@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSeed", "CloudSeed\CloudSeed.csproj", "{9BB36904-5BF5-4929-86AA-FD9A884505DE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CloudSeed.Native", "CloudSeed.Native\CloudSeed.Native.vcxproj", "{71460306-FE20-4720-A7D8-3D13B1739B17}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Debug|Win32.ActiveCfg = Debug|x86
+		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Debug|Win32.Build.0 = Debug|x86
+		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Release|Win32.ActiveCfg = Release|x86
+		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Release|Win32.Build.0 = Release|x86
+		{71460306-FE20-4720-A7D8-3D13B1739B17}.Debug|Win32.ActiveCfg = Debug|Win32
+		{71460306-FE20-4720-A7D8-3D13B1739B17}.Debug|Win32.Build.0 = Debug|Win32
+		{71460306-FE20-4720-A7D8-3D13B1739B17}.Release|Win32.ActiveCfg = Release|Win32
+		{71460306-FE20-4720-A7D8-3D13B1739B17}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
