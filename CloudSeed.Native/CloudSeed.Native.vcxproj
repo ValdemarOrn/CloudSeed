@@ -53,6 +53,9 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>cp $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -73,7 +76,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>cp $(TargetDir)$(TargetFileName) $(SolutionDir)$(TargetFileName)</Command>
+      <Command>cp $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

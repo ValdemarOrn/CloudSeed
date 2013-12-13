@@ -10,17 +10,22 @@ namespace CloudSeed
 		Predelay = 0,
 		EarlySize,
 		Density,
-		GlobalFeedback,
-		GlobalDelay,
+
+		APDelay,
+		APFeedback,
+
 		HiCut,
 		HiCutAmt,
 		LowCut,
 		LowCutAmt,
-		APDelay,
-		APFeedback,
+
 		ModRate,
 		ModAmount,
 		StageCount,
+
+		GlobalFeedback,
+		GlobalDelay,
+
 		Dry,
 		Wet
 	}

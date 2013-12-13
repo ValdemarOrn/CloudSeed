@@ -39,9 +39,11 @@ void Reverber::SetSamplerate(double value)
 		AllpassModules[i].Samplerate = Samplerate;
 		AllpassModules[i].SetHiCut(AllpassModules[i].HiCut);
 	}
+
+	RecalculateTapIndexes();
 }
 
-void Reverber::SetTaps(int* indexes, double* amplitudes, int count)
+void Reverber::SetTaps(double* indexOffsets, double* amplitudes, int count)
 {
 	if(count > MAX_TAP_COUNT)
 		count = MAX_TAP_COUNT;
@@ -49,9 +51,11 @@ void Reverber::SetTaps(int* indexes, double* amplitudes, int count)
 	TapCount = count;
 	for (int i = 0; i < TapCount; i++)
 	{
-		TapsIndexes[i] = indexes[i];
+		TapIndexOffsets[i] = indexOffsets[i];
 		TapAmplitudes[i] = amplitudes[i];
 	}
+
+	RecalculateTapIndexes();
 }
 
 void Reverber::SetLate(double* feedback, int* delaySamples)
@@ -72,7 +76,7 @@ void Reverber::SetHiCut(double* fc, double* amount)
 	}
 }
 
-void Reverber::SetMod(double* freq, double* amount)
+void Reverber::SetAllpassMod(double* freq, double* amount)
 {
 	for (int i = 0; i < ALLPASS_COUNT; i++)
 	{
@@ -102,15 +106,21 @@ void Reverber::Process(double* input, double* output, int len)
 		}
 
 		EarlyBuffer[EarlyI] = input[i];
-		double outputEarly = 0.0;
-
+		
+		double taps[MAX_TAP_COUNT];
 		for (int i = 0; i < TapCount; i++)
 		{
-			int idx = (EarlyI + TapsIndexes[i]) % len;
-			outputEarly += EarlyBuffer[idx] * TapAmplitudes[i];
+			int idx = (EarlyI + TapsIndexes[i]) & MODULO;
+			taps[i] = EarlyBuffer[idx];
 		}
 
-		double d = outputEarly + globalFeedback * OutBuffer[(OutI + globalDelay) % BUF_LEN];
+		double outputEarly = 0.0;
+		for (int i = 0; i < TapCount; i++)
+		{
+			outputEarly += taps[i] * TapAmplitudes[i];
+		}
+
+		double d = outputEarly + globalFeedback * OutBuffer[(OutI + globalDelay) & MODULO];
 
 		for (int i = 0; i < stageCount; i++)
 			d = AllpassModules[i].Process(d);
@@ -119,12 +129,24 @@ void Reverber::Process(double* input, double* output, int len)
 
 		EarlyI--;
 		if (EarlyI < 0)
-			EarlyI += len;
+			EarlyI += BUF_LEN;
 
 		OutI--;
 		if (OutI < 0)
 			OutI += BUF_LEN;
 
 		output[i] = dry * input[i] + wet * d;
+
+		// Early only output
+		//output[i] = dry * input[i] + wet * outputEarly;
 	}
+}
+
+void Reverber::RecalculateTapIndexes()
+{
+	int predelay = (int)(Parameters[Parameter::Predelay] / 1000.0 * Samplerate);
+	int earlySizeSamples = Parameters[Parameter::EarlySize] / 1000.0 * Samplerate;
+
+	for (int i = 0; i < TapCount; i++)
+		TapsIndexes[i] = predelay + TapIndexOffsets[i] * earlySizeSamples;
 }

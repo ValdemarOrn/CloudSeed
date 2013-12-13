@@ -18,12 +18,10 @@ Allpass::Allpass()
 	Alpha = 0;
 	I = 0;
 	A = 0;
-	AOut = 0;
 
 	for (int i = 0; i < BUF_LEN; i++)
 	{
 		Buffer[i] = 0.0;
-		BufferOut[i] = 0.0;
 	}
 }
 

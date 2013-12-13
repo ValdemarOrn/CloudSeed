@@ -31,6 +31,5 @@ intermediate*/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-!CloudSeed.Native.dll
 !SharpSoundDevice-Stable-1.1.2-2013-05-08/*
-!AudioLib.dll
+Build/*

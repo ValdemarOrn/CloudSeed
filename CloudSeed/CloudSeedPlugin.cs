@@ -15,19 +15,26 @@ namespace CloudSeed
 		private static string[] ParameterNames = new[] 
 		{
 			"Predelay", 
-			"Size", 
+			"Early Size", 
 			"Density", 
-			"Decay", 
-			"Delay", 
-			"Hi Cut", 
-			"Hi Cut Amt", 
+
 			"AP-Delay", 
 			"AP-Feedback", 
+
+			"Hi Cut", 
+			"Hi Cut Amt", 
+			"Low Cut", 
+			"Low Cut Amt", 
+
 			"Mod Rate",
 			"Mod Amount",
-			"Late Stages",
+			"Stage Count",
+
+			"Feedback", 
+			"Delay", 
+			
 			"Dry", 
-			"Wet" 
+			"Wet"
 		};
 
 		// --------------- IAudioDevice Properties ---------------
@@ -92,49 +99,67 @@ namespace CloudSeed
 			}
 		}
 
-		public double Predelay { get { return Parameters[0] * 100; } }
-		public double Size { get { return Parameters[1] * 400; } }
-		public int Density { get { return (int)(Parameters[2] * 100); } }
-		public double Decay { get { return Parameters[3]; } }
-		public double Delay { get { return Parameters[4] * 100; } }
+		public double Predelay { get { return Parameters[(int)ParameterEnum.Predelay] * 100; } }
+		public double EarlySize { get { return Parameters[(int)ParameterEnum.EarlySize] * 1000; } }
+		public int Density { get { return (int)(Parameters[(int)ParameterEnum.Density] * 200); } }
+		public double GlobalFeedback { get { return Parameters[(int)ParameterEnum.GlobalFeedback]; } }
+		public double GlobalDelay { get { return Parameters[(int)ParameterEnum.GlobalDelay] * 100; } }
 
-		public double HiCut { get { return ValueTables.Get(Parameters[5], ValueTables.Response4Oct) * 20000; } }
-		public double HiCutAmt { get { return Parameters[6]; } }
+		public double HiCut { get { return ValueTables.Get(Parameters[(int)ParameterEnum.HiCut], ValueTables.Response4Oct) * 20000; } }
+		public double HiCutAmt { get { return Parameters[(int)ParameterEnum.HiCutAmt]; } }
 
-		public double APDelay { get { return Parameters[7] * 100; } }
-		public double APFeedback { get { return Parameters[8]; } }
+		public double APDelay { get { return Parameters[(int)ParameterEnum.APDelay] * 100; } }
+		public double APFeedback { get { return Parameters[(int)ParameterEnum.APFeedback]; } }
 
-		public double ModRate { get { return Parameters[9] * 2; } }
-		public double ModAmount { get { return Parameters[10]; } }
+		public double ModRate { get { return Parameters[(int)ParameterEnum.ModRate] * 2; } }
+		public double ModAmount { get { return Parameters[(int)ParameterEnum.ModAmount] * 2; } }
 
-		public int LateStages { get { return 1 + (int)(Parameters[11] * 7.999); } }
+		public int StageCount { get { return 1 + (int)(Parameters[(int)ParameterEnum.StageCount] * 7.999); } }
 
-		public double Dry { get { return Parameters[12]; } }
-		public double Wet { get { return Parameters[13]; } }
+		public double Dry { get { return Parameters[(int)ParameterEnum.Dry]; } }
+		public double Wet { get { return Parameters[(int)ParameterEnum.Wet]; } }
 
 		public string GetDisplay(int i)
 		{
-			if (i == 0) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}ms", Predelay);
-			if (i == 1) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}ms", Size);
-			if (i == 2) return String.Format(CultureInfo.InvariantCulture, "{0:0}x", Density);
-			if (i == 3) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Decay);
-			if (i == 4) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Delay);
+			switch((ParameterEnum)i)
+			{
+				case ParameterEnum.Predelay:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}ms", Predelay);
+				case ParameterEnum.EarlySize:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}ms", EarlySize);
+				case ParameterEnum.Density:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0}x", Density);
+				case ParameterEnum.GlobalFeedback:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", GlobalFeedback);
+				case ParameterEnum.GlobalDelay:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", GlobalDelay);
 
-			if (i == 5) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}Hz", HiCut);
-			if (i == 6) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", HiCutAmt);
+				case ParameterEnum.HiCut:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}Hz", HiCut);
+				case ParameterEnum.HiCutAmt:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", HiCutAmt);
 
-			if (i == 7) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}ms", APDelay);
-			if (i == 8) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", APFeedback);
+				case ParameterEnum.APDelay:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}ms", APDelay);
+				case ParameterEnum.APFeedback:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", APFeedback);
 
-			if (i == 9) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}Hz", ModRate);
-			if (i == 10) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", ModAmount);
+				case ParameterEnum.ModRate:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}Hz", ModRate);
+				case ParameterEnum.ModAmount:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", ModAmount);
 
-			if (i == 11) return String.Format(CultureInfo.InvariantCulture, "{0:0}", LateStages);
+				case ParameterEnum.StageCount:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0}", StageCount);
 
-			if (i == 12) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Dry);
-			if (i == 13) return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Wet);
+				case ParameterEnum.Dry:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Dry);
+				case ParameterEnum.Wet:
+					return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Wet);
+			}
+			
 
-			return Parameters[i].ToString();
+			return String.Format(CultureInfo.InvariantCulture, "{0:0.00}", Parameters[i]);
 		}
 
 		public void DisposeDevice() { }
@@ -169,26 +194,36 @@ namespace CloudSeed
 				ParameterInfo[index].Value = value;
 				ParameterInfo[index].Display = GetDisplay(index);
 
-				RevLeft.SetTaps(Predelay, Size, Density);
-				RevLeft.SetLate(APFeedback, (int)(APDelay / 1000.0 * Samplerate));
-				RevLeft.SetParameter(ParameterEnum.GlobalFeedback, Decay);
-				RevLeft.SetParameter(ParameterEnum.GlobalDelay, (int)(Delay / 1000.0 * Samplerate));
-				RevLeft.SetHiCut(HiCut, HiCutAmt);
-				RevLeft.SetMod(ModRate, ModAmount);
-				RevLeft.SetParameter(ParameterEnum.StageCount, LateStages);
+				RevLeft.SetParameter(ParameterEnum.EarlySize, EarlySize);
+				RevLeft.SetParameter(ParameterEnum.Predelay, Predelay);
 				RevLeft.SetParameter(ParameterEnum.Dry, Dry);
 				RevLeft.SetParameter(ParameterEnum.Wet, Wet);
+				RevLeft.SetParameter(ParameterEnum.StageCount, StageCount);
 
-				RevRight.SetTaps(Predelay, Size, Density);
-				RevRight.SetLate(APFeedback, (int)(APDelay / 1000.0 * Samplerate));
-				RevRight.SetParameter(ParameterEnum.GlobalFeedback, Decay);
-				RevRight.SetParameter(ParameterEnum.GlobalDelay, (int)(Delay / 1000.0 * Samplerate));
-				RevRight.SetHiCut(HiCut, HiCutAmt);
-				RevRight.SetMod(ModRate, ModAmount);
-				RevRight.SetParameter(ParameterEnum.StageCount, LateStages);
+				RevLeft.SetTaps(EarlySize, Density);
+				RevLeft.SetLate(APFeedback, (int)(APDelay / 1000.0 * Samplerate));
+				RevLeft.SetParameter(ParameterEnum.GlobalFeedback, GlobalFeedback);
+				RevLeft.SetParameter(ParameterEnum.GlobalDelay, (int)(GlobalDelay / 1000.0 * Samplerate));
+				RevLeft.SetHiCut(HiCut, HiCutAmt);
+				RevLeft.SetAllpassMod(ModRate, ModAmount);
+				
+
+				RevRight.SetParameter(ParameterEnum.EarlySize, EarlySize);
+				RevRight.SetParameter(ParameterEnum.Predelay, Predelay);
 				RevRight.SetParameter(ParameterEnum.Dry, Dry);
 				RevRight.SetParameter(ParameterEnum.Wet, Wet);
+				RevRight.SetParameter(ParameterEnum.StageCount, StageCount);
+
+				RevRight.SetTaps(EarlySize, Density);
+				RevRight.SetLate(APFeedback, (int)(APDelay / 1000.0 * Samplerate));
+				RevRight.SetParameter(ParameterEnum.GlobalFeedback, GlobalFeedback);
+				RevRight.SetParameter(ParameterEnum.GlobalDelay, (int)(GlobalDelay / 1000.0 * Samplerate));
+				RevRight.SetHiCut(HiCut, HiCutAmt);
+				RevRight.SetAllpassMod(ModRate, ModAmount);
+				
 			}
+
+			System.Windows.Forms.Cursor.Show();
 		}
 
 		public void SetProgramData(Program program, int index)
@@ -221,8 +256,6 @@ namespace CloudSeed
 				Samplerate = samplerate;
 				RevLeft.SetSamplerate(samplerate);
 				RevRight.SetSamplerate(samplerate);
-				RevLeft.SetTaps(Predelay, Size, Density);
-				RevRight.SetTaps(Predelay, Size, Density);
 			}
 		}
 

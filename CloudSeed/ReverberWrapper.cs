@@ -6,54 +6,33 @@ using System.Text;
 
 namespace CloudSeed
 {
-	/*[StructLayout(LayoutKind.Sequential)]
-	public unsafe struct ReverberStruct
-	{
-		public double Samplerate;
-		public fixed double Parameters[Constants.PARAM_COUNT];
-
-		public fixed int TapsIndexes[Constants.MAX_TAP_COUNT];
-		public fixed double TapAmplitudes[Constants.MAX_TAP_COUNT];
-		public int TapCount;
-
-		public fixed Allpass AllpassModules[Constants.ALLPASS_COUNT];
-
-		public fixed double EarlyBuffer[Constants.BUF_LEN];
-		public int EarlyI;
-
-		public fixed double OutBuffer[Constants.BUF_LEN];
-		public int OutI;
-
-		public int SampleCounter;
-	}*/
-
 	public unsafe class ReverberWrapper
 	{
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern IntPtr Create();
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void Delete(IntPtr item);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern double* GetParameters(IntPtr item);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void SetSamplerate(IntPtr item, double samplerate);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetTaps(IntPtr item, int* indexes, double* amplitudes, int count);
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void SetTaps(IntPtr item, double* indexOffsets, double* amplitudes, int count);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void SetLate(IntPtr item, double* feedback, int* delaySamples);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void SetHiCut(IntPtr item, double* fc, double* amount);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetMod(IntPtr item, double* freq, double* amount);
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void SetAllpassMod(IntPtr item, double* freq, double* amount);
 
-		[DllImport(@"C:\Src\_Tree\Audio\CloudSeed\CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void Process(IntPtr item, double* input, double* output, int len);
 
 		IntPtr Instance;
@@ -82,7 +61,7 @@ namespace CloudSeed
 			SetSamplerate(Instance, samplerate); 
 		}
 
-		public void SetTaps(double predelay, double size, int density)
+		public void SetTaps(double size, int density)
 		{
 			if (size < 5)
 				size = 5;
@@ -90,12 +69,10 @@ namespace CloudSeed
 				density = 5;
 
 			var rand = new Random();
-			var min = (int)(predelay / 1000.0 * Samplerate);
-			var max = min + (int)(size / 1000.0 * Samplerate);
-			var tapIndexes = Enumerable.Range(0, density).Select(x => rand.Next(min, max)).OrderBy(x => x).ToArray();
-			var tapAmplitudes = tapIndexes.Select(x => Math.Exp(-x / (double)max * 3) * 2 * (0.5 - rand.NextDouble())).ToArray();
+			var tapIndexes = Enumerable.Range(0, density).Select(x => rand.NextDouble()).OrderBy(x => x).ToArray();
+			var tapAmplitudes = tapIndexes.Select(x => Math.Exp(-x / 1.0 * 3) * 2 * (0.5 - rand.NextDouble())).ToArray();
 			
-			fixed(int* indexes = tapIndexes)
+			fixed(double* indexes = tapIndexes)
 			fixed(double* amps = tapAmplitudes)
 			{
 				SetTaps(Instance, indexes, amps, density);
@@ -133,7 +110,7 @@ namespace CloudSeed
 			SetHiCut(Instance, fcs, amounts);
 		}
 
-		public void SetMod(double freq, double amount)
+		public void SetAllpassMod(double freq, double amount)
 		{
 			var rand = new Random();
 			double* freqs = stackalloc double[Constants.ALLPASS_COUNT];
@@ -145,7 +122,7 @@ namespace CloudSeed
 				amounts[i] = amount;
 			}
 
-			SetMod(Instance, freqs, amounts);
+			SetAllpassMod(Instance, freqs, amounts);
 		}
 
 		public void Process(double[] input, double[] output)

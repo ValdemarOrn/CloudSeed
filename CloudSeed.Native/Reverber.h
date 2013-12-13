@@ -11,7 +11,10 @@ struct Reverber
 	double Samplerate;
 	double Parameters[PARAM_COUNT];
 
+	double EarlySize;
+
 	int TapsIndexes[MAX_TAP_COUNT];
+	double TapIndexOffsets[MAX_TAP_COUNT];
 	double TapAmplitudes[MAX_TAP_COUNT];
 	int TapCount;
 
@@ -28,11 +31,14 @@ struct Reverber
 	Reverber();
 	double* GetParameters();
 	void SetSamplerate(double samplerate);
-	void SetTaps(int* indexes, double* amplitudes, int count);
+	void SetTaps(double* indexOffsets, double* amplitudes, int count);
 	void SetLate(double* feedback, int* delaySamples);
 	void SetHiCut(double* fc, double* amount);
-	void SetMod(double* freq, double* amount);
+	void SetAllpassMod(double* freq, double* amount);
 	void Process(double* input, double* output, int len);
+
+private:
+	void RecalculateTapIndexes();
 };
 
 extern "C"
@@ -57,9 +63,9 @@ extern "C"
 		item->SetSamplerate(samplerate);
 	}
 
-	__dllexport void SetTaps(Reverber* item, int* indexes, double* amplitudes, int count)
+	__dllexport void SetTaps(Reverber* item, double* indexOffsets, double* amplitudes, int count)
 	{
-		item->SetTaps(indexes, amplitudes, count);
+		item->SetTaps(indexOffsets, amplitudes, count);
 	}
 
 	__dllexport void SetLate(Reverber* item, double* feedback, int* delaySamples)
@@ -72,9 +78,9 @@ extern "C"
 		item->SetHiCut(fc, amount);
 	}
 
-	__dllexport void SetMod(Reverber* item, double* freq, double* amount)
+	__dllexport void SetAllpassMod(Reverber* item, double* freq, double* amount)
 	{
-		item->SetMod(freq, amount);
+		item->SetAllpassMod(freq, amount);
 	}
 
 	__dllexport void Process(Reverber* item, double* input, double* output, int len)

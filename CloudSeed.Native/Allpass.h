@@ -22,14 +22,13 @@ private:
 	double ModPhase;
 	double ModValue;
 	double ModIncrement;
+	int IndexOffset;
 
 	double Alpha;
 	double Buffer[BUF_LEN];
-	double BufferOut[BUF_LEN];
 	int I;
 
 	double A;
-	double AOut;
 
 public:
 
@@ -44,24 +43,28 @@ public:
 			ModPhase -= 1.0;
 
 		ModValue = sin(ModPhase * 2 * PI);
+		IndexOffset = DelaySamples * (1 + 0.01 * ModAmount * ModValue);
 	}
 	
 	__inline_always double Allpass::Process(double x)
 	{
-		int k = (int)(I + DelaySamples * (1 + 0.01 * ModAmount * ModValue)) % BUF_LEN;
+		// https://ccrma.stanford.edu/~jos/Reverb/Are_Allpass_Filters_Really.html
+
+		int k = (int)(I + IndexOffset) & MODULO;
 
 		double bufOut = Buffer[k];
-		double bufIn = x - Feedback * bufOut;
+		double bufIn = x + Feedback * bufOut;
 		Buffer[I] = bufIn;
-		double y = Feedback * bufIn + bufOut;
 
 		I--;
 		if (I < 0)
 			I += BUF_LEN;
 
+		double y = bufOut - Feedback * bufIn;
+		// filter the feedback
 		A = (1 - Alpha) * y + Alpha * A;
-		AOut = A * HiCutAmount + y * (1 - HiCutAmount);
-		return AOut;	
+		A = A * HiCutAmount + y * (1 - HiCutAmount);
+		return A;
 	}
 };
 
