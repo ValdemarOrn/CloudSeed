@@ -2,46 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CloudSeed
 {
-	public class Allpass
+	public class SimpleDelay
 	{
 		private readonly double[] buffer;
 		private readonly double[] output;
 		private readonly int len;
-		private int index;
 
-		public int SampleDelay;
-		public double Feedback;
+		private int sampleDelay;
+		private int index;
 		
-		public Allpass(int bufferSize, int sampleDelay)
+		public SimpleDelay(int bufferSize, int sampleDelay)
 		{
 			this.len = bufferSize;
 			this.buffer = new double[bufferSize];
 			this.output = new double[bufferSize];
-			this.SampleDelay = sampleDelay;
+			this.sampleDelay = sampleDelay;
 			index = bufferSize - 1;
 		}
 
 		public double[] Output { get { return output; } }
-		
+
+		public void SetDelay(int delaySamples)
+		{
+			if (delaySamples <= 0)
+				delaySamples = 1;
+
+			sampleDelay = delaySamples;
+		}
+
 		public void Process(double[] input, int sampleCount)
 		{
-			int indexread = (index + SampleDelay) % len;
+			int indexread = (index + sampleDelay) % len;
 
 			for (int i = 0; i < sampleCount; i++)
 			{
 				if (index < 0) index += len;
-				if (indexread < 0) indexread += len;
+				buffer[index--] = input[i];
+			}
 
-				var bufOut = buffer[indexread];
-				var inVal = input[i] + bufOut * Feedback;
-				buffer[index] = inVal;
-				output[i] = bufOut - inVal * Feedback;
-				index--;
-				indexread--;
+			for (int i = 0; i < sampleCount; i++)
+			{
+				if (indexread < 0) indexread += len;
+				output[i] = buffer[indexread--];
 			}
 		}
 	}

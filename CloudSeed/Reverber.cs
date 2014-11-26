@@ -30,7 +30,7 @@ namespace CloudSeed
 
 		double[] Amplitudes;
 		int[] Taps;
-		Allpass[] AllpassModules;
+		AllpassM[] AllpassModules;
 
 		double[] EarlyBuffer;
 		int EarlyI;
@@ -42,10 +42,10 @@ namespace CloudSeed
 
 		public Reverber()
 		{
-			AllpassModules = new Allpass[8];
+			AllpassModules = new AllpassM[8];
 			for (int i = 0; i < AllpassModules.Length; i++)
 			{
-				AllpassModules[i] = new Allpass();
+				AllpassModules[i] = new AllpassM();
 			}
 			
 			OutBuffer = new double[48000];

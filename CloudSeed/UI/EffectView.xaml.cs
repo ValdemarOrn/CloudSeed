@@ -21,7 +21,7 @@ namespace CloudSeed.UI
 	/// </summary>
 	public partial class EffectView : Window
 	{
-		private ViewModel VM;
+		/*private ViewModel VM;
 		private DispatcherTimer Timer;
 
 		public EffectView(ViewModel vm)
@@ -29,25 +29,26 @@ namespace CloudSeed.UI
 			VM = vm;
 			DataContext = VM;
 			InitializeComponent();
-			//SetupAnnouncer();
-		}
-
-		/*public SynthView(SynthController ctrl)
-		{
-			VM = new ViewModel(ctrl);
-			DataContext = VM;
-			InitializeComponent();
-			SetupAnnouncer();
+			Setup();
 		}*/
 
 		public EffectView()
 		{
 			InitializeComponent();
-			//SetupAnnouncer();
+			//Setup();
 		}
 
-		/*void SetupAnnouncer()
+		/*void Setup()
 		{
+			Func<double?, string> formatter = x => string.Format("{0:0}", x);
+			SpinnerParallel.Formatting = x => ParameterFormatters.Formatters[ParameterEnum.Parallel](x ?? 0.0);
+			SpinnerEarlySeedLeft.Formatting = formatter;
+			SpinnerLateSeedLeft.Formatting = formatter;
+			SpinnerStageCount.Formatting = formatter;
+			SpinnerEarlySeedRight.Formatting = formatter;
+			SpinnerLateSeedRight.Formatting = formatter;
+		*/
+			/*
 			Timer = new DispatcherTimer();
 			Timer.Interval = TimeSpan.FromSeconds(1);
 			Timer.Tick += (s, e) =>
@@ -64,8 +65,8 @@ namespace CloudSeed.UI
 
 				if(timeout)
 					Timer.Start();
-			});
-		}*/
+			});*/
+		/*}*/
 	
 	}
 }

@@ -24,7 +24,7 @@ namespace CloudSeed
 		static extern void SetTaps(IntPtr item, double* indexOffsets, double* amplitudes, int count);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetLate(IntPtr item, double* feedback, int* delaySamples);
+		static extern void SetEarly(IntPtr item, double* feedback, int* delaySamples);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void SetHiCut(IntPtr item, double* fc, double* amount);
@@ -38,9 +38,11 @@ namespace CloudSeed
 		IntPtr Instance;
 		double Samplerate;
 		double* ParameterArray;
+		object lockObject;
 
 		public ReverberWrapper()
 		{
+			lockObject = new object();
 			Instance = Create();
 			ParameterArray = GetParameters(Instance);
 		}
@@ -61,38 +63,49 @@ namespace CloudSeed
 			SetSamplerate(Instance, samplerate); 
 		}
 
-		public void SetTaps(double size, int density)
+		public void SetTaps(int grainCount)
 		{
-			if (size < 5)
-				size = 5;
-			if (density < 5)
-				density = 5;
-
-			var rand = new Random();
-			var tapIndexes = Enumerable.Range(0, density).Select(x => rand.NextDouble()).OrderBy(x => x).ToArray();
-			var tapAmplitudes = tapIndexes.Select(x => Math.Exp(-x / 1.0 * 3) * 2 * (0.5 - rand.NextDouble())).ToArray();
-			
-			fixed(double* indexes = tapIndexes)
-			fixed(double* amps = tapAmplitudes)
+			lock (lockObject)
 			{
-				SetTaps(Instance, indexes, amps, density);
+				if (grainCount < 1)
+					grainCount = 1;
+
+				var rand = new Random();
+				var tapIndexes = Enumerable.Range(0, grainCount).Select(x => rand.NextDouble()).OrderBy(x => x).ToArray();
+				var tapAmplitudes = tapIndexes.Select(x => Math.Exp(-x / 1.0 * 3) * 2 * (0.5 - rand.NextDouble())).ToArray();
+
+				if (tapAmplitudes.Length == 1)
+				{
+					tapIndexes[0] = 1;
+					tapAmplitudes[0] = 1.0;
+				}
+
+				fixed (double* indexes = tapIndexes)
+				fixed (double* amps = tapAmplitudes)
+				{
+					SetTaps(Instance, indexes, amps, grainCount);
+				}
 			}
 		}
 
-		public void SetLate(double feedback, int delaySamples)
+		public void SetEarly(double feedback, int delaySamples)
 		{
-			var rand = new Random();
-			double* feedbacks = stackalloc double[Constants.ALLPASS_COUNT];
-			int* delays = stackalloc int[Constants.ALLPASS_COUNT];
-
-			for (int i = 0; i < Constants.ALLPASS_COUNT; i++)
+			lock (lockObject)
 			{
-				feedbacks[i] = feedback * (0.9 + 0.1 * rand.NextDouble());
-				feedbacks[i] = feedbacks[i] > 0.98 ? 0.98 : feedbacks[i];
-				delays[i] = (int)(delaySamples * (1 + 0.5 * i * (0.3 + 0.7 * rand.NextDouble())));
-			}
+				var rand = new Random();
+				double* feedbacks = stackalloc double[Constants.ALLPASS_COUNT];
+				int* delays = stackalloc int[Constants.ALLPASS_COUNT];
+				var delayRatios = new[] { 1.0, 1.06654, 1.1273561, 1.2484571, 1.3823743, 1.411276356, 1.527432, 1.5996734 };
+				for (int i = 0; i < Constants.ALLPASS_COUNT; i++)
+				{
+					feedbacks[i] = feedback * (1 + i * 0.02);
+					feedbacks[i] = feedbacks[i] > 0.98 ? 0.98 : feedbacks[i];
+					var delay = (delaySamples / delayRatios[i]) * (1 + 0.05 * rand.NextDouble());
+					delays[i] = (int)delay;
+				}
 
-			SetLate(Instance, feedbacks, delays);
+				SetEarly(Instance, feedbacks, delays);
+			}
 		}
 
 		public void SetHiCut(double fc, double amount)
@@ -127,12 +140,15 @@ namespace CloudSeed
 
 		public void Process(double[] input, double[] output)
 		{
-			var len = input.Length;
-
-			fixed (double* ins = input)
-			fixed (double* outs = output)
+			lock (lockObject)
 			{
-				Process(Instance, ins, outs, len);
+				var len = input.Length;
+
+				fixed (double* ins = input)
+				fixed (double* outs = output)
+				{
+					Process(Instance, ins, outs, len);
+				}
 			}
 		}
 

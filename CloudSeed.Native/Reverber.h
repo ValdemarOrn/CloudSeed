@@ -23,8 +23,8 @@ struct Reverber
 	double EarlyBuffer[BUF_LEN];
 	int EarlyI;
 
-	double OutBuffer[BUF_LEN];
-	int OutI;
+	double LateBuffers[LATE_COUNT * BUF_LEN];
+	int LateI;
 
 	int SampleCounter;
 
@@ -32,7 +32,7 @@ struct Reverber
 	double* GetParameters();
 	void SetSamplerate(double samplerate);
 	void SetTaps(double* indexOffsets, double* amplitudes, int count);
-	void SetLate(double* feedback, int* delaySamples);
+	void SetEarly(double* feedback, int* delaySamples);
 	void SetHiCut(double* fc, double* amount);
 	void SetAllpassMod(double* freq, double* amount);
 	void Process(double* input, double* output, int len);
@@ -68,9 +68,9 @@ extern "C"
 		item->SetTaps(indexOffsets, amplitudes, count);
 	}
 
-	__dllexport void SetLate(Reverber* item, double* feedback, int* delaySamples)
+	__dllexport void SetEarly(Reverber* item, double* feedback, int* delaySamples)
 	{
-		item->SetLate(feedback, delaySamples);
+		item->SetEarly(feedback, delaySamples);
 	}
 
 	__dllexport void SetHiCut(Reverber* item, double* fc, double* amount)

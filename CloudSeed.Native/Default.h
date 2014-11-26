@@ -6,27 +6,60 @@ namespace Parameter
 {
 	enum ParameterEnum
 	{
-		Predelay = 0,
-		EarlySize,
-		Density,
+		PredelayLeft = 0,     
+		PredelayRight,
+		EarlySizeLeft, 
+		EarlySizeRight,
+		GrainCountLeft,
+		GrainCountRight,
 
-		APDelay,
-		APFeedback,
+		EarlySeedLeft,
+		EarlySeedRight,
+		LateSeedLeft,
+		LateSeedRight,
+		StageCount,
+		Parallel,
+
+
+		AllpassDelay,
+		AllpassFeedback,
+		AllpassModRate,
+		AllpassModAmount,
 
 		HiCut,
-		HiCutAmt,
+		HiCutAmount,
 		LowCut,
-		LowCutAmt,
+		LowCutAmount,
 
-		ModRate,
-		ModAmount,
-		StageCount,
 
-		GlobalFeedback,
-		GlobalDelay,
+		Delay1,
+		Delay2,
+		Delay3,
+		Feedback1,
+		Feedback2,
+		Feedback3,
+		ModRate1,
+		ModRate2,
+		ModRate3,
+		ModAmt1,
+		ModAmt2,
+		ModAmt3,
 
-		Dry,
-		Wet
+
+		FreqLow,
+		FreqHi,
+		FreqMid,
+		GainLow,
+		GainHi,
+		GainMid,
+		QMid,
+
+
+		EarlyOut,
+		WetOut,
+		DryOut,
+
+		COUNT
 	};
 }
 
@@ -40,10 +73,11 @@ namespace Parameter
 	#define __inline_always __forceinline
 #endif
 
-const int PARAM_COUNT = Parameter::Wet + 1;
+const int PARAM_COUNT = Parameter::COUNT;
 const int BUF_LEN = 65536;
 const int ALLPASS_COUNT = 8;
 const int MAX_TAP_COUNT = 200;
 const int MODULO = 65535;
+const int LATE_COUNT = 16;
 
 #endif
