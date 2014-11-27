@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AudioLib;
+using AudioLib.Modules;
 
 namespace CloudSeed
 {
@@ -10,26 +11,35 @@ namespace CloudSeed
 		private readonly MultitapDiffuser multitap;
 		private readonly AllpassDiffuser diffuser;
 		private readonly CombLine[] lines;
-		
-		private readonly ShaRandom rand;
-		private double[] delayLineSeeds;
-		
 		private readonly double[] tempBuffer;
-		private readonly double[] tempBuffer2;
 		private readonly double[] outBuffer;
+		private readonly ShaRandom rand;
 
-		public ReverbChannel(int bufferSize)
+		private readonly Biquad highPass;
+		private readonly Biquad lowPass;
+		
+		private double[] delayLineSeeds;
+		private int lineCount;
+		private double perLineGain;
+		
+		public ReverbChannel(int bufferSize, int samplerate)
 		{
 			preDelay = new SimpleDelay(bufferSize, 10000);
 			multitap = new MultitapDiffuser(bufferSize);
 			diffuser = new AllpassDiffuser(bufferSize);
-			lines = Enumerable.Range(0, 8).Select(x => new CombLine(bufferSize)).ToArray();
+			lines = Enumerable.Range(0, 20).Select(x => new CombLine(bufferSize, samplerate)).ToArray();
+			lineCount = 8;
+			perLineGain = GetPerLineGain();
+
+			highPass = new Biquad(Biquad.FilterType.HighPass, samplerate) { Q = 1.0, Frequency = 20 };
+			lowPass = new Biquad(Biquad.FilterType.LowPass, samplerate) { Q = 1.0, Frequency = 20000 };
+			highPass.Update();
+			lowPass.Update();
 			
 			rand = new ShaRandom();
 			tempBuffer = new double[bufferSize];
-			tempBuffer2 = new double[bufferSize];
 			outBuffer = new double[bufferSize];
-			delayLineSeeds = rand.Generate(12345, 8).ToArray();
+			delayLineSeeds = rand.Generate(12345, lines.Length).ToArray();
 		}
 
 		public double[] Output { get { return outBuffer; } }
@@ -41,9 +51,13 @@ namespace CloudSeed
 		private double predelayOut;
 		private double earlyOut;
 		private double lineOut;
-		private double postDiffusionOut;
 		private int lineDelay;
 		private double lineFeedback;
+
+		private double GetPerLineGain()
+		{
+			return 1 / Math.Sqrt(lineCount);
+		}
 
 		public void SetParameter(Parameter para, object value)
 		{
@@ -55,11 +69,13 @@ namespace CloudSeed
 
 			else if (para == Parameter.HighPass)
 			{
-				
+				highPass.Frequency = (double)value;
+				highPass.Update();
 			}
 			else if (para == Parameter.LowPass)
 			{
-				
+				lowPass.Frequency = (double)value;
+				lowPass.Update();
 			}
 
 
@@ -98,6 +114,11 @@ namespace CloudSeed
 				diffuser.SetFeedback((double)value);
 			}
 
+			else if (para == Parameter.LineCount)
+			{
+				lineCount = (int)value;
+				perLineGain = GetPerLineGain();
+			}
 			else if (para == Parameter.LineGain)
 			{
 				lineGain = (double)value;
@@ -148,7 +169,7 @@ namespace CloudSeed
 			}
 			else if (para == Parameter.CombSeed)
 			{
-				delayLineSeeds = rand.Generate((int)value, 8).ToArray();
+				delayLineSeeds = rand.Generate((int)value, lines.Length).ToArray();
 				UpdateLines();
 			}
 			else if (para == Parameter.PostDiffusionSeed)
@@ -176,10 +197,6 @@ namespace CloudSeed
 			{
 				lineOut = (double)value;
 			}
-			else if (para == Parameter.PostDiffusionOut)
-			{
-				postDiffusionOut = (double)value;
-			}
 		}
 
 		private void UpdateLines()
@@ -198,10 +215,21 @@ namespace CloudSeed
 		{
 			int len = sampleCount;
 			var predelayOutput = preDelay.Output;
-			var diffuserOut = diffuser.Output;
 			
 			preDelay.Process(input, len);
-			multitap.Process(preDelay.Output, len);
+
+			highPass.Process(preDelay.Output, tempBuffer, len);
+			lowPass.Process(tempBuffer, tempBuffer, len);
+
+			// completely zero if no input present
+			for (int i = 0; i < len; i++)
+			{
+				var n = tempBuffer[i];
+				if (n * n < 0.000000001)
+					tempBuffer[i] = 0;
+			}
+
+			multitap.Process(tempBuffer, len);
 
 			var earlyOutStage = diffuserEnabled ? diffuser.Output : multitap.Output;
 
@@ -217,28 +245,26 @@ namespace CloudSeed
 
 			tempBuffer.Gain(lineGain, len);
 
-			for (int i = 0; i < lines.Length; i++)
+			for (int i = 0; i < lineCount; i++)
 				lines[i].Process(tempBuffer, len);
 
-			tempBuffer.MixInto(len,
-				lines[0].Output,
-				lines[1].Output,
-				lines[2].Output,
-				lines[3].Output,
-				lines[4].Output,
-				lines[5].Output,
-				lines[6].Output,
-				lines[7].Output);
+			for (int i = 0; i < lineCount; i++)
+			{
+				var buf = lines[i].Output;
 
-			tempBuffer2.MixInto(len,
-				lines[0].OutputDelay,
-				lines[1].OutputDelay,
-				lines[2].OutputDelay,
-				lines[3].OutputDelay,
-				lines[4].OutputDelay,
-				lines[5].OutputDelay,
-				lines[6].OutputDelay,
-				lines[7].OutputDelay);
+				if (i == 0)
+				{	
+					for (int j = 0; j < len; j++)
+						tempBuffer[j] = buf[j];
+				}
+				else 
+				{
+					for (int j = 0; j < len; j++)
+						tempBuffer[j] += buf[j];
+				}
+			}
+
+			tempBuffer.Gain(perLineGain, len);
 			
 			for (int i = 0; i < len; i++)
 			{
@@ -246,8 +272,7 @@ namespace CloudSeed
 					dryOut           * input[i] +
 					predelayOut      * predelayOutput[i] +
 					earlyOut         * earlyOutStage[i] +
-					lineOut          * tempBuffer[i] +
-					postDiffusionOut * tempBuffer2[i];
+					lineOut          * tempBuffer[i];
 			}
 		}
 

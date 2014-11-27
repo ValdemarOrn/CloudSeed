@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AudioLib.Modules;
 
 namespace CloudSeed
 {
@@ -10,16 +11,23 @@ namespace CloudSeed
 	{
 		private readonly SimpleDelay delay;
 		private readonly AllpassDiffuser diffuser;
+		private readonly Biquad lowShelf;
+		private readonly Biquad highShelf;
 		private readonly double[] sumBuffer;
 
 		private double feedback;
 		private bool diffuserEnabled;
 
-		public CombLine(int bufferSize)
+		public CombLine(int bufferSize, int samplerate)
 		{
 			delay = new SimpleDelay(bufferSize, 10000);
 			diffuser = new AllpassDiffuser(bufferSize);
 			sumBuffer = new double[bufferSize];
+
+			lowShelf = new Biquad(Biquad.FilterType.LowShelf, samplerate) { Slope = 1.0, GainDB = -20, Frequency = 20 };
+			highShelf = new Biquad(Biquad.FilterType.HighShelf, samplerate) { Slope = 1.0, GainDB = -20, Frequency = 19000 };
+			lowShelf.Update();
+			highShelf.Update();
 		}
 
 		public double[] Seeds
@@ -58,8 +66,31 @@ namespace CloudSeed
 			diffuserEnabled = isEnabled;
 		}
 
-		public double[] OutputDelay { get { return delay.Output; } }
-		public double[] Output { get { return diffuserEnabled ? diffuser.Output : delay.Output; } }
+		public void SetLowShelfGain(double gain)
+		{
+			lowShelf.Gain = gain;
+			lowShelf.Update();
+		}
+
+		public void SetLowShelfFrequency(double frequency)
+		{
+			lowShelf.Frequency = frequency;
+			lowShelf.Update();
+		}
+
+		public void SetHighShelfGain(double gain)
+		{
+			highShelf.Gain = gain;
+			highShelf.Update();
+		}
+		
+		public void SetHighShelfFrequency(double frequency)
+		{
+			highShelf.Frequency = frequency;
+			highShelf.Update();
+		}
+
+		public double[] Output { get { return delay.Output; } }
 
 		public void Process(double[] input, int sampleCount)
 		{

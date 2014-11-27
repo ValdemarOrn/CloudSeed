@@ -4,23 +4,23 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace CloudSeed
 {
 	public class SimpleRev
 	{
 		private readonly ReverbChannel channelL, channelR;
-		private readonly double[] tempBuffer;
-		private readonly AllpassDiffuser apDiffuser;
+		private int bufferSize;
 
 		public readonly double[] Parameters;
 		
-		public SimpleRev()
+		public SimpleRev(int samplerate)
 		{
-			channelL = new ReverbChannel(48000);
-			channelR = new ReverbChannel(48000);
+			bufferSize = samplerate;
 
-			tempBuffer = new double[48000];
+			channelL = new ReverbChannel(bufferSize, samplerate);
+			channelR = new ReverbChannel(bufferSize, samplerate);
 			Parameters = new double[Parameter.Count.Value()];
 		}
 		
@@ -37,8 +37,8 @@ namespace CloudSeed
 		public double CrossMix               { get { return P(Parameter.CrossMix); } }
 		public int PreDelay                  { get { return (int)(P(Parameter.PreDelay) * 0.5 * samplerate); } }
 		
-		public double HighPass               { get { return ValueTables.Get(P(Parameter.CrossMix), ValueTables.Response4Oct) * 500; } }
-		public double LowPass                { get { return ValueTables.Get(P(Parameter.CrossMix), ValueTables.Response4Oct) * 20000; } }
+		public double HighPass               { get { return 20 + ValueTables.Get(P(Parameter.HighPass), ValueTables.Response4Oct) * 980; } }
+		public double LowPass                { get { return 400 + ValueTables.Get(P(Parameter.LowPass), ValueTables.Response4Oct) * 19600; } }
 
 		// Early
 
@@ -54,6 +54,7 @@ namespace CloudSeed
 
 		// Late
 
+		public int LineCount                 { get { return 1 + (int)(P(Parameter.LineCount) * 11.999); } }
 		public double LineGain               { get { return ValueTables.Get(P(Parameter.LineGain), ValueTables.Response3Dec); } }
 		public int LineDelay                 { get { return (int)(P(Parameter.LineDelay) * 0.5 * samplerate); } }
 		public double LineFeedback           { get { return P(Parameter.LineFeedback); } }
@@ -69,7 +70,7 @@ namespace CloudSeed
 		public double PostLowShelfFrequency  { get { return ValueTables.Get(P(Parameter.PostLowShelfFrequency), ValueTables.Response4Oct) * 1000; } }
 		public double PostHighShelfGain      { get { return ValueTables.Get(P(Parameter.PostHighShelfGain), ValueTables.Response3Dec); } }
 		public double PostHighShelfFrequency { get { return ValueTables.Get(P(Parameter.PostHighShelfFrequency), ValueTables.Response4Oct) * 20000; } }
-		public double PostCutoffFrequency    { get { return ValueTables.Get(P(Parameter.PostHighShelfFrequency), ValueTables.Response4Oct) * 20000; } }
+		public double PostCutoffFrequency    { get { return ValueTables.Get(P(Parameter.PostCutoffFrequency), ValueTables.Response4Oct) * 20000; } }
 
 		// Modulation
 		
@@ -94,7 +95,6 @@ namespace CloudSeed
 		public double PredelayOut            { get { return ValueTables.Get(P(Parameter.PredelayOut), ValueTables.Response3Dec); } }
 		public double EarlyOut               { get { return ValueTables.Get(P(Parameter.EarlyOut), ValueTables.Response3Dec); } }
 		public double LineOut                { get { return ValueTables.Get(P(Parameter.LineOut), ValueTables.Response3Dec); } }
-		public double PostDiffusionOut       { get { return ValueTables.Get(P(Parameter.PostDiffusionOut), ValueTables.Response3Dec); } }
 
 		#endregion
 
@@ -113,23 +113,43 @@ namespace CloudSeed
 			Parameters[param.Value()] = value;
 			var propVal = GetType().GetProperty(param.ToString()).GetValue(this);
 			channelL.SetParameter(param, propVal);
-			//channelR.SetParameter(param, propVal);
+
+			if (param.Value() >= Parameter.TapSeed.Value() && param.Value() <= Parameter.PostDiffusionSeed.Value())
+				propVal = (int)propVal + 1000000;
+
+			channelR.SetParameter(param, propVal);
 		}
 
 		public void Process(double[][] input, double[][] output)
 		{
 			var len = input[0].Length;
 			channelL.Process(input[0], len);
-			//channelR.Process(input[1], len);
+			channelR.Process(input[1], len);
 			var leftOut = channelL.Output;
-			//var rightOut = channelR.Output;
+			var rightOut = channelR.Output;
 
 			for (int i = 0; i < len; i++)
 			{
 				output[0][i] = leftOut[i];
-				output[1][i] = leftOut[i];
-				//output[1][i] = rightOut[i];
+				output[1][i] = rightOut[i];
 			}
+		}
+
+		public byte[] GetJsonProgram()
+		{
+			var dict = Parameters
+				.Select((x, i) => new { Name = ((Parameter)i).Name(), Value = x })
+				.ToDictionary(x => x.Name, x => x.Value);
+
+			var json = JsonConvert.SerializeObject(dict);
+			return Encoding.UTF8.GetBytes(json);
+		}
+
+		public static Dictionary<string, double> ParseJsonProgram(byte[] jsonData)
+		{
+			var json = Encoding.UTF8.GetString(jsonData);
+			var dict = JsonConvert.DeserializeObject<Dictionary<string, double>>(json);
+			return dict;
 		}
 	}
 }

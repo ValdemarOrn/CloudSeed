@@ -36,6 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="SharpSoundDevice">
@@ -76,6 +79,7 @@
     <Compile Include="Reverber.cs" />
     <Compile Include="CloudSeedPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="packages.config" />
     <None Include="ReverberWrapper.cs" />
     <Compile Include="UI\SimpleRevView.xaml.cs">
       <DependentUpon>SimpleRevView.xaml</DependentUpon>

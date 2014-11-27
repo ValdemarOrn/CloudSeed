@@ -23,7 +23,7 @@ namespace CloudSeed
 
 		public SimpleRevPlugin()
 		{
-			rev = new SimpleRev();
+			rev = new SimpleRev(48000);
 			rev.Samplerate = 48000;
 			Samplerate = 48000;
 			devInfo = new DeviceInfo();
@@ -116,9 +116,16 @@ namespace CloudSeed
 		{
 			try
 			{
-				DeviceUtilities.DeserializeParameters(ParameterInfo, program.Data);
-				for (int i = 0; i < ParameterInfo.Length; i++)
-					SendEvent(new Event { EventIndex = i, Type = EventType.Parameter, Data = ParameterInfo[i].Value });
+				var dict = SimpleRev.ParseJsonProgram(program.Data);
+				foreach (var kvp in dict)
+				{
+					Parameter param;
+					var ok = Enum.TryParse<Parameter>(kvp.Key, out param);
+					if (ok)
+					{
+						SendEvent(new Event { Data = kvp.Value, EventIndex = param.Value(), Type = EventType.Parameter });
+					}
+				}
 			}
 			catch (Exception)
 			{
@@ -129,8 +136,8 @@ namespace CloudSeed
 		public Program GetProgramData(int index)
 		{
 			var output = new Program();
-			output.Data = DeviceUtilities.SerializeParameters(ParameterInfo);
-			output.Name = "";
+			output.Data = rev.GetJsonProgram();
+			output.Name = "Default Program";
 			return output;
 		}
 

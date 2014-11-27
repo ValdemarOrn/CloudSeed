@@ -29,6 +29,7 @@ namespace CloudSeed
 
 		// Late
 
+		LineCount,
 		LineGain,
 		LineDelay,
 		LineFeedback,
@@ -69,7 +70,6 @@ namespace CloudSeed
 		PredelayOut,
 		EarlyOut,
 		LineOut,
-		PostDiffusionOut,
 
 		Count
 	}
