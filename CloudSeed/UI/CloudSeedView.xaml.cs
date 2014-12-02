@@ -19,20 +19,37 @@ namespace CloudSeed.UI
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class SimpleRevView : Window
+	public partial class CloudSeedView : UserControl
 	{
-		private SimpleRevViewModel vm;
+		private CloudSeedViewModel viewModel;
 
-		public SimpleRevView(SimpleRevViewModel vm)
+		public CloudSeedView(CloudSeedViewModel viewModel)
 		{
-			this.vm = vm;
-			DataContext = vm;
+			this.viewModel = viewModel;
+			DataContext = viewModel;
 			InitializeComponent();
 		}
 
-		public SimpleRevView()
+		public CloudSeedView()
 		{
 			InitializeComponent();
+			Setup();
+		}
+
+		void Setup()
+		{
+			var linkedControls = ParameterControl.GetChildrenWithValue(this);
+
+
+			/*nouncer.RegisterAnnouncer(this, (caption, val, timeout) =>
+			{
+				VM.AnnouncerCaption = caption;
+				VM.AnnouncerValue = val;
+				Timer.Stop();
+
+				if(timeout)
+					Timer.Start();
+			});*/
 		}
 	
 	}

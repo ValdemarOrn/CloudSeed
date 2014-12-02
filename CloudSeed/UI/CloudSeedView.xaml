@@ -1,0 +1,378 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wpfUi="clr-namespace:AudioLib.WpfUi;assembly=AudioLib"
+        xmlns:cloudSeed="clr-namespace:CloudSeed"
+        x:Class="CloudSeed.UI.CloudSeedView"
+        x:Name="Main"
+        Height="346" Width="936">
+    <UserControl.Resources>
+        <Style x:Key="KnobStyle" TargetType="wpfUi:Knob2">
+            <Setter Property="Margin" Value="0,5,0,0" />
+            <Setter Property="Thickness" Value="3" />
+            <Setter Property="Width" Value="60" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FillColor" Value="CornflowerBlue" />
+            <Setter Property="Foreground" Value="#777" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#555"/>
+                    <Setter Property="FillColor" Value="#FF4975C5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="KnobSmallStyle" TargetType="wpfUi:Knob2" BasedOn="{StaticResource ResourceKey=KnobStyle}">
+            <Setter Property="Thickness" Value="2" />
+            <Setter Property="Height" Value="28" />
+        </Style>
+        <Style x:Key="MainLabelStyle" TargetType="Label">
+            <Setter Property="Foreground" Value="#666" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="Open Sans Light" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style x:Key="SeedSpinnerStyle" TargetType="wpfUi:Spinner">
+            <Setter Property="Fill" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="#999" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="Open Sans Light" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Padding" Value="0" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="CornflowerBlue" />
+                    <Setter Property="FontFamily" Value="Open Sans" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ToggleButtonStyle" TargetType="wpfUi:FlatToggleButton">
+            <Setter Property="FontFamily" Value="Open Sans" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="8,5,8,8" />
+            <Setter Property="BorderBrush" Value="#777" />
+            <Setter Property="Background" Value="#777" />
+            <Setter Property="Foreground" Value="#f3f3f3" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#666" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="SpinnerStyle" TargetType="wpfUi:Spinner">
+            <Setter Property="FontFamily" Value="Open Sans" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="8,5,8,8" />
+            <Setter Property="BorderBrush" Value="#777" />
+            <Setter Property="Fill" Value="#777" />
+            <Setter Property="Foreground" Value="#f3f3f3" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Fill" Value="#666" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="LabelStyle" TargetType="Label">
+            <Setter Property="FontFamily" Value="Open Sans" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,3" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Foreground" Value="#777" />
+        </Style>
+        <Style x:Key="BoxContainerStyle" TargetType="Border">
+            <Setter Property="Background" Value="#10777777" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#30777777" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="5,4" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Style.Resources>
+                <Style TargetType="wpfUi:Spinner" BasedOn="{StaticResource SpinnerStyle}" />
+                <Style TargetType="wpfUi:FlatToggleButton" BasedOn="{StaticResource ToggleButtonStyle}" />
+                <Style TargetType="Label" BasedOn="{StaticResource LabelStyle}" />
+                <Style TargetType="wpfUi:Knob2" BasedOn="{StaticResource ResourceKey=KnobStyle}" />
+            </Style.Resources>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid Margin="3" x:Name="MainGrid">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#f7f7f7" Offset="0.0" />
+                <GradientStop Color="#ffffff" Offset="0.1" />
+                <GradientStop Color="#fbfbfb" Offset="0.2" />
+                <GradientStop Color="#e8e8e8" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Main" Style="{StaticResource MainLabelStyle}" />
+            <Label Grid.Column="1" Content="Filters"  Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Impulses"  Style="{StaticResource MainLabelStyle}" />
+            <Label Grid.Column="1" Content="Diffusion"  Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Late Diffusion"  Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Equalization"  Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource ResourceKey=BoxContainerStyle}">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+            
+                <Label Content="Cross Mix" Grid.Row="3" Grid.Column="0" />
+                <Label Content="Predelay" Grid.Row="3" Grid.Column="1" />
+                <Label Content="Low Cut" Grid.Row="3" Grid.Column="2" />
+                <Label Content="High Cut" Grid.Row="3" Grid.Column="3" />
+
+                <Label Content="Dry Out" Grid.Row="5" Grid.Column="0" />
+                <Label Content="Pre Out" Grid.Row="5" Grid.Column="1" />
+                <Label Content="Early Out" Grid.Row="5" Grid.Column="2" />
+                <Label Content="Main Out" Grid.Row="5" Grid.Column="3" />
+
+                <wpfUi:FlatToggleButton Grid.Column="2" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton Grid.Column="3" Grid.Row="0" IsChecked="True" />
+                
+                <wpfUi:Knob2 Grid.Row="2" Grid.Column="0" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PreDelay" Grid.Row="2" Grid.Column="1" />
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="3" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+
+                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="3" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource ResourceKey=BoxContainerStyle}">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label Content="Count" Grid.Row="3" Grid.Column="0" />
+                <Label Content="Length" Grid.Row="3" Grid.Column="1" />
+                <Label Content="Delay" Grid.Row="3" Grid.Column="2" />
+                <Label Content="Mod Amt." Grid.Row="3" Grid.Column="3" />
+
+                <Label Content="Gain" Grid.Row="5" Grid.Column="0" />
+                <Label Content="Decay" Grid.Row="5" Grid.Column="1" />
+                <Label Content="Feedback" Grid.Row="5" Grid.Column="2" />
+                <Label Content="Mod Rate" Grid.Row="5" Grid.Column="3" />
+
+                <wpfUi:Spinner Grid.Column="2" Grid.Row="0" ValueText="4" Min="0" Max="4" Delta="1" Sensitivity="20" Formatter="{}0" />
+
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="3" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="3" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource ResourceKey=BoxContainerStyle}">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label Content="Time" Grid.Row="3" Grid.Column="0" />
+                <Label Content="Delay" Grid.Row="3" Grid.Column="1" />
+                <Label Content="Mod Amt." Grid.Row="3" Grid.Column="2" />
+
+                <Label Content="Feedback" Grid.Row="5" Grid.Column="0" />
+                <Label Content="Feedback" Grid.Row="5" Grid.Column="1" />
+                <Label Content="Mod Rate" Grid.Row="5" Grid.Column="2" />
+
+                <wpfUi:Spinner Grid.Column="0" Grid.Row="0" ValueText="0" Min="1" Max="12" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:Spinner Grid.Column="1" Grid.Row="0" ValueText="0" Min="0" Max="4" Delta="1" Sensitivity="20" Formatter="{}0" />
+
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource ResourceKey=BoxContainerStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label Content="Low Freq." Grid.Row="3" Grid.Column="0" />
+                <Label Content="Hi Freq." Grid.Row="3" Grid.Column="1" />
+                <Label Content="Cutoff" Grid.Row="3" Grid.Column="2" />
+
+                <Label Content="Low Gain" Grid.Row="5" Grid.Column="0" />
+                <Label Content="Hi Gain" Grid.Row="5" Grid.Column="1" />
+                <Label Content="Width" Grid.Row="5" Grid.Column="2" />
+
+                <wpfUi:FlatToggleButton Grid.Column="0" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton Grid.Column="1" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton Grid.Column="2" Grid.Row="0" IsChecked="True" />
+
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Random Seeds"  Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Diffusion Delay"  Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource ResourceKey=BoxContainerStyle}" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <wpfUi:Spinner Grid.Column="0" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+                <wpfUi:Spinner Grid.Column="1" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+                <wpfUi:Spinner Grid.Column="0" Grid.Row="1" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+                <wpfUi:Spinner Grid.Column="1" Grid.Row="1" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="27.5 ms" FontSize="16" VerticalAlignment="Center" Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <StackPanel Orientation="Vertical" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,15,5,0">
+            <Label Content="Cloud Seed" FontFamily="Open Sans Light" FontSize="40" Padding="0" Foreground="#777" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <Label Content="By Low Profile" FontFamily="Open Sans Light" FontSize="14" Foreground="#777" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>

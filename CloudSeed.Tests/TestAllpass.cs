@@ -9,7 +9,7 @@ namespace CloudSeed.Tests
 		[TestMethod]
 		public void TestAllpass1()
 		{
-			var ap = new Allpass(200, 5);
+			var ap = new ModulatedAllpass(200, 5);
 			ap.Feedback = 0.9;
 			var input = new double[200];
 			input[0] = 1.0;

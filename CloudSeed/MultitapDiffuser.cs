@@ -31,7 +31,7 @@ namespace CloudSeed
 			tapGains = new double[20];
 			tapPosition = new int[20];
 			index = 0;
-			Seeds = new ShaRandom().Generate(1, 400).ToArray();
+			Seeds = new ShaRandom().Generate(1, 100).ToArray();
 		}
 
 		public double[] Seeds
@@ -120,6 +120,11 @@ namespace CloudSeed
 
 				index--;
 			}
+		}
+
+		internal void ClearBuffers()
+		{
+			buffer.Zero();
 		}
 	}
 }

@@ -30,7 +30,6 @@ namespace CloudSeed
 		// Late
 
 		LineCount,
-		LineGain,
 		LineDelay,
 		LineFeedback,
 
@@ -49,8 +48,8 @@ namespace CloudSeed
 		
 		// Modulation
 		
-		DiffuserModAmount,
-		DiffuserModRate,
+		DiffusionModAmount,
+		DiffusionModRate,
 
 		LineModAmount,
 		LineModRate,
@@ -71,7 +70,16 @@ namespace CloudSeed
 		EarlyOut,
 		LineOut,
 
-		Count
+		// Switches
+		HiPassEnabled,
+		LowPassEnabled,
+		LowShelfEnabled,
+		HighShelfEnabled,
+		CutoffEnabled,
+
+		Count,
+
+		Unused = 999
 	}
 
 	public static class ParameterEnumExtensions

@@ -7,13 +7,13 @@ using System.Text;
 
 namespace CloudSeed.UI
 {
-	public class SimpleRevViewModel : INotifyPropertyChanged
+	public class CloudSeedViewModel : INotifyPropertyChanged
 	{
-		private readonly SimpleRev instance;
+		private readonly ReverbController instance;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public SimpleRevViewModel(SimpleRev instance)
+		public CloudSeedViewModel(ReverbController instance)
 		{
 			this.instance = instance;
 		}

@@ -56,58 +56,32 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Allpass.cs" />
+    <Compile Include="ModulatedAllpass.cs" />
     <Compile Include="AllpassDiffuser.cs" />
-    <Compile Include="AllpassM.cs" />
-    <Compile Include="CombLine.cs" />
+    <Compile Include="DelayLine.cs" />
+    <Compile Include="FastSin.cs" />
+    <Compile Include="ParameterControl.cs" />
+    <Compile Include="PTimer.cs" />
     <Compile Include="ReverbChannel.cs" />
-    <Compile Include="SimpleDelay.cs" />
+    <Compile Include="ModulatedDelay.cs" />
     <Compile Include="MultitapDiffuser.cs" />
-    <Compile Include="SimpleRevPlugin.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="ParameterFormatters.cs" />
-    <Compile Include="Parameter.cs" />
-    <Compile Include="ParameterNames.cs" />
-    <Compile Include="ParameterTransform.cs" />
-    <Compile Include="RandomSource.cs" />
-    <Compile Include="Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SimpleRev.cs" />
-    <Compile Include="Reverber.cs" />
     <Compile Include="CloudSeedPlugin.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="ReverbController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="packages.config" />
-    <None Include="ReverberWrapper.cs" />
-    <Compile Include="UI\SimpleRevView.xaml.cs">
-      <DependentUpon>SimpleRevView.xaml</DependentUpon>
+    <None Include="OldWrapper.cs" />
+    <Compile Include="UI\CloudSeedView.xaml.cs">
+      <DependentUpon>CloudSeedView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EffectView.xaml.cs">
-      <DependentUpon>EffectView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SimpleRevViewModel.cs" />
+    <Compile Include="UI\CloudSeedViewModel.cs" />
     <None Include="UI\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UI\SimpleRevView.xaml">
+    <Page Include="UI\CloudSeedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\EffectView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="random.bin" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AudioLib\AudioLib\AudioLib.csproj">

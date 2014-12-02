@@ -1,213 +1,272 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AudioLib;
-using AudioLib.Modules;
+using AudioLib.TF;
 
 namespace CloudSeed
 {
 	public class ReverbChannel
 	{
-		private readonly SimpleDelay preDelay;
+		private readonly Dictionary<Parameter, double> parameters;
+		private int samplerate;
+
+		private readonly ModulatedDelay preDelay;
 		private readonly MultitapDiffuser multitap;
 		private readonly AllpassDiffuser diffuser;
-		private readonly CombLine[] lines;
+		private readonly DelayLine[] lines;
+		private readonly ShaRandom rand;
+		private readonly Hp1 highPass;
+		private readonly Lp1 lowPass;
 		private readonly double[] tempBuffer;
 		private readonly double[] outBuffer;
-		private readonly ShaRandom rand;
-
-		private readonly Biquad highPass;
-		private readonly Biquad lowPass;
-		
 		private double[] delayLineSeeds;
+
+		// Used the the main process loop
 		private int lineCount;
 		private double perLineGain;
-		
-		public ReverbChannel(int bufferSize, int samplerate)
-		{
-			preDelay = new SimpleDelay(bufferSize, 10000);
-			multitap = new MultitapDiffuser(bufferSize);
-			diffuser = new AllpassDiffuser(bufferSize);
-			lines = Enumerable.Range(0, 20).Select(x => new CombLine(bufferSize, samplerate)).ToArray();
-			lineCount = 8;
-			perLineGain = GetPerLineGain();
 
-			highPass = new Biquad(Biquad.FilterType.HighPass, samplerate) { Q = 1.0, Frequency = 20 };
-			lowPass = new Biquad(Biquad.FilterType.LowPass, samplerate) { Q = 1.0, Frequency = 20000 };
-			highPass.Update();
-			lowPass.Update();
-			
-			rand = new ShaRandom();
-			tempBuffer = new double[bufferSize];
-			outBuffer = new double[bufferSize];
-			delayLineSeeds = rand.Generate(12345, lines.Length).ToArray();
-		}
-
-		public double[] Output { get { return outBuffer; } }
-
+		private bool highPassEnabled;
+		private bool lowPassEnabled;
 		private bool diffuserEnabled;
-		private double lineGain;
-
 		private double dryOut;
 		private double predelayOut;
 		private double earlyOut;
 		private double lineOut;
-		private int lineDelay;
-		private double lineFeedback;
+
+		public ReverbChannel(int bufferSize, int samplerate)
+		{
+			parameters = new Dictionary<Parameter, double>();
+			foreach (var value in Enum.GetValues(typeof(Parameter)).Cast<Parameter>())
+				parameters[value] = 0.0;
+
+			preDelay = new ModulatedDelay(bufferSize, 10000);
+			
+			multitap = new MultitapDiffuser(bufferSize);
+			diffuser = new AllpassDiffuser(bufferSize, samplerate) { ModulationEnabled = true };
+			lines = Enumerable.Range(0, 12).Select(x => new DelayLine(bufferSize, samplerate)).ToArray();
+			lineCount = 8;
+			perLineGain = GetPerLineGain();
+
+			highPass = new Hp1(samplerate) { CutoffHz = 20 };
+			lowPass = new Lp1(samplerate) { CutoffHz = 20000 };
+			
+			rand = new ShaRandom();
+			tempBuffer = new double[bufferSize];
+			outBuffer = new double[bufferSize];
+			delayLineSeeds = rand.Generate(12345, lines.Length * 3).ToArray();
+
+			this.samplerate = samplerate;
+		}
+
+		public int Samplerate
+		{
+			get { return samplerate; }
+			set
+			{
+				samplerate = value;
+				highPass.Samplerate = samplerate;
+				lowPass.Samplerate = samplerate;
+
+				for (int i = 0; i < lines.Length; i++)
+				{
+					lines[i].Samplerate = samplerate;	
+				}
+				
+				Action<Parameter> update = p => SetParameter(p, parameters[p]);
+				update(Parameter.PreDelay);
+				update(Parameter.TapLength);
+				update(Parameter.DiffusionDelay);
+				update(Parameter.LineDelay);
+				update(Parameter.PostDiffusionDelay);
+				update(Parameter.DiffusionModAmount);
+				update(Parameter.LineModAmount);
+				UpdateLines();
+			}
+		}
+
+		public double[] Output { get { return outBuffer; } }
 
 		private double GetPerLineGain()
 		{
 			return 1 / Math.Sqrt(lineCount);
 		}
 
-		public void SetParameter(Parameter para, object value)
+		public void SetParameter(Parameter para, double value)
 		{
-			if (para == Parameter.PreDelay)
-			{
-				preDelay.SetDelay((int)value);
-			}
+			parameters[para] = value;
 
+			switch (para)
+			{
+				case Parameter.PreDelay:
+					preDelay.SampleDelay = (int)ms2Samples(value);
+					break;
+				case Parameter.HighPass:
+					highPass.CutoffHz = value;
+					break;
+				case Parameter.LowPass:
+					lowPass.CutoffHz = value;
+					break;
 
-			else if (para == Parameter.HighPass)
-			{
-				highPass.Frequency = (double)value;
-				highPass.Update();
-			}
-			else if (para == Parameter.LowPass)
-			{
-				lowPass.Frequency = (double)value;
-				lowPass.Update();
-			}
+				case Parameter.TapCount:
+					multitap.SetTapCount((int)value);
+					break;
+				case Parameter.TapLength:
+					multitap.SetTapLength((int)ms2Samples(value));
+					break;
+				case Parameter.TapGain:
+					multitap.SetTapGain(value);
+					break;
+				case Parameter.TapDecay:
+					multitap.SetTapDecay(value);
+					break;
 
+				case Parameter.DiffusionEnabled:
+					diffuserEnabled = value >= 0.5;
+					break;
+				case Parameter.DiffusionStages:
+					diffuser.Stages = (int)value;
+					break;
+				case Parameter.DiffusionDelay:
+					diffuser.SetDelay((int)ms2Samples(value));
+					break;
+				case Parameter.DiffusionFeedback:
+					diffuser.SetFeedback(value);
+					break;
 
-			else if (para == Parameter.TapCount)
-			{
-				multitap.SetTapCount((int)value);
-			}
-			else if (para == Parameter.TapLength)
-			{
-				multitap.SetTapLength((int)value);
-			}
-			else if (para == Parameter.TapGain)
-			{
-				multitap.SetTapGain((double)value);
-			}
-			else if (para == Parameter.TapDecay)
-			{
-				multitap.SetTapDecay((double)value);
-			}
+				case Parameter.LineCount:
+					lineCount = (int)value;
+					perLineGain = GetPerLineGain();
+					break;
+				case Parameter.LineDelay:
+					UpdateLines();
+					break;
+				case Parameter.LineFeedback:
+					UpdateLines();
+					break;
 
+				case Parameter.PostDiffusionEnabled:
+					foreach (var line in lines)
+						line.DiffuserEnabled = value >= 0.5;
+					break;
+				case Parameter.PostDiffusionStages:
+					foreach (var line in lines)
+						line.SetDiffuserStages((int)value);
+					break;
+				case Parameter.PostDiffusionDelay:
+					foreach (var line in lines)
+						line.SetDiffuserDelay((int)ms2Samples(value));
+					break;
+				case Parameter.PostDiffusionFeedback:
+					foreach (var line in lines)
+						line.SetDiffuserFeedback(value);
+					break;
 
-			else if (para == Parameter.DiffusionEnabled)
-			{
-				diffuserEnabled = (bool)value;
-			}
-			else if (para == Parameter.DiffusionStages)
-			{
-				diffuser.Stages = (int)value;
-			}
-			else if (para == Parameter.DiffusionDelay)
-			{
-				diffuser.SetDelay((int)value);
-			}
-			else if (para == Parameter.DiffusionFeedback)
-			{
-				diffuser.SetFeedback((double)value);
-			}
+				case Parameter.PostLowShelfGain:
+					foreach (var line in lines)
+						line.SetLowShelfGain(value);
+					break;
+				case Parameter.PostLowShelfFrequency:
+					foreach (var line in lines)
+						line.SetLowShelfFrequency(value);
+					break;
+				case Parameter.PostHighShelfGain:
+					foreach (var line in lines)
+						line.SetHighShelfGain(value);
+					break;
+				case Parameter.PostHighShelfFrequency:
+					foreach (var line in lines)
+						line.SetHighShelfFrequency(value);
+					break;
+				case Parameter.PostCutoffFrequency:
+					foreach (var line in lines)
+						line.SetCutoffFrequency(value);
+					break;
 
-			else if (para == Parameter.LineCount)
-			{
-				lineCount = (int)value;
-				perLineGain = GetPerLineGain();
-			}
-			else if (para == Parameter.LineGain)
-			{
-				lineGain = (double)value;
-			}
-			else if (para == Parameter.LineDelay)
-			{
-				var val = (int)value;
-				if (val < 50) val = 50;
-				lineDelay = val;
-				UpdateLines();
-			}
-			else if (para == Parameter.LineFeedback)
-			{
-				lineFeedback = (double)value;
-				UpdateLines();
-			}
+				case Parameter.DiffusionModAmount:
+					diffuser.SetModAmount(ms2Samples(value));
+					break;
+				case Parameter.DiffusionModRate:
+					diffuser.SetModRate(value);
+					break;
+				case Parameter.LineModAmount:
+					UpdateLines();
+					break;
+				case Parameter.LineModRate:
+					UpdateLines();
+					break;
 
+				case Parameter.TapSeed:
+					multitap.Seeds = rand.Generate((int)value, 100).ToArray();
+					break;
+				case Parameter.DiffusionSeed:
+					diffuser.Seeds = rand.Generate((int)value, 12).ToArray();
+					break;
+				case Parameter.CombSeed:
+					delayLineSeeds = rand.Generate((int)value, lines.Length * 3).ToArray();
+					UpdateLines();
+					break;
+				case Parameter.PostDiffusionSeed:
+					for (int i = 0; i < lines.Length; i++)
+						lines[i].DiffuserSeeds = rand.Generate(((int)value) + i, 12).ToArray();
+					break;
 
-			else if (para == Parameter.PostDiffusionEnabled)
-			{
-				for (int i = 0; i < lines.Length; i++)
-					lines[i].SetDiffuserEnabled((bool)value);
-			}
-			else if (para == Parameter.PostDiffusionStages)
-			{
-				for (int i = 0; i < lines.Length; i++)
-					lines[i].SetDiffuserStages((int)value);
-			}
-			else if (para == Parameter.PostDiffusionDelay)
-			{
-				for (int i = 0; i < lines.Length; i++)
-					lines[i].SetDiffuserDelay((int)value);
-			}
-			else if (para == Parameter.PostDiffusionFeedback)
-			{
-				for (int i = 0; i < lines.Length; i++)
-					lines[i].SetDiffuserFeedback((double)value);
-			}
+				case Parameter.DryOut:
+					dryOut = value;
+					break;
+				case Parameter.PredelayOut:
+					predelayOut = value;
+					break;
+				case Parameter.EarlyOut:
+					earlyOut = value;
+					break;
+				case Parameter.LineOut:
+					lineOut = value;
+					break;
 
-
-			else if (para == Parameter.TapSeed)
-			{
-				multitap.Seeds = rand.Generate((int)value, 400).ToArray();
-			}
-			else if (para == Parameter.DiffusionSeed)
-			{
-				diffuser.Seeds = rand.Generate((int)value, 4).ToArray();
-			}
-			else if (para == Parameter.CombSeed)
-			{
-				delayLineSeeds = rand.Generate((int)value, lines.Length).ToArray();
-				UpdateLines();
-			}
-			else if (para == Parameter.PostDiffusionSeed)
-			{
-				for (int i = 0; i < lines.Length; i++)
-				{
-					lines[i].Seeds = rand.Generate(((int)value) + i, 4).ToArray();
-				}
-			}
-
-
-			else if (para == Parameter.DryOut)
-			{
-				dryOut = (double)value;
-			}
-			else if (para == Parameter.PredelayOut)
-			{
-				predelayOut = (double)value;
-			}
-			else if (para == Parameter.EarlyOut)
-			{
-				earlyOut = (double)value;
-			}
-			else if (para == Parameter.LineOut)
-			{
-				lineOut = (double)value;
+				case Parameter.HiPassEnabled:
+					highPassEnabled = value >= 0.5;
+					break;
+				case Parameter.LowPassEnabled:
+					lowPassEnabled = value >= 0.5;
+					break;
+				case Parameter.LowShelfEnabled:
+					foreach (var line in lines)
+						line.LowShelfEnabled = value >= 0.5;
+					break;
+				case Parameter.HighShelfEnabled:
+					foreach (var line in lines)
+						line.HighShelfEnabled = value >= 0.5;
+					break;
+				case Parameter.CutoffEnabled:
+					foreach (var line in lines)
+						line.CutoffEnabled = value >= 0.5;
+					break;
 			}
 		}
 
 		private void UpdateLines()
 		{
-			for (int i = 0; i < lines.Length; i++)
+			var lineModRate = parameters[Parameter.LineModRate];
+			var lineModAmount = ms2Samples(parameters[Parameter.LineModAmount]);
+			var lineFeedback = parameters[Parameter.LineFeedback];
+			var lineDelay = (int)ms2Samples(parameters[Parameter.LineDelay]);
+			if (lineDelay < 50) lineDelay = 50;		
+
+			var count = lines.Length;
+			for (int i = 0; i < count; i++)
 			{
 				var delay = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelay;
 				var ratio = delay / lineDelay;
 				var adjustedFeedback = Math.Pow(lineFeedback, ratio);
+
+				var modAmount = lineModAmount * (0.8 + 0.2 * delayLineSeeds[i + count]);
+				var modRate = lineModRate * (0.8 + 0.2 * delayLineSeeds[i + 2 * count]) / samplerate;
+
 				lines[i].SetDelay((int)delay);
 				lines[i].SetFeedback(adjustedFeedback);
+				lines[i].SetModAmount(modAmount);
+				lines[i].SetModRate(modRate);
 			}
 		}
 
@@ -215,13 +274,17 @@ namespace CloudSeed
 		{
 			int len = sampleCount;
 			var predelayOutput = preDelay.Output;
-			
-			preDelay.Process(input, len);
+			var lowPassInput = highPassEnabled ? tempBuffer : input;
 
-			highPass.Process(preDelay.Output, tempBuffer, len);
-			lowPass.Process(tempBuffer, tempBuffer, len);
+			if (highPassEnabled)
+				highPass.Process(input, tempBuffer, len);
+			if (lowPassEnabled)
+				lowPass.Process(lowPassInput, tempBuffer, len);
+			if (!lowPassEnabled && !highPassEnabled)
+				input.Copy(tempBuffer, len);
 
 			// completely zero if no input present
+			// Previously, the very small values were causing some really strange CPU spikes
 			for (int i = 0; i < len; i++)
 			{
 				var n = tempBuffer[i];
@@ -229,8 +292,9 @@ namespace CloudSeed
 					tempBuffer[i] = 0;
 			}
 
-			multitap.Process(tempBuffer, len);
-
+			preDelay.Process(tempBuffer, len);
+			multitap.Process(preDelay.Output, len);
+			
 			var earlyOutStage = diffuserEnabled ? diffuser.Output : multitap.Output;
 
 			if (diffuserEnabled)
@@ -242,8 +306,6 @@ namespace CloudSeed
 			{
 				multitap.Output.Copy(tempBuffer, len);
 			}
-
-			tempBuffer.Gain(lineGain, len);
 
 			for (int i = 0; i < lineCount; i++)
 				lines[i].Process(tempBuffer, len);
@@ -276,5 +338,23 @@ namespace CloudSeed
 			}
 		}
 
+		public void ClearBuffers()
+		{
+			tempBuffer.Zero();
+			outBuffer.Zero();
+			lowPass.Output = 0;
+			highPass.Output = 0;
+
+			preDelay.ClearBuffers();
+			multitap.ClearBuffers();
+			diffuser.ClearBuffers();
+			foreach (var line in lines)
+				line.ClearBuffers();
+		}
+
+		private double ms2Samples(double value)
+		{
+			return value / 1000.0 * samplerate;
+		}
 	}
 }

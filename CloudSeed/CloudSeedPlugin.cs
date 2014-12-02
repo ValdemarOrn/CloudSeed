@@ -1,60 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Runtime.InteropServices;
 using SharpSoundDevice;
-using AudioLib;
 using System.Globalization;
 using CloudSeed.UI;
 
 namespace CloudSeed
-{/*
+{
 	public class CloudSeedPlugin : IAudioDevice
 	{
 		// --------------- IAudioDevice Properties ---------------
 
-		DeviceInfo DevInfo;
+		private DeviceInfo devInfo;
 
+		private readonly ReverbController controller;
+		private readonly CloudSeedViewModel viewModel;
+		private CloudSeedView view;
+		private System.Windows.Window window; 
+		
 		public double Samplerate;
-
-		public DeviceInfo DeviceInfo { get { return this.DevInfo; } }
-		public Parameter[] ParameterInfo { get; private set; }
+		public DeviceInfo DeviceInfo { get { return devInfo; } }
+		public SharpSoundDevice.Parameter[] ParameterInfo { get; private set; }
 		public Port[] PortInfo { get; private set; }
 		public int CurrentProgram { get; private set; }
 
-		private ReverberWrapper RevLeft, RevRight;
-		private Dictionary<ParameterEnum, double> Parameters;
-		public EffectView View;
-		public ViewModel VM;
-
 		public CloudSeedPlugin()
 		{
-			RevLeft = new ReverberWrapper();
-			RevRight = new ReverberWrapper();
-			RevLeft.SetSamplerate(48000);
-			RevRight.SetSamplerate(48000);
+			controller = new ReverbController(48000);
+			controller.Samplerate = 48000;
 			Samplerate = 48000;
-			DevInfo = new DeviceInfo();
-			ParameterInfo = new Parameter[ParameterNames.Names.Count];
-			Parameters = new Dictionary<ParameterEnum, double>();
+			devInfo = new DeviceInfo();
+			ParameterInfo = new SharpSoundDevice.Parameter[controller.Parameters.Length];
 			PortInfo = new Port[2];
-			VM = new ViewModel(this);
+			viewModel = new CloudSeedViewModel(controller);
 		}
 
 		public void InitializeDevice()
 		{
-			DevInfo.DeviceID = "Low Profile - Cloud Seed";
-			DevInfo.Developer = "Valdemar Erlingsson";
-			DevInfo.EditorWidth = 950;
-			DevInfo.EditorHeight = 500;
-			DevInfo.HasEditor = true;
-			DevInfo.Name = "Cloud Seed Algorithmic Reverb";
-			DevInfo.ProgramCount = 1;
-			DevInfo.Type = DeviceType.Effect;
-			DevInfo.Version = 1000;
-			DevInfo.VstId = DeviceUtilities.GenerateIntegerId(DevInfo.DeviceID);
+			devInfo.DeviceID = "Low Profile - Cloud Seed";
+			devInfo.Developer = "Valdemar Erlingsson";
+			devInfo.EditorWidth = 950;
+			devInfo.EditorHeight = 500;
+			devInfo.HasEditor = true;
+			devInfo.Name = "Cloud Seed Algorithmic Reverb";
+			devInfo.ProgramCount = 1;
+			devInfo.Type = DeviceType.Effect;
+			devInfo.Version = 1000;
+			devInfo.VstId = DeviceUtilities.GenerateIntegerId(devInfo.DeviceID);
 
 			PortInfo[0].Direction = PortDirection.Input;
 			PortInfo[0].Name = "Stereo Input";
@@ -64,144 +58,124 @@ namespace CloudSeed
 			PortInfo[1].Name = "Stereo Output";
 			PortInfo[1].NumberOfChannels = 2;
 
-			for (int i = 0; i < (int)ParameterEnum.COUNT; i++)
+			for (int i = 0; i < controller.Parameters.Length; i++)
 			{
-				var p = new Parameter();
-				p.Display = GetDisplay((ParameterEnum)i);
+				var p = new SharpSoundDevice.Parameter();
+				p.Display = GetDisplay(0.0);
 				p.Index = (uint)i;
-				p.Name = ParameterNames.Names[(ParameterEnum)i];
+				p.Name = i < Parameter.Count.Value() ? ((Parameter)i).Name() : "Parameter " + i;
 				p.Steps = 0;
-				p.Value = GetParameter((ParameterEnum)i);
+				p.Value = 0.0;
 				ParameterInfo[i] = p;
 			}
 		}
 
 		public void DisposeDevice() { }
 
-		public void Start() { }
+		public void Start()
+		{
+			controller.ClearBuffers();
+		}
 
 		public void Stop() { }
 
+		//private static Stopwatch sw = new Stopwatch();
+
 		public void ProcessSample(double[][] input, double[][] output, uint bufferSize)
 		{
-			RevLeft.Process(input[0], output[0]);
-			RevRight.Process(input[1], output[1]);
+			PTimer.Begin("Main");
+
+			/*
+			 * for (int i = 0; i < bufferSize; i++)
+			{
+				output[0][i] = input[0][i];
+				output[1][i] = input[1][i];
+			}
+			sw.Restart();
+			var ticks = TimeSpan.TicksPerMillisecond * 0.3;
+			while (sw.ElapsedTicks < ticks)
+			{
+				
+			}
+			sw.Stop();
+			 */
+
+			controller.Process(input, output);
+
+			PTimer.End("Main");
 		}
 
+		
 		public void OpenEditor(IntPtr parentWindow) 
 		{
-			View = new EffectView(VM);
-			DevInfo.EditorWidth = (int)View.Width;
-			DevInfo.EditorHeight = (int)View.Height;
-			HostInfo.SendEvent(this, new Event() { Data = null, EventIndex = 0, Type = EventType.WindowSize });
-			DeviceUtilities.DockWpfWindow(View, parentWindow);
-			View.Show();
+			view = new CloudSeedView(viewModel);
+			devInfo.EditorWidth = (int)view.Width;
+			devInfo.EditorHeight = (int)view.Height;
+			HostInfo.SendEvent(this, new Event { Data = null, EventIndex = 0, Type = EventType.WindowSize });
+			window = new System.Windows.Window() { Content = view };
+			window.Width = view.Width;
+			window.Height = view.Height;
+			DeviceUtilities.DockWpfWindow(window, parentWindow);
+			window.Show();
 		}
 
 		public void CloseEditor() 
 		{
-			View.Close();
+			window.Close();
 		}
 
 		public void SendEvent(Event ev)
 		{
 			if (ev.Type == EventType.Parameter)
 			{
-				if (ev.EventIndex >= 0 && ev.EventIndex < (int)ParameterEnum.COUNT)
+				if (ev.EventIndex >= 0 && ev.EventIndex < controller.Parameters.Length)
 				{
-					var parameter = (ParameterEnum)ev.EventIndex;
+					var i = ev.EventIndex;
 					var value = (double)ev.Data;
-					SetParameterBase(parameter, value, false);
+					SetParameter((Parameter)i, value);
 				}
 			}
 		}
 
-		public string GetDisplay(ParameterEnum parameter)
+		public void SetParameter(Parameter param, double value, bool updateHost = false)
 		{
-			Func<double, string> formatter = x => String.Format(CultureInfo.InvariantCulture, "{0:0.00}", x);
-			ParameterFormatters.Formatters.TryGetValue(parameter, out formatter);
-			var para = GetParameter(parameter);
-			return formatter(para);
-		}
-
-		public double GetParameter(ParameterEnum parameter)
-		{
-			double value;
-			bool ok = Parameters.TryGetValue(parameter, out value);
-			return ok ? value : 0.0;
-		}
-
-		public double GetParameterBase(ParameterEnum parameter)
-		{
-			return ParameterInfo[(int)parameter].Value;
-		}
-
-		/// <summary>
-		/// Set a parameter in terms of range 0...1
-		/// </summary>
-		/// <param name="parameter"></param>
-		/// <param name="value"></param>
-		public void SetParameterBase(ParameterEnum parameter, double valueInput, bool updateHost = true)
-		{
-			ParameterInfo[(int)parameter].Value = valueInput;
-
-			double value = valueInput;
-			if (ParameterTransform.Transforms.ContainsKey(parameter))
-				value = ParameterTransform.Transforms[parameter](valueInput);
-
-			Parameters[parameter] = value;
-			ParameterInfo[(int)parameter].Display = GetDisplay(parameter);
-
-			RevLeft.SetParameter(parameter, value);
-			RevRight.SetParameter(parameter, value);
-
-			if (new[] { ParameterEnum.EarlySizeLeft, ParameterEnum.EarlySizeRight, 
-				ParameterEnum.GrainCountLeft, ParameterEnum.GrainCountRight,
-				ParameterEnum.PredelayLeft, ParameterEnum.PredelayRight}.Contains(parameter))
-			{
-				RevLeft.SetTaps((int)GetParameter(ParameterEnum.GrainCountLeft));
-				RevRight.SetTaps((int)GetParameter(ParameterEnum.GrainCountRight));
-			}
-
-			if (parameter == ParameterEnum.AllpassFeedback || parameter == ParameterEnum.AllpassDelay)
-			{
-				var samples = (int)(GetParameter(ParameterEnum.AllpassDelay) / 1000.0 * Samplerate);
-				RevLeft.SetEarly(GetParameter(ParameterEnum.AllpassFeedback), samples);
-				RevRight.SetEarly(GetParameter(ParameterEnum.AllpassFeedback), samples);
-			}
-
-			if (parameter == ParameterEnum.AllpassModRate || parameter == ParameterEnum.AllpassModAmount)
-			{
-				RevLeft.SetAllpassMod(GetParameter(ParameterEnum.AllpassModRate), GetParameter(ParameterEnum.AllpassModAmount));
-				RevRight.SetAllpassMod(GetParameter(ParameterEnum.AllpassModRate), GetParameter(ParameterEnum.AllpassModAmount));
-			}
-
-			if (parameter == ParameterEnum.HiCut || parameter == ParameterEnum.HiCutAmount)
-			{
-				RevLeft.SetHiCut(GetParameter(ParameterEnum.HiCut), GetParameter(ParameterEnum.HiCutAmount));
-				RevRight.SetHiCut(GetParameter(ParameterEnum.HiCut), GetParameter(ParameterEnum.HiCutAmount));
-			}
+			controller.SetParameter(param, value);
+			ParameterInfo[param.Value()].Value = value;
+			ParameterInfo[param.Value()].Display = GetDisplay(param);
 
 			System.Windows.Forms.Cursor.Show();
-			VM.Update(parameter);
+			//VM.Update(parameter);
 			if (updateHost)
 			{
 				HostInfo.SendEvent(this, new Event
 				{
-					Data = valueInput,
-					EventIndex = (int)parameter,
+					Data = value,
+					EventIndex = param.Value(),
 					Type = EventType.Parameter
 				});
 			}
 		}
 
+		private string GetDisplay(Parameter param)
+		{
+			var propVal = controller.GetScaledParameter(param);
+			return string.Format(CultureInfo.InvariantCulture, "{0:0.00}", propVal);
+		}
+	
 		public void SetProgramData(Program program, int index)
 		{
 			try
 			{
-				DeviceUtilities.DeserializeParameters(ParameterInfo, program.Data);
-				for (int i = 0; i < ParameterInfo.Length; i++)
-					SendEvent(new Event { EventIndex = i, Type = EventType.Parameter, Data = ParameterInfo[i].Value });
+				var dict = ReverbController.ParseJsonProgram(program.Data);
+				foreach (var kvp in dict)
+				{
+					Parameter param;
+					var ok = Enum.TryParse<Parameter>(kvp.Key, out param);
+					if (ok)
+					{
+						SendEvent(new Event { Data = kvp.Value, EventIndex = param.Value(), Type = EventType.Parameter });
+					}
+				}
 			}
 			catch (Exception)
 			{
@@ -212,24 +186,23 @@ namespace CloudSeed
 		public Program GetProgramData(int index)
 		{
 			var output = new Program();
-			output.Data = DeviceUtilities.SerializeParameters(ParameterInfo);
-			output.Name = "";
+			output.Data = controller.GetJsonProgram();
+			output.Name = "Default Program";
 			return output;
 		}
 
 		public void HostChanged()
 		{
 			var samplerate = HostInfo.SampleRate;
-			if (samplerate != this.Samplerate)
+			if (samplerate != Samplerate)
 			{
 				Samplerate = samplerate;
-				RevLeft.SetSamplerate(samplerate);
-				RevRight.SetSamplerate(samplerate);
+				controller.Samplerate = (int)samplerate;
 			}
 		}
 
 		public IHostInfo HostInfo { get; set; }
 
-	}*/
+	}
 }
 
