@@ -1,0 +1,160 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:wpfUi="clr-namespace:AudioLib.WpfUi;assembly=AudioLib">
+    <Style x:Key="KnobStyle" TargetType="wpfUi:Knob2">
+        <Setter Property="Margin" Value="0,5,0,0" />
+        <Setter Property="Thickness" Value="3" />
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FillColor" Value="CornflowerBlue" />
+        <Setter Property="Foreground" Value="#777" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="#555"/>
+                <Setter Property="FillColor" Value="#FFB4B4B4" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="KnobSmallStyle" TargetType="wpfUi:Knob2" BasedOn="{StaticResource ResourceKey=KnobStyle}">
+        <Setter Property="Thickness" Value="2" />
+        <Setter Property="Height" Value="28" />
+    </Style>
+    <Style x:Key="MainLabelStyle" TargetType="Label">
+        <Setter Property="Foreground" Value="#666" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="Open Sans Light" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style x:Key="TextBoxStyle" TargetType="TextBox" >
+        <Setter Property="Foreground" Value="#666" />
+        <Setter Property="Background" Value="#11000000" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontFamily" Value="Open Sans Light" />
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="Width" Value="80" />
+        <Setter Property="Padding" Value="10,2" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="ButtonStyle" TargetType="Button" >
+        <Setter Property="Foreground" Value="#666" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontFamily" Value="Open Sans Light" />
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="Width" Value="80" />
+        <Setter Property="Padding" Value="10,2" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="bg" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" BorderThickness="0">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="CornflowerBlue" />
+                <Setter Property="Background" Value="#11000000" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="ProgramLabelStyle" TargetType="Label" BasedOn="{StaticResource MainLabelStyle}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="CornflowerBlue" />
+                <Setter Property="Background" Value="#11000000" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="SeedSpinnerStyle" TargetType="wpfUi:Spinner">
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="#999" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="Open Sans Light" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="CornflowerBlue" />
+                <Setter Property="FontFamily" Value="Open Sans" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="ToggleButtonStyle" TargetType="wpfUi:FlatToggleButton">
+        <Setter Property="FontFamily" Value="Open Sans" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="8,5,8,8" />
+        <Setter Property="BorderBrush" Value="#777" />
+        <Setter Property="Background" Value="#777" />
+        <Setter Property="Foreground" Value="#f3f3f3" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#666" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="SpinnerStyle" TargetType="wpfUi:Spinner">
+        <Setter Property="FontFamily" Value="Open Sans" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="8,5,8,8" />
+        <Setter Property="BorderBrush" Value="#777" />
+        <Setter Property="Fill" Value="#777" />
+        <Setter Property="Foreground" Value="#f3f3f3" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Fill" Value="#666" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="LabelStyle" TargetType="Label">
+        <Setter Property="FontFamily" Value="Open Sans" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,0,3" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Foreground" Value="#777" />
+    </Style>
+    <Style x:Key="BoxContainerStyle" TargetType="Border">
+        <Setter Property="Background" Value="#10777777" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#30777777" />
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="Padding" Value="5,4" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Style.Resources>
+            <Style TargetType="wpfUi:Spinner" BasedOn="{StaticResource SpinnerStyle}" />
+            <Style TargetType="wpfUi:FlatToggleButton" BasedOn="{StaticResource ToggleButtonStyle}" />
+            <Style TargetType="Label" BasedOn="{StaticResource LabelStyle}" />
+            <Style TargetType="wpfUi:Knob2" BasedOn="{StaticResource ResourceKey=KnobStyle}" />
+        </Style.Resources>
+    </Style>
+</ResourceDictionary>

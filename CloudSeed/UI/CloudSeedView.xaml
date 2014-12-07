@@ -4,118 +4,17 @@
         xmlns:cloudSeed="clr-namespace:CloudSeed"
         x:Class="CloudSeed.UI.CloudSeedView"
         x:Name="Main"
-        Height="346" Width="936">
+        Height="386" Width="936">
     <UserControl.Resources>
-        <Style x:Key="KnobStyle" TargetType="wpfUi:Knob2">
-            <Setter Property="Margin" Value="0,5,0,0" />
-            <Setter Property="Thickness" Value="3" />
-            <Setter Property="Width" Value="60" />
-            <Setter Property="Height" Value="40" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FillColor" Value="CornflowerBlue" />
-            <Setter Property="Foreground" Value="#777" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="#555"/>
-                    <Setter Property="FillColor" Value="#FF4975C5" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="KnobSmallStyle" TargetType="wpfUi:Knob2" BasedOn="{StaticResource ResourceKey=KnobStyle}">
-            <Setter Property="Thickness" Value="2" />
-            <Setter Property="Height" Value="28" />
-        </Style>
-        <Style x:Key="MainLabelStyle" TargetType="Label">
-            <Setter Property="Foreground" Value="#666" />
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="Open Sans Light" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="0" />
-        </Style>
-        <Style x:Key="SeedSpinnerStyle" TargetType="wpfUi:Spinner">
-            <Setter Property="Fill" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="Foreground" Value="#999" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="Open Sans Light" />
-            <Setter Property="Margin" Value="4" />
-            <Setter Property="Padding" Value="0" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="CornflowerBlue" />
-                    <Setter Property="FontFamily" Value="Open Sans" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="ToggleButtonStyle" TargetType="wpfUi:FlatToggleButton">
-            <Setter Property="FontFamily" Value="Open Sans" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Height" Value="16" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Margin" Value="8,5,8,8" />
-            <Setter Property="BorderBrush" Value="#777" />
-            <Setter Property="Background" Value="#777" />
-            <Setter Property="Foreground" Value="#f3f3f3" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#666" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="SpinnerStyle" TargetType="wpfUi:Spinner">
-            <Setter Property="FontFamily" Value="Open Sans" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Height" Value="16" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Margin" Value="8,5,8,8" />
-            <Setter Property="BorderBrush" Value="#777" />
-            <Setter Property="Fill" Value="#777" />
-            <Setter Property="Foreground" Value="#f3f3f3" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Fill" Value="#666" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="LabelStyle" TargetType="Label">
-            <Setter Property="FontFamily" Value="Open Sans" />
-            <Setter Property="FontSize" Value="10" />
-            <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,0,0,3" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Foreground" Value="#777" />
-        </Style>
-        <Style x:Key="BoxContainerStyle" TargetType="Border">
-            <Setter Property="Background" Value="#10777777" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="#30777777" />
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Padding" Value="5,4" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Style.Resources>
-                <Style TargetType="wpfUi:Spinner" BasedOn="{StaticResource SpinnerStyle}" />
-                <Style TargetType="wpfUi:FlatToggleButton" BasedOn="{StaticResource ToggleButtonStyle}" />
-                <Style TargetType="Label" BasedOn="{StaticResource LabelStyle}" />
-                <Style TargetType="wpfUi:Knob2" BasedOn="{StaticResource ResourceKey=KnobStyle}" />
-            </Style.Resources>
-        </Style>
+        <ResourceDictionary Source="Styles.xaml" />
     </UserControl.Resources>
     
     <Grid Margin="3" x:Name="MainGrid">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                <GradientStop Color="#f7f7f7" Offset="0.0" />
-                <GradientStop Color="#ffffff" Offset="0.1" />
-                <GradientStop Color="#fbfbfb" Offset="0.2" />
+                <GradientStop Color="#f3f3f3" Offset="0.0" />
+                <GradientStop Color="White" Offset="0.12" />
+                <GradientStop Color="#fbfbfb" Offset="0.24" />
                 <GradientStop Color="#e8e8e8" Offset="1.0" />
             </LinearGradientBrush>
         </Grid.Background>
@@ -127,13 +26,22 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
+            <RowDefinition Height="120" />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <Label Content="Cloud Seed" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" FontFamily="Open Sans Light" FontSize="45" Padding="0" 
+               Foreground="#999" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="35,15,0,0">
+            <Label.Effect>
+                <DropShadowEffect ShadowDepth="0" Color="#ccc" BlurRadius="10" />
+            </Label.Effect>
+        </Label>
+        
+        <Label Grid.Column="3" Content="By Low Profile" FontFamily="Open Sans Light" FontSize="14" Foreground="#777" VerticalAlignment="Top" Margin="0,35,0,0" HorizontalAlignment="Center" />
+        
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -195,18 +103,18 @@
                 <Label Content="Early Out" Grid.Row="5" Grid.Column="2" />
                 <Label Content="Main Out" Grid.Row="5" Grid.Column="3" />
 
-                <wpfUi:FlatToggleButton Grid.Column="2" Grid.Row="0" IsChecked="True" />
-                <wpfUi:FlatToggleButton Grid.Column="3" Grid.Row="0" IsChecked="True" />
-                
-                <wpfUi:Knob2 Grid.Row="2" Grid.Column="0" />
-                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PreDelay" Grid.Row="2" Grid.Column="1" />
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="3" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="HiPassEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LowPassEnabled" Grid.Column="3" Grid.Row="0" IsChecked="True" />
 
-                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="3" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="CrossMix" Grid.Row="2" Grid.Column="0" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PreDelay" Grid.Row="2" Grid.Column="1" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="HighPass" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LowPass" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="3" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="DryOut" Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PredelayOut" Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="EarlyOut" Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="MainOut" Thickness="2" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="3" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
@@ -239,17 +147,18 @@
                 <Label Content="Feedback" Grid.Row="5" Grid.Column="2" />
                 <Label Content="Mod Rate" Grid.Row="5" Grid.Column="3" />
 
-                <wpfUi:Spinner Grid.Column="2" Grid.Row="0" ValueText="4" Min="0" Max="4" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="DiffusionEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
+                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="DiffusionStages" Grid.Column="3" Grid.Row="0" Value="1" Min="1" Max="4" Delta="1" Sensitivity="20" Formatter="{}0" />
+                
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="TapCount" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="TapLength" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="DiffusionDelay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="DiffusionModAmount" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="3" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
 
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="3" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
-
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="3" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="TapGain" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="TapDecay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="DiffusionFeedback" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="DiffusionModRate" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="3" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
@@ -279,16 +188,17 @@
                 <Label Content="Feedback" Grid.Row="5" Grid.Column="1" />
                 <Label Content="Mod Rate" Grid.Row="5" Grid.Column="2" />
 
-                <wpfUi:Spinner Grid.Column="0" Grid.Row="0" ValueText="0" Min="1" Max="12" Delta="1" Sensitivity="20" Formatter="{}0" />
-                <wpfUi:Spinner Grid.Column="1" Grid.Row="0" ValueText="0" Min="0" Max="4" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="LineCount" Grid.Column="0" Grid.Row="0" Value="1" Min="1" Max="12" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="PostDiffusionEnabled" Grid.Column="1" Grid.Row="0" IsChecked="True" />
+                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="PostDiffusionStages" Grid.Column="2" Grid.Row="0" Value="1" Min="1" Max="4" Delta="1" Sensitivity="20" Formatter="{}0" />
 
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineDelay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostDiffusionDelay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineModAmount" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
 
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineFeedback" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostDiffusionFeedback" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineModRate" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
@@ -318,17 +228,17 @@
                 <Label Content="Hi Gain" Grid.Row="5" Grid.Column="1" />
                 <Label Content="Width" Grid.Row="5" Grid.Column="2" />
 
-                <wpfUi:FlatToggleButton Grid.Column="0" Grid.Row="0" IsChecked="True" />
-                <wpfUi:FlatToggleButton Grid.Column="1" Grid.Row="0" IsChecked="True" />
-                <wpfUi:FlatToggleButton Grid.Column="2" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LowShelfEnabled" Grid.Column="0" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="HighShelfEnabled" Grid.Column="1" Grid.Row="0" IsChecked="True" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="CutoffEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
 
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostLowShelfFrequency" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" Value="{Binding Path=PredelayLeft, Mode=TwoWay}" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostHighShelfFrequency" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" Value="{Binding Path=EarlySizeLeft, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostCutoffFrequency" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" Value="{Binding Path=GrainCountLeft, Mode=TwoWay}"/>
 
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
-                <wpfUi:Knob2 Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostLowShelfGain" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" Value="{Binding Path=PredelayRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostHighShelfGain" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" Value="{Binding Path=EarlySizeRight, Mode=TwoWay}"/>
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="StereoWidth" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" Value="{Binding Path=GrainCountRight, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
@@ -343,36 +253,113 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Diffusion Delay"  Style="{StaticResource MainLabelStyle}" />
+            <Label Grid.Column="0" Content="Program Bank" Style="{StaticResource MainLabelStyle}" />
         </Grid>
-
-        <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource ResourceKey=BoxContainerStyle}" HorizontalAlignment="Stretch">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <wpfUi:Spinner Grid.Column="0" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
-                <wpfUi:Spinner Grid.Column="1" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
-                <wpfUi:Spinner Grid.Column="0" Grid.Row="1" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
-                <wpfUi:Spinner Grid.Column="1" Grid.Row="1" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
-            </Grid>
-        </Border>
-
-        <Grid Grid.Row="3" Grid.Column="1">
+        
+        <Grid Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="27.5 ms" FontSize="16" VerticalAlignment="Center" Style="{StaticResource MainLabelStyle}" />
+            <Label Grid.Column="0" Content="{Binding ActiveControlName, FallbackValue=Active Parameter}" Style="{StaticResource MainLabelStyle}" />
         </Grid>
 
-        <StackPanel Orientation="Vertical" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,15,5,0">
-            <Label Content="Cloud Seed" FontFamily="Open Sans Light" FontSize="40" Padding="0" Foreground="#777" VerticalAlignment="Center" HorizontalAlignment="Center" />
-            <Label Content="By Low Profile" FontFamily="Open Sans Light" FontSize="14" Foreground="#777" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        </StackPanel>
+        <Grid Grid.Row="3" Grid.Column="0" Margin="5" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="TapSeed" Grid.Column="0" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+            <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="DiffusionSeed" Grid.Column="1" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+            <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="CombSeed" Grid.Column="2" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+            <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="PostDiffusionSeed" Grid.Column="3" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+        </Grid>
+
+        <Grid Grid.Row="3" Grid.Column="1" Margin="5" HorizontalAlignment="Stretch">
+            <Label Content="{Binding SelectedProgram.Name, FallbackValue=Default Program}" 
+                   Style="{StaticResource ProgramLabelStyle}" x:Name="ProgramLabel" MouseDown="ProgramLabelClick">
+                <Label.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Factory Programs">
+                            <MenuItem Header="Program 1" />
+                            <MenuItem Header="Program 2" />
+                            <MenuItem Header="Program 3" />
+                        </MenuItem>
+                        <MenuItem Header="User Programs" ItemsSource="{Binding UserPrograms}" Command="{Binding LoadProgramCommand}" CommandParameter="{Binding}" >
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="{x:Type MenuItem}">
+                                    <Setter Property="Command" Value="{Binding DataContext.LoadProgramCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type MenuItem}, AncestorLevel=1}}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                        </MenuItem>
+                        <MenuItem Header="Rename Program" Click="ShowRenameDialog" />
+                        <MenuItem Header="Save Program" Click="ShowSaveDialog" />
+                        <MenuItem Header="Delete Program" />
+                    </ContextMenu>
+                </Label.ContextMenu>
+            </Label>
+        </Grid>
+        
+        <Grid Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="{Binding ActiveControlDisplay, FallbackValue=200 ms}" FontSize="16" VerticalAlignment="Center" Style="{StaticResource MainLabelStyle}" />
+        </Grid>
+
+        <Grid Grid.RowSpan="10" Grid.ColumnSpan="10" Background="#33000000" x:Name="SaveProgramDialog" Visibility="Collapsed">
+            <Border Width="400" Height="150" Background="#f7f7f7" BorderThickness="1" CornerRadius="8" BorderBrush="#999">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">
+                        <Label Style="{StaticResource MainLabelStyle}" FontSize="16" Margin="10">Save Program:</Label>
+                        <TextBox Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Center" Width="300" 
+                                 Text="{Binding NewProgramName}" x:Name="SaveProgramTextBox" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="5">
+                        <Button Style="{StaticResource ButtonStyle}" Command="{Binding SaveProgramCommand}" Click="CloseDialogs">Save</Button>
+                        <Button Style="{StaticResource ButtonStyle}" Click="CloseDialogs">Cancel</Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.RowSpan="10" Grid.ColumnSpan="10" Background="#33000000" x:Name="RenameProgramDialog" Visibility="Collapsed">
+            <Border Width="400" Height="150" Background="#f7f7f7" BorderThickness="1" CornerRadius="8" BorderBrush="#999">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">
+                        <Label Style="{StaticResource MainLabelStyle}" FontSize="16" Margin="10">Rename Program:</Label>
+                        <TextBox Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Center" Width="300" 
+                                 Text="{Binding NewProgramName}" x:Name="RenameProgramTextBox" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="5">
+                        <Button Style="{StaticResource ButtonStyle}" Command="{Binding RenameProgramCommand}" Click="CloseDialogs">Save</Button>
+                        <Button Style="{StaticResource ButtonStyle}" Click="CloseDialogs">Cancel</Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

@@ -65,7 +65,7 @@ namespace CloudSeed
 				case Parameter.LowPass:                   return 400 + ValueTables.Get(P(Parameter.LowPass), ValueTables.Response4Oct) * 19600;
 
 				// Early
-				case Parameter.TapCount:                  return (int)(P(Parameter.TapCount) * 50);
+				case Parameter.TapCount:                  return 1 + (int)(P(Parameter.TapCount) * 49.0);
 				case Parameter.TapLength:                 return (int)(P(Parameter.TapLength) * 500);
 				case Parameter.TapGain:                   return ValueTables.Get(P(Parameter.TapGain), ValueTables.Response2Dec);
 				case Parameter.TapDecay:                  return P(Parameter.TapDecay);
@@ -107,10 +107,10 @@ namespace CloudSeed
 				// Output
 				case Parameter.StereoWidth:               return P(Parameter.StereoWidth);
 
-				case Parameter.DryOut:                    return ValueTables.Get(P(Parameter.DryOut), ValueTables.Response3Dec);
-				case Parameter.PredelayOut:               return ValueTables.Get(P(Parameter.PredelayOut), ValueTables.Response3Dec);
-				case Parameter.EarlyOut:                  return ValueTables.Get(P(Parameter.EarlyOut), ValueTables.Response3Dec);
-				case Parameter.LineOut:                   return ValueTables.Get(P(Parameter.LineOut), ValueTables.Response3Dec);
+				case Parameter.DryOut:                    return ValueTables.Get(P(Parameter.DryOut), ValueTables.Response2Dec);
+				case Parameter.PredelayOut:               return ValueTables.Get(P(Parameter.PredelayOut), ValueTables.Response2Dec);
+				case Parameter.EarlyOut:                  return ValueTables.Get(P(Parameter.EarlyOut), ValueTables.Response2Dec);
+				case Parameter.MainOut:                   return ValueTables.Get(P(Parameter.MainOut), ValueTables.Response2Dec);
 
 				// Switches
 				case Parameter.HiPassEnabled:             return P(Parameter.HiPassEnabled);
@@ -172,23 +172,6 @@ namespace CloudSeed
 		{
 			channelL.ClearBuffers();
 			channelR.ClearBuffers();
-		}
-
-		public byte[] GetJsonProgram()
-		{
-			var dict = Parameters
-				.Select((x, i) => new { Name = ((Parameter)i).Name(), Value = x })
-				.ToDictionary(x => x.Name, x => x.Value);
-
-			var json = JsonConvert.SerializeObject(dict);
-			return Encoding.UTF8.GetBytes(json);
-		}
-
-		public static Dictionary<string, double> ParseJsonProgram(byte[] jsonData)
-		{
-			var json = Encoding.UTF8.GetString(jsonData);
-			var dict = JsonConvert.DeserializeObject<Dictionary<string, double>>(json);
-			return dict;
 		}
 	}
 }

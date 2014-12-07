@@ -220,7 +220,7 @@ namespace CloudSeed
 				case Parameter.EarlyOut:
 					earlyOut = value;
 					break;
-				case Parameter.LineOut:
+				case Parameter.MainOut:
 					lineOut = value;
 					break;
 

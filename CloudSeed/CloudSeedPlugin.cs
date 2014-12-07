@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using Newtonsoft.Json;
 using SharpSoundDevice;
 using System.Globalization;
 using CloudSeed.UI;
@@ -16,7 +18,6 @@ namespace CloudSeed
 		private DeviceInfo devInfo;
 
 		private readonly ReverbController controller;
-		private readonly CloudSeedViewModel viewModel;
 		private CloudSeedView view;
 		private System.Windows.Window window; 
 		
@@ -34,22 +35,21 @@ namespace CloudSeed
 			devInfo = new DeviceInfo();
 			ParameterInfo = new SharpSoundDevice.Parameter[controller.Parameters.Length];
 			PortInfo = new Port[2];
-			viewModel = new CloudSeedViewModel(controller);
 		}
 
 		public void InitializeDevice()
 		{
-			devInfo.DeviceID = "Low Profile - Cloud Seed";
+			devInfo.DeviceID = "Low Profile - CloudSeed";
 			devInfo.Developer = "Valdemar Erlingsson";
-			devInfo.EditorWidth = 950;
-			devInfo.EditorHeight = 500;
+			devInfo.EditorWidth = 936;
+			devInfo.EditorHeight = 346;
 			devInfo.HasEditor = true;
-			devInfo.Name = "Cloud Seed Algorithmic Reverb";
+			devInfo.Name = "CloudSeed Algorithmic Reverb";
 			devInfo.ProgramCount = 1;
 			devInfo.Type = DeviceType.Effect;
 			devInfo.Version = 1000;
 			devInfo.VstId = DeviceUtilities.GenerateIntegerId(devInfo.DeviceID);
-
+			
 			PortInfo[0].Direction = PortDirection.Input;
 			PortInfo[0].Name = "Stereo Input";
 			PortInfo[0].NumberOfChannels = 2;
@@ -68,7 +68,11 @@ namespace CloudSeed
 				p.Value = 0.0;
 				ParameterInfo[i] = p;
 			}
+
+			ViewModel = new CloudSeedViewModel(this);
 		}
+
+		public CloudSeedViewModel ViewModel { get; private set; }
 
 		public void DisposeDevice() { }
 
@@ -79,36 +83,16 @@ namespace CloudSeed
 
 		public void Stop() { }
 
-		//private static Stopwatch sw = new Stopwatch();
-
 		public void ProcessSample(double[][] input, double[][] output, uint bufferSize)
 		{
 			PTimer.Begin("Main");
-
-			/*
-			 * for (int i = 0; i < bufferSize; i++)
-			{
-				output[0][i] = input[0][i];
-				output[1][i] = input[1][i];
-			}
-			sw.Restart();
-			var ticks = TimeSpan.TicksPerMillisecond * 0.3;
-			while (sw.ElapsedTicks < ticks)
-			{
-				
-			}
-			sw.Stop();
-			 */
-
 			controller.Process(input, output);
-
 			PTimer.End("Main");
 		}
-
 		
 		public void OpenEditor(IntPtr parentWindow) 
 		{
-			view = new CloudSeedView(viewModel);
+			view = new CloudSeedView(ViewModel);
 			devInfo.EditorWidth = (int)view.Width;
 			devInfo.EditorHeight = (int)view.Height;
 			HostInfo.SendEvent(this, new Event { Data = null, EventIndex = 0, Type = EventType.WindowSize });
@@ -132,20 +116,23 @@ namespace CloudSeed
 				{
 					var i = ev.EventIndex;
 					var value = (double)ev.Data;
-					SetParameter((Parameter)i, value);
+					SetParameter((Parameter)i, value, true, false);
 				}
 			}
 		}
 
-		public void SetParameter(Parameter param, double value, bool updateHost = false)
+		public void SetParameter(Parameter param, double value, bool updateUi, bool updateHost)
 		{
 			controller.SetParameter(param, value);
 			ParameterInfo[param.Value()].Value = value;
 			ParameterInfo[param.Value()].Display = GetDisplay(param);
 
-			System.Windows.Forms.Cursor.Show();
-			//VM.Update(parameter);
-			if (updateHost)
+			//System.Windows.Forms.Cursor.Show();
+
+			if (updateUi && ViewModel != null)
+				ViewModel.UpdateParameter(param, value);
+
+			if (updateHost && HostInfo != null)
 			{
 				HostInfo.SendEvent(this, new Event
 				{
@@ -156,39 +143,56 @@ namespace CloudSeed
 			}
 		}
 
-		private string GetDisplay(Parameter param)
+		public string GetDisplay(Parameter param)
 		{
 			var propVal = controller.GetScaledParameter(param);
-			return string.Format(CultureInfo.InvariantCulture, "{0:0.00}", propVal);
+			return param.Formatter()(propVal);
 		}
 	
 		public void SetProgramData(Program program, int index)
 		{
 			try
 			{
-				var dict = ReverbController.ParseJsonProgram(program.Data);
-				foreach (var kvp in dict)
-				{
-					Parameter param;
-					var ok = Enum.TryParse<Parameter>(kvp.Key, out param);
-					if (ok)
-					{
-						SendEvent(new Event { Data = kvp.Value, EventIndex = param.Value(), Type = EventType.Parameter });
-					}
-				}
+				var jsonData = Encoding.UTF8.GetString(program.Data);
+				SetJsonProgram(jsonData);
 			}
-			catch (Exception)
+			catch
 			{
-
+				// Nothing we can do except crash or ignore
 			}
 		}
 
 		public Program GetProgramData(int index)
 		{
 			var output = new Program();
-			output.Data = controller.GetJsonProgram();
+			var jsonData = GetJsonProgram();
+			output.Data = Encoding.UTF8.GetBytes(jsonData);
 			output.Name = "Default Program";
 			return output;
+		}
+
+		public void SetJsonProgram(string jsonData)
+		{
+			var dict = JsonConvert.DeserializeObject<Dictionary<string, double>>(jsonData);
+			foreach (var kvp in dict)
+			{
+				Parameter param;
+				var ok = Enum.TryParse(kvp.Key, out param);
+				if (ok)
+				{
+					SetParameter(param, kvp.Value, true, true);
+				}
+			}
+		}
+
+		public string GetJsonProgram()
+		{
+			var dict = controller.Parameters
+				.Select((x, i) => new { Name = ((Parameter)i).Name(), Value = x })
+				.ToDictionary(x => x.Name, x => x.Value);
+
+			var json = JsonConvert.SerializeObject(dict, Formatting.Indented);
+			return json;
 		}
 
 		public void HostChanged()
