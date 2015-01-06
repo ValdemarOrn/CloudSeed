@@ -87,9 +87,13 @@ namespace CloudSeed
 				var queue = kvp.Value;
 				lock (queue)
 				{
+					var ordered = queue.OrderBy(x => x).ToArray();
 					var averageTicks = queue.Sum() / (double)queue.Count;
+					var ticks99Th = ordered.Length > 0 ? (double)ordered[(int)(ordered.Length * 0.99)] : 0.0;
+
 					var averageMicros = averageTicks / TimeSpan.TicksPerMillisecond * 1000;
-					sb.Append(string.Format("{0}: {1:0.0}   ", key, averageMicros));
+					var n99ThMicros = ticks99Th / TimeSpan.TicksPerMillisecond * 1000;
+					sb.Append(string.Format("{0}: {1:0.0}, {2:0.0}   ", key, averageMicros, n99ThMicros));
 				}
 			}
 

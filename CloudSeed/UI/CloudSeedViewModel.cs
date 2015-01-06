@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Input;
 
 namespace CloudSeed.UI
@@ -16,14 +17,19 @@ namespace CloudSeed.UI
 
 		private readonly object updateLock = new object();
 		private readonly CloudSeedPlugin plugin;
-		private bool suppressUpdates;
+		private readonly Thread updateThread;
+		private readonly Dictionary<Parameter, double> parameterUpdates;
+
+		private volatile bool suppressUpdates;
 		private Parameter? activeControl;
 		private ProgramBanks.PluginProgram selectedProgram;
 		private string newProgramName;
+		
 
 		public CloudSeedViewModel(CloudSeedPlugin plugin)
 		{
 			this.plugin = plugin;
+			this.parameterUpdates = new Dictionary<Parameter, double>();
 			NumberedParameters = new ObservableCollection<double>();
 			foreach (var para in Enum.GetValues(typeof(Parameter)).Cast<Parameter>())
 				NumberedParameters.Add(0.0);
@@ -34,19 +40,49 @@ namespace CloudSeed.UI
 
 			NumberedParameters.CollectionChanged += (s, e) =>
 			{
+				if (suppressUpdates)
+					return;
+
 				lock (updateLock)
 				{
-					if (suppressUpdates)
-						return;
-
 					var para = (Parameter)e.NewStartingIndex;
 					var val = (double)e.NewItems[0];
-					plugin.SetParameter(para, val, false, true);
+					plugin.SetParameterAsync(para, val);
 					NotifyChanged(() => ActiveControlDisplay);
 				}
 			};
 
+			updateThread = new Thread(UpdateParameters);
+			updateThread.Priority = ThreadPriority.Lowest;
+			updateThread.Start();
+			
 			LoadProgram(ProgramBanks.Bank.UserPrograms.FirstOrDefault() ?? new ProgramBanks.PluginProgram { Name = "Default Program" });
+		}
+
+		private void UpdateParameters()
+		{
+			var toProcess = new List<KeyValuePair<Parameter, double>>();
+
+			while (true)
+			{
+				Thread.Sleep(50);
+				toProcess.Clear();
+
+				lock (parameterUpdates)
+				{
+					toProcess.AddRange(parameterUpdates);
+					parameterUpdates.Clear();
+				}
+
+				if (toProcess.Count == 0)
+					continue;
+
+				lock (updateLock)
+				{
+					foreach (var tuple in toProcess)
+						UpdateParameter(tuple.Key, tuple.Value);
+				}
+			}
 		}
 
 		public ICommand SaveProgramCommand { get; private set; }
@@ -98,7 +134,15 @@ namespace CloudSeed.UI
 			set { newProgramName = value; NotifyChanged(); }
 		}
 
-		public void UpdateParameter(Parameter param, double newValue)
+		public void UpdateParameterAsync(Parameter param, double newValue)
+		{
+			lock (parameterUpdates)
+			{
+				parameterUpdates[param] = newValue;
+			}
+		}
+
+		private void UpdateParameter(Parameter param, double newValue)
 		{
 			lock (updateLock)
 			{

@@ -19,8 +19,9 @@ namespace CloudSeed
 
 		private readonly ReverbController controller;
 		private CloudSeedView view;
-		private System.Windows.Window window; 
-		
+		private System.Windows.Window window;
+		private readonly Dictionary<Parameter, double> updatedParameters;
+
 		public double Samplerate;
 		public DeviceInfo DeviceInfo { get { return devInfo; } }
 		public SharpSoundDevice.Parameter[] ParameterInfo { get; private set; }
@@ -35,6 +36,7 @@ namespace CloudSeed
 			devInfo = new DeviceInfo();
 			ParameterInfo = new SharpSoundDevice.Parameter[controller.Parameters.Length];
 			PortInfo = new Port[2];
+			updatedParameters = new Dictionary<Parameter, double>();
 		}
 
 		public void InitializeDevice()
@@ -42,7 +44,7 @@ namespace CloudSeed
 			devInfo.DeviceID = "Low Profile - CloudSeed";
 			devInfo.Developer = "Valdemar Erlingsson";
 			devInfo.EditorWidth = 936;
-			devInfo.EditorHeight = 346;
+			devInfo.EditorHeight = 386;
 			devInfo.HasEditor = true;
 			devInfo.Name = "CloudSeed Algorithmic Reverb";
 			devInfo.ProgramCount = 1;
@@ -83,11 +85,31 @@ namespace CloudSeed
 
 		public void Stop() { }
 
+		List<KeyValuePair<Parameter, double>> toUpdate = new List<KeyValuePair<Parameter, double>>();
+
 		public void ProcessSample(double[][] input, double[][] output, uint bufferSize)
 		{
+			PTimer.Begin("Params");
+			toUpdate.Clear();
+			lock (updatedParameters)
+			{
+				toUpdate.AddRange(updatedParameters);
+				updatedParameters.Clear();
+			}
+
+			foreach (var kvp in toUpdate)
+				SetParameter(kvp.Key, kvp.Value, false, true);
+
+			PTimer.End("Params");
+
 			PTimer.Begin("Main");
 			controller.Process(input, output);
 			PTimer.End("Main");
+		}
+
+		public void ProcessSample(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize)
+		{
+			
 		}
 		
 		public void OpenEditor(IntPtr parentWindow) 
@@ -108,7 +130,7 @@ namespace CloudSeed
 			window.Close();
 		}
 
-		public void SendEvent(Event ev)
+		public bool SendEvent(Event ev)
 		{
 			if (ev.Type == EventType.Parameter)
 			{
@@ -119,9 +141,19 @@ namespace CloudSeed
 					SetParameter((Parameter)i, value, true, false);
 				}
 			}
+
+			return false;
 		}
 
-		public void SetParameter(Parameter param, double value, bool updateUi, bool updateHost)
+		public void SetParameterAsync(Parameter param, double value)
+		{
+			lock (updatedParameters)
+			{
+				updatedParameters[param] = value;
+			}
+		}
+
+		private void SetParameter(Parameter param, double value, bool updateUi, bool updateHost)
 		{
 			controller.SetParameter(param, value);
 			ParameterInfo[param.Value()].Value = value;
@@ -130,7 +162,7 @@ namespace CloudSeed
 			//System.Windows.Forms.Cursor.Show();
 
 			if (updateUi && ViewModel != null)
-				ViewModel.UpdateParameter(param, value);
+				ViewModel.UpdateParameterAsync(param, value);
 
 			if (updateHost && HostInfo != null)
 			{
@@ -206,7 +238,6 @@ namespace CloudSeed
 		}
 
 		public IHostInfo HostInfo { get; set; }
-
 	}
 }
 
