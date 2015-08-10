@@ -17,10 +17,9 @@ namespace CloudSeed
 
 		private DeviceInfo devInfo;
 
-		private readonly ReverbController controller;
+		private readonly IReverbController controller;
 		private CloudSeedView view;
 		private System.Windows.Window window;
-		private readonly Dictionary<Parameter, double> updatedParameters;
 
 		public double Samplerate;
 		public DeviceInfo DeviceInfo { get { return devInfo; } }
@@ -34,9 +33,8 @@ namespace CloudSeed
 			controller.Samplerate = 48000;
 			Samplerate = 48000;
 			devInfo = new DeviceInfo();
-			ParameterInfo = new SharpSoundDevice.Parameter[controller.Parameters.Length];
+			ParameterInfo = new SharpSoundDevice.Parameter[controller.GetParameterCount()];
 			PortInfo = new Port[2];
-			updatedParameters = new Dictionary<Parameter, double>();
 		}
 
 		public void InitializeDevice()
@@ -50,6 +48,7 @@ namespace CloudSeed
 			devInfo.ProgramCount = 1;
 			devInfo.Type = DeviceType.Effect;
 			devInfo.Version = 1000;
+			devInfo.UnsafeProcessing = controller is IUnsafeReverbController;
 			devInfo.VstId = DeviceUtilities.GenerateIntegerId(devInfo.DeviceID);
 			
 			PortInfo[0].Direction = PortDirection.Input;
@@ -60,7 +59,7 @@ namespace CloudSeed
 			PortInfo[1].Name = "Stereo Output";
 			PortInfo[1].NumberOfChannels = 2;
 
-			for (int i = 0; i < controller.Parameters.Length; i++)
+			for (int i = 0; i < controller.GetParameterCount(); i++)
 			{
 				var p = new SharpSoundDevice.Parameter();
 				p.Display = GetDisplay(0.0);
@@ -85,31 +84,14 @@ namespace CloudSeed
 
 		public void Stop() { }
 
-		List<KeyValuePair<Parameter, double>> toUpdate = new List<KeyValuePair<Parameter, double>>();
-
 		public void ProcessSample(double[][] input, double[][] output, uint bufferSize)
 		{
-			PTimer.Begin("Params");
-			toUpdate.Clear();
-			lock (updatedParameters)
-			{
-				toUpdate.AddRange(updatedParameters);
-				updatedParameters.Clear();
-			}
-
-			foreach (var kvp in toUpdate)
-				SetParameter(kvp.Key, kvp.Value, false, true);
-
-			PTimer.End("Params");
-
-			PTimer.Begin("Main");
-			controller.Process(input, output);
-			PTimer.End("Main");
+			((IManagedReverbController)controller).Process(input, output);
 		}
 
 		public void ProcessSample(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize)
 		{
-			
+			((IUnsafeReverbController)controller).Process(input, output, inChannelCount, outChannelCount, bufferSize);
 		}
 		
 		public void OpenEditor(IntPtr parentWindow) 
@@ -134,7 +116,7 @@ namespace CloudSeed
 		{
 			if (ev.Type == EventType.Parameter)
 			{
-				if (ev.EventIndex >= 0 && ev.EventIndex < controller.Parameters.Length)
+				if (ev.EventIndex >= 0 && ev.EventIndex < controller.GetParameterCount())
 				{
 					var i = ev.EventIndex;
 					var value = (double)ev.Data;
@@ -145,12 +127,9 @@ namespace CloudSeed
 			return false;
 		}
 
-		public void SetParameterAsync(Parameter param, double value)
+		public void SetParameter(Parameter param, double value)
 		{
-			lock (updatedParameters)
-			{
-				updatedParameters[param] = value;
-			}
+			SetParameter(param, value, false, true);
 		}
 
 		private void SetParameter(Parameter param, double value, bool updateUi, bool updateHost)
@@ -219,7 +198,7 @@ namespace CloudSeed
 
 		public string GetJsonProgram()
 		{
-			var dict = controller.Parameters
+			var dict = controller.GetAllParameters()
 				.Select((x, i) => new { Name = ((Parameter)i).Name(), Value = x })
 				.ToDictionary(x => x.Name, x => x.Value);
 

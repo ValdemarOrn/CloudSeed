@@ -77,6 +77,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IReverbController.cs" />
     <Compile Include="ModulatedAllpass.cs" />
     <Compile Include="AllpassDiffuser.cs" />
     <Compile Include="DelayLine.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="UI\RenameProgramDialog.xaml.cs">
       <DependentUpon>RenameProgramDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UnsafeReverbController.cs" />
     <None Include="packages.config" />
     <None Include="OldWrapper.cs" />
     <Compile Include="UI\CloudSeedView.xaml.cs">

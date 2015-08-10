@@ -87,11 +87,6 @@ namespace CloudSeed
 
 		public double[] Output { get { return outBuffer; } }
 
-		private double GetPerLineGain()
-		{
-			return 1 / Math.Sqrt(lineCount);
-		}
-
 		public void SetParameter(Parameter para, double value)
 		{
 			parameters[para] = value;
@@ -99,7 +94,7 @@ namespace CloudSeed
 			switch (para)
 			{
 				case Parameter.PreDelay:
-					preDelay.SampleDelay = (int)ms2Samples(value);
+					preDelay.SampleDelay = (int)Ms2Samples(value);
 					break;
 				case Parameter.HighPass:
 					highPass.CutoffHz = value;
@@ -112,7 +107,7 @@ namespace CloudSeed
 					multitap.SetTapCount((int)value);
 					break;
 				case Parameter.TapLength:
-					multitap.SetTapLength((int)ms2Samples(value));
+					multitap.SetTapLength((int)Ms2Samples(value));
 					break;
 				case Parameter.TapGain:
 					multitap.SetTapGain(value);
@@ -128,7 +123,7 @@ namespace CloudSeed
 					diffuser.Stages = (int)value;
 					break;
 				case Parameter.DiffusionDelay:
-					diffuser.SetDelay((int)ms2Samples(value));
+					diffuser.SetDelay((int)Ms2Samples(value));
 					break;
 				case Parameter.DiffusionFeedback:
 					diffuser.SetFeedback(value);
@@ -155,7 +150,7 @@ namespace CloudSeed
 					break;
 				case Parameter.PostDiffusionDelay:
 					foreach (var line in lines)
-						line.SetDiffuserDelay((int)ms2Samples(value));
+						line.SetDiffuserDelay((int)Ms2Samples(value));
 					break;
 				case Parameter.PostDiffusionFeedback:
 					foreach (var line in lines)
@@ -184,7 +179,7 @@ namespace CloudSeed
 					break;
 
 				case Parameter.DiffusionModAmount:
-					diffuser.SetModAmount(ms2Samples(value));
+					diffuser.SetModAmount(Ms2Samples(value));
 					break;
 				case Parameter.DiffusionModRate:
 					diffuser.SetModRate(value);
@@ -245,12 +240,17 @@ namespace CloudSeed
 			}
 		}
 
+		private double GetPerLineGain()
+		{
+			return 1 / Math.Sqrt(lineCount);
+		}
+
 		private void UpdateLines()
 		{
 			var lineModRate = parameters[Parameter.LineModRate];
-			var lineModAmount = ms2Samples(parameters[Parameter.LineModAmount]);
+			var lineModAmount = Ms2Samples(parameters[Parameter.LineModAmount]);
 			var lineFeedback = parameters[Parameter.LineFeedback];
-			var lineDelay = (int)ms2Samples(parameters[Parameter.LineDelay]);
+			var lineDelay = (int)Ms2Samples(parameters[Parameter.LineDelay]);
 			if (lineDelay < 50) lineDelay = 50;		
 
 			var count = lines.Length;
@@ -352,7 +352,7 @@ namespace CloudSeed
 				line.ClearBuffers();
 		}
 
-		private double ms2Samples(double value)
+		private double Ms2Samples(double value)
 		{
 			return value / 1000.0 * samplerate;
 		}

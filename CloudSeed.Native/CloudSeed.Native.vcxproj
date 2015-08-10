@@ -55,7 +55,8 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,13 +83,35 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Allpass.h" />
+    <ClInclude Include="AudioLib\Hp1.h" />
+    <ClInclude Include="AudioLib\Lp1.h" />
+    <ClInclude Include="AudioLib\ShaRandom.h" />
+    <ClInclude Include="AudioLib\ValueTables.h" />
     <ClInclude Include="Default.h" />
-    <ClInclude Include="Reverber.h" />
+    <ClInclude Include="DelayLine.h" />
+    <ClInclude Include="Exports.h" />
+    <ClInclude Include="FastSin.h" />
+    <ClInclude Include="ModulatedDelay.h" />
+    <ClInclude Include="MultitapDiffuser.h" />
+    <ClInclude Include="Parameter.h" />
+    <ClInclude Include="ReverbChannel.h" />
+    <ClInclude Include="ReverbController.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Utils\Sha256.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Allpass.cpp" />
-    <ClCompile Include="Reverber.cpp" />
+    <ClCompile Include="AudioLib\Hp1.cpp" />
+    <ClCompile Include="AudioLib\Lp1.cpp" />
+    <ClCompile Include="AudioLib\ShaRandom.cpp" />
+    <ClCompile Include="AudioLib\ValueTables.cpp" />
+    <ClCompile Include="DelayLine.cpp" />
+    <ClCompile Include="FastSin.cpp" />
+    <ClCompile Include="ModulatedDelay.cpp" />
+    <ClCompile Include="MultitapDiffuser.cpp" />
+    <ClCompile Include="ReverbChannel.cpp" />
+    <ClCompile Include="ReverbController.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Utils\Sha256.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

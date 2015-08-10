@@ -28,8 +28,6 @@ namespace CloudSeed
 			this.len = bufferSize;
 			this.buffer = new double[bufferSize];
 			this.output = new double[bufferSize];
-			tapGains = new double[20];
-			tapPosition = new int[20];
 			index = 0;
 			Seeds = new ShaRandom().Generate(1, 100).ToArray();
 		}
@@ -122,7 +120,7 @@ namespace CloudSeed
 			}
 		}
 
-		internal void ClearBuffers()
+		public void ClearBuffers()
 		{
 			buffer.Zero();
 		}

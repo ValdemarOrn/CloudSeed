@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace CloudSeed
 {
-	public class ReverbController
+	public class ReverbController : IManagedReverbController
 	{
 		private int samplerate;
 
@@ -16,14 +16,14 @@ namespace CloudSeed
 		private readonly ReverbChannel channelR;
 		private readonly double[] leftChannelIn;
 		private readonly double[] rightChannelIn;
-		
-		public readonly double[] Parameters;
+
+		private readonly double[] parameters;
 
 		public ReverbController(int samplerate)
 		{
 			const int bufferSize = 192000 / 2; // just make it huge by default...
 
-			Parameters = new double[Parameter.Count.Value()];
+			parameters = new double[Parameter.Count.Value()];
 			leftChannelIn = new double[bufferSize];
 			rightChannelIn = new double[bufferSize];
 			channelL = new ReverbChannel(bufferSize, samplerate);
@@ -41,13 +41,17 @@ namespace CloudSeed
 				channelR.Samplerate = samplerate;
 			}
 		}
-		
-		private double P(Parameter para)
+
+		public int GetParameterCount()
 		{
-			var idx = para.Value();
-			return idx >= 0 && idx < Parameters.Length ? Parameters[idx] : 0.0;
+			return parameters.Length;
 		}
 
+		public double[] GetAllParameters()
+		{
+			return parameters.ToArray();
+		}
+		
 		/// <summary>
 		/// warps the 0...1 parameter range into a meaningful value
 		/// </summary>
@@ -130,7 +134,7 @@ namespace CloudSeed
 		/// <param name="value"></param>
 		public void SetParameter(Parameter param, double value)
 		{
-			Parameters[param.Value()] = value;
+			parameters[param.Value()] = value;
 			var scaled = GetScaledParameter(param);
 
 			channelL.SetParameter(param, scaled);
@@ -172,6 +176,12 @@ namespace CloudSeed
 		{
 			channelL.ClearBuffers();
 			channelR.ClearBuffers();
+		}
+
+		private double P(Parameter para)
+		{
+			var idx = para.Value();
+			return idx >= 0 && idx < parameters.Length ? parameters[idx] : 0.0;
 		}
 	}
 }

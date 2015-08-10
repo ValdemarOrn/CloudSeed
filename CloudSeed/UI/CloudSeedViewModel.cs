@@ -47,7 +47,7 @@ namespace CloudSeed.UI
 				{
 					var para = (Parameter)e.NewStartingIndex;
 					var val = (double)e.NewItems[0];
-					plugin.SetParameterAsync(para, val);
+					plugin.SetParameter(para, val);
 					NotifyChanged(() => ActiveControlDisplay);
 				}
 			};

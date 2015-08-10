@@ -13,23 +13,101 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\AudioLib">
+      <UniqueIdentifier>{400f2ab1-5b40-42e9-920d-c9602fe14421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AudioLib">
+      <UniqueIdentifier>{dbfb8845-4920-4335-b646-703c46dad011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{ff412544-c468-4b3d-952f-f108ec963aa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{e90233f2-634b-43dd-9327-4a8ebd7e032b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Reverber.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Allpass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Default.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReverbController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLib\ValueTables.h">
+      <Filter>Header Files\AudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="ReverbChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Exports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModulatedDelay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastSin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultitapDiffuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Sha256.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLib\ShaRandom.h">
+      <Filter>Header Files\AudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLib\Hp1.h">
+      <Filter>Header Files\AudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLib\Lp1.h">
+      <Filter>Header Files\AudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="DelayLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Allpass.cpp">
+    <ClCompile Include="ReverbController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Reverber.cpp">
+    <ClCompile Include="AudioLib\ValueTables.cpp">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="ReverbChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModulatedDelay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastSin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MultitapDiffuser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Sha256.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioLib\ShaRandom.cpp">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioLib\Hp1.cpp">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioLib\Lp1.cpp">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="DelayLine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

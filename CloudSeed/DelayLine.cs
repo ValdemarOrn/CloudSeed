@@ -151,7 +151,7 @@ namespace CloudSeed
 			}
 		}
 
-		internal void ClearBuffers()
+		public void ClearBuffers()
 		{
 			delay.ClearBuffers();
 			diffuser.ClearBuffers();
