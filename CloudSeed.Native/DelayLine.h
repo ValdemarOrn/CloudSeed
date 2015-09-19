@@ -2,20 +2,25 @@
 #define DELAYLINE
 
 #include "AudioLib\Lp1.h"
+#include "ModulatedDelay.h"
+#include "AllpassDiffuser.h"
+#include "AudioLib\Biquad.h"
+
+using namespace AudioLib;
 
 namespace CloudSeed
 {
 	class DelayLine
 	{
 	private:
-		//ModulatedDelay delay;
-		//AllpassDiffuser diffuser;
-		//Biquad lowShelf;
-		//Biquad highShelf;
+		ModulatedDelay delay;
+		AllpassDiffuser diffuser;
+		Biquad lowShelf;
+		Biquad highShelf;
 		AudioLib::Lp1 lowPass;
 		double* tempBuffer;
 		double* filterOutputBuffer;
-		
+		int bufferSize;
 		double feedback;
 		int samplerate;
 		
@@ -31,8 +36,8 @@ namespace CloudSeed
 
 		int GetSamplerate();
 		void SetSamplerate(int samplerate);
-		double* GetDiffuserSeeds();
-		void SetDiffuserSeeds(double* seeds);
+		vector<double> GetDiffuserSeeds();
+		void SetDiffuserSeeds(vector<double> seeds);
 		void SetDelay(int delaySamples);
 		void SetFeedback(double feedb);
 		void SetDiffuserDelay(int delaySamples);

@@ -9,31 +9,34 @@ namespace CloudSeed
 	public unsafe class ReverberWrapper
 	{
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern IntPtr Create();
+		static extern IntPtr Create(int samplerate);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void Delete(IntPtr item);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern double* GetParameters(IntPtr item);
+		static extern int GetSamplerate(IntPtr item);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetSamplerate(IntPtr item, double samplerate);
+		static extern void SetSamplerate(IntPtr item, int samplerate);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetTaps(IntPtr item, double* indexOffsets, double* amplitudes, int count);
+		static extern int GetParameterCount(IntPtr item);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetEarly(IntPtr item, double* feedback, int* delaySamples);
+		static extern double* GetAllParameters(IntPtr item);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetHiCut(IntPtr item, double* fc, double* amount);
+		static extern double GetScaledParameter(IntPtr item, int param);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void SetAllpassMod(IntPtr item, double* freq, double* amount);
+		static extern void SetParameter(IntPtr item, int param, double value);
 
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
-		static extern void Process(IntPtr item, double* input, double* output, int len);
+		static extern void ClearBuffers(IntPtr item);
+		
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void Process(IntPtr item, double** input, double** output, int bufferSize);
 
 		IntPtr Instance;
 		double Samplerate;

@@ -8,7 +8,7 @@ namespace AudioLib
 	class ShaRandom
 	{
 	public:
-		std::vector<double> Generate(long long seed, int count);
+		static std::vector<double> Generate(long long seed, int count);
 	};
 }
 

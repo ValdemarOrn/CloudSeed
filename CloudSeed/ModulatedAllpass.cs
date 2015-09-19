@@ -28,8 +28,7 @@ namespace CloudSeed
 
 		public double ModAmount;
 		public double ModRate;
-		//public bool SmoothChanges; // values are smoothed at the moment...
-
+		
 		public bool ModulationEnabled;
 
 		public ModulatedAllpass(int bufferSize, int sampleDelay)

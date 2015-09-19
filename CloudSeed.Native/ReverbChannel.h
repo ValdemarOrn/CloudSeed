@@ -11,27 +11,31 @@
 #include "AudioLib/Lp1.h"
 #include "AudioLib/Hp1.h"
 #include "DelayLine.h"
+#include "AllpassDiffuser.h"
+
+using namespace std;
 
 namespace CloudSeed
 {
 	class ReverbChannel
 	{
 	private:
-		const int TotalLineCount = 12;
+		static const int TotalLineCount = 12;
 
-		std::map<Parameter, double> parameters;
+		map<Parameter, double> parameters;
 		int samplerate;
+		int bufferSize;
 
 		ModulatedDelay preDelay;
 		MultitapDiffuser multitap;
-		/*AllpassDiffuser diffuser;*/
-		std::vector<std::unique_ptr<DelayLine>> lines;
+		AllpassDiffuser diffuser;
+		vector<DelayLine*> lines;
 		AudioLib::ShaRandom rand;
 		AudioLib::Hp1 highPass;
 		AudioLib::Lp1 lowPass;
 		double* tempBuffer;
 		double* outBuffer;
-		double* delayLineSeeds;
+		vector<double> delayLineSeeds;
 
 		// Used the the main process loop
 		int lineCount;

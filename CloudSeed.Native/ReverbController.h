@@ -32,7 +32,7 @@ namespace CloudSeed
 		double GetScaledParameter(Parameter param);
 		void SetParameter(Parameter param, double value);
 		void ClearBuffers();
-		void Process(double** input, double** output, uint inChannelCount, uint outChannelCount, uint bufferSize);
+		void Process(double** input, double** output, int bufferSize);
 
 	private:
 		double P(Parameter para);

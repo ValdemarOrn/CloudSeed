@@ -20,6 +20,6 @@ namespace CloudSeed
 
 	public interface IUnsafeReverbController : IReverbController
 	{
-		void Process(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize);
+		void Process(IntPtr input, IntPtr output, int bufferSize);
 	}
 }

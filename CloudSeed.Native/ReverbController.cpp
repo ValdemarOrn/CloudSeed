@@ -1,5 +1,6 @@
 #include "ReverbController.h"
 #include "AudioLib/ValueTables.h"
+#include <iostream>
 
 using namespace AudioLib;
 
@@ -125,7 +126,7 @@ namespace CloudSeed
 		channelR.ClearBuffers();
 	}
 
-	void ReverbController::Process(double** input, double** output, uint inChannelCount, uint outChannelCount, uint bufferSize)
+	void ReverbController::Process(double** input, double** output, int bufferSize)
 	{
 		auto len = bufferSize;
 
@@ -150,6 +151,8 @@ namespace CloudSeed
 			output[0][i] = leftOut[i] * st + rightOut[i] * sti;
 			output[1][i] = rightOut[i] * st + leftOut[i] * sti;
 		}
+
+		std::cout << "Sample 0: " << output[0][0] << std::endl;
 	}
 
 	double ReverbController::P(Parameter para)

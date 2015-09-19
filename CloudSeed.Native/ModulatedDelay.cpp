@@ -1,6 +1,7 @@
 #include "ModulatedDelay.h"
 #include "Utils.h"
 #include "FastSin.h"
+#include <iostream>
 
 namespace CloudSeed
 {
@@ -16,6 +17,7 @@ namespace CloudSeed
 
 	ModulatedDelay::~ModulatedDelay()
 	{
+		std::cout << "Deleting ModulatedDelay " << std::endl;
 		delete buffer;
 		delete output;
 	}
@@ -48,6 +50,7 @@ namespace CloudSeed
 	void ModulatedDelay::ClearBuffers()
 	{
 		Utils::ZeroBuffer(buffer, bufferSize);
+		Utils::ZeroBuffer(output, bufferSize);
 	}
 
 	void ModulatedDelay::Update()

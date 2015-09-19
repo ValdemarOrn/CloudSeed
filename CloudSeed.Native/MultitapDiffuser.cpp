@@ -4,32 +4,36 @@
 #include "MultitapDiffuser.h"
 #include "Utils.h"
 #include "AudioLib/ShaRandom.h"
+#include <iostream>
 
 namespace CloudSeed
 {
 	MultitapDiffuser::MultitapDiffuser(int bufferSize)
 	{
 		len = bufferSize;
+		buffer = new double[bufferSize];
+		output = new double[bufferSize];
 		index = 0;
-		AudioLib::ShaRandom rand;
-		auto seedData = rand.Generate(1, 100);
-		for (size_t i = 0; i < seedData.size(); i++)
-			seeds[i] = seedData[i];
+		seeds = AudioLib::ShaRandom::Generate(1, 100);
 	}
 
-	double* MultitapDiffuser::GetSeeds()
+	MultitapDiffuser::~MultitapDiffuser()
+	{
+		std::cout << "Deleting MultitapDiffuser " << std::endl;
+		delete buffer;
+		delete output;
+	}
+
+	vector<double> MultitapDiffuser::GetSeeds()
 	{
 		return seeds;
 	}
 
-	void MultitapDiffuser::SetSeeds(double* seeds)
+	void MultitapDiffuser::SetSeeds(vector<double> seeds)
 	{
-		for (size_t i = 0; i < SeedValueCount; i++)
-			this->seeds[i] = seeds[i];
-
+		this->seeds = seeds;
 		Update();
-	}
-	
+	}	
 
 	double* MultitapDiffuser::GetOutput()
 	{ 
@@ -63,7 +67,7 @@ namespace CloudSeed
 	void MultitapDiffuser::Update()
 	{
 		int s = 0;
-		auto rand = [&](){return this->seeds[s++]; };
+		auto rand = [&](){return seeds[s++]; };
 
 		if (count < 1)
 			count = 1;
@@ -105,6 +109,9 @@ namespace CloudSeed
 
 	void MultitapDiffuser::Process(double* input, int sampleCount)
 	{
+		int* const tapPos = &tapPosition[0];
+		double* const tapGain = &tapGains[0];
+
 		for (int i = 0; i < sampleCount; i++)
 		{
 			if (index < 0) index += len;
@@ -113,8 +120,8 @@ namespace CloudSeed
 
 			for (int j = 0; j < count; j++)
 			{
-				auto idx = (index + tapPosition[j]) % len;
-				output[i] += buffer[idx] * tapGains[j];
+				auto idx = (index + tapPos[j]) % len;
+				output[i] += buffer[idx] * tapGain[j];
 			}
 
 			index--;
@@ -124,5 +131,6 @@ namespace CloudSeed
 	void MultitapDiffuser::ClearBuffers()
 	{
 		Utils::ZeroBuffer(buffer, len);
+		Utils::ZeroBuffer(output, len);
 	}
 }

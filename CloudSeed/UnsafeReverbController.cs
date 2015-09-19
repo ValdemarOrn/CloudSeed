@@ -1,44 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CloudSeed
 {
-	public class UnsafeReverbController : IUnsafeReverbController
+	public unsafe class UnsafeReverbController : IUnsafeReverbController, IDisposable
 	{
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern IntPtr Create(int samplerate);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void Delete(IntPtr item);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern int GetSamplerate(IntPtr item);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void SetSamplerate(IntPtr item, int samplerate);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern int GetParameterCount(IntPtr item);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern double* GetAllParameters(IntPtr item);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern double GetScaledParameter(IntPtr item, int param);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void SetParameter(IntPtr item, int param, double value);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void ClearBuffers(IntPtr item);
+
+		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
+		static extern void Process(IntPtr item, double** input, double** output, int bufferSize);
+
+		private IntPtr instance;
+
+		public UnsafeReverbController(int samplerate)
+		{
+			instance = Create(samplerate);
+		}
+
+		~UnsafeReverbController()
+		{
+			Delete(instance);
+		}
+
+		public void Dispose()
+		{
+			Delete(instance);
+			GC.SuppressFinalize(this);
+		}
+
 		public int Samplerate
 		{
-			get { return 0; }
-			set { }
+			get { return GetSamplerate(instance); }
+			set { SetSamplerate(instance, value); }
 		}
 
 		public int GetParameterCount()
 		{
-			return 0;
+			return GetParameterCount(instance);
 		}
 
 		public double[] GetAllParameters()
 		{
-			return null;
+			IntPtr para = (IntPtr)GetAllParameters(instance);
+			var count = GetParameterCount(instance);
+			var output = new double[count];
+			Marshal.Copy(para, output, 0, count);
+			return output;
 		}
 
 		public double GetScaledParameter(Parameter param)
 		{
-			return 0.0;
+			return GetScaledParameter(instance, (int)param);
 		}
 
 		public void SetParameter(Parameter param, double value)
 		{
+			SetParameter(instance, (int)param, value);
 		}
 
-		public void Process(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize)
+		public void Process(IntPtr input, IntPtr output, int bufferSize)
 		{
+			Process(instance, (double**)input, (double**)output, bufferSize);
 		}
 
 		public void ClearBuffers()
 		{
+			ClearBuffers(instance);
 		}
 	}
 }

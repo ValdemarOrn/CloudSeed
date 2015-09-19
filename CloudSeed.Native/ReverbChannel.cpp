@@ -1,6 +1,8 @@
 
 #include <cmath>
 #include "ReverbChannel.h"
+#include "AudioLib\ShaRandom.h"
+#include "Utils.h"
 
 namespace CloudSeed
 {
@@ -9,19 +11,18 @@ namespace CloudSeed
 		, multitap(bufferSize)
 		, highPass(samplerate)
 		, lowPass(samplerate)
+		, diffuser(bufferSize, samplerate)
 	{
+		for (int i = 0; i < TotalLineCount; i++)
+			lines.push_back(new DelayLine(bufferSize, samplerate));
+		
+		this->bufferSize = bufferSize;
+
 		for (auto value = 0; value < (int)Parameter::Count; value++)
 			this->parameters[static_cast<Parameter>(value)] = 0.0;
 
-//		multitap = new MultitapDiffuser(bufferSize);
-//		diffuser = new AllpassDiffuser(bufferSize, samplerate){ ModulationEnabled = true };
+		diffuser.SetModulationEnabled(true);
 
-		for (int i = 0; i < TotalLineCount; i++)
-		{
-			unique_ptr<DelayLine> ptr(new DelayLine(bufferSize, samplerate));
-			this->lines.push_back(std::move(ptr));
-		}
-		
 		lineCount = 8;
 		perLineGain = GetPerLineGain();
 
@@ -30,16 +31,18 @@ namespace CloudSeed
 
 		tempBuffer = new double[bufferSize];
 		outBuffer = new double[bufferSize];
-//		delayLineSeeds = rand.Generate(12345, lines.Length * 3);
+		delayLineSeeds = AudioLib::ShaRandom::Generate(12345, lines.size() * 3);
 
 		this->samplerate = samplerate;
 	}
 
 	ReverbChannel::~ReverbChannel()
 	{
-		delete this->tempBuffer;
-		delete this->outBuffer;
-		delete this->delayLineSeeds;
+		for (auto line : lines)
+			delete line;
+
+		delete tempBuffer;
+		delete outBuffer;
 	}
 
 	int ReverbChannel::GetSamplerate()
@@ -53,11 +56,11 @@ namespace CloudSeed
 		highPass.SetSamplerate(samplerate);
 		lowPass.SetSamplerate(samplerate);
 
-/*		for (int i = 0; i < lines.Length; i++)
+		for (size_t i = 0; i < lines.size(); i++)
 		{
-			lines[i].Samplerate = samplerate;
+			lines[i]->SetSamplerate(samplerate);
 		}
-*/
+
 		auto update = [&](Parameter p) { SetParameter(p, parameters[p]); };
 		update(Parameter::PreDelay);
 		update(Parameter::TapLength);
@@ -91,29 +94,29 @@ namespace CloudSeed
 			break;
 
 		case Parameter::TapCount:
-//			multitap.SetTapCount((int)value);
+			multitap.SetTapCount((int)value);
 			break;
 		case Parameter::TapLength:
-//			multitap.SetTapLength((int)Ms2Samples(value));
+			multitap.SetTapLength((int)Ms2Samples(value));
 			break;
 		case Parameter::TapGain:
-//			multitap.SetTapGain(value);
+			multitap.SetTapGain(value);
 			break;
 		case Parameter::TapDecay:
-//			multitap.SetTapDecay(value);
+			multitap.SetTapDecay(value);
 			break;
 
 		case Parameter::DiffusionEnabled:
-//			diffuserEnabled = value >= 0.5;
+			diffuserEnabled = value >= 0.5;
 			break;
 		case Parameter::DiffusionStages:
-//			diffuser.Stages = (int)value;
+			diffuser.Stages = (int)value;
 			break;
 		case Parameter::DiffusionDelay:
-//			diffuser.SetDelay((int)Ms2Samples(value));
+			diffuser.SetDelay((int)Ms2Samples(value));
 			break;
 		case Parameter::DiffusionFeedback:
-//			diffuser.SetFeedback(value);
+			diffuser.SetFeedback(value);
 			break;
 
 		case Parameter::LineCount:
@@ -128,48 +131,48 @@ namespace CloudSeed
 			break;
 
 		case Parameter::PostDiffusionEnabled:
-//			foreach(var line in lines)
-//				line.DiffuserEnabled = value >= 0.5;
+			for(auto line : lines)
+				line->DiffuserEnabled = value >= 0.5;
 			break;
 		case Parameter::PostDiffusionStages:
-//			foreach(var line in lines)
-//				line.SetDiffuserStages((int)value);
+			for(auto line : lines)
+				line->SetDiffuserStages((int)value);
 			break;
 		case Parameter::PostDiffusionDelay:
-//			foreach(var line in lines)
-//				line.SetDiffuserDelay((int)Ms2Samples(value));
+			for (auto line : lines)
+				line->SetDiffuserDelay((int)Ms2Samples(value));
 			break;
 		case Parameter::PostDiffusionFeedback:
-//			foreach(var line in lines)
-//				line.SetDiffuserFeedback(value);
+			for (auto line : lines)
+				line->SetDiffuserFeedback(value);
 			break;
 
 		case Parameter::PostLowShelfGain:
-//			foreach(var line in lines)
-//				line.SetLowShelfGain(value);
+			for (auto line : lines)
+				line->SetLowShelfGain(value);
 			break;
 		case Parameter::PostLowShelfFrequency:
-//			foreach(var line in lines)
-//				line.SetLowShelfFrequency(value);
+			for (auto line : lines)
+				line->SetLowShelfFrequency(value);
 			break;
 		case Parameter::PostHighShelfGain:
-//			foreach(var line in lines)
-//				line.SetHighShelfGain(value);
+			for (auto line : lines)
+				line->SetHighShelfGain(value);
 			break;
 		case Parameter::PostHighShelfFrequency:
-//			foreach(var line in lines)
-//				line.SetHighShelfFrequency(value);
+			for (auto line : lines)
+				line->SetHighShelfFrequency(value);
 			break;
 		case Parameter::PostCutoffFrequency:
-//			foreach(var line in lines)
-//				line.SetCutoffFrequency(value);
+			for (auto line : lines)
+				line->SetCutoffFrequency(value);
 			break;
 
 		case Parameter::DiffusionModAmount:
-//			diffuser.SetModAmount(Ms2Samples(value));
+			diffuser.SetModAmount(Ms2Samples(value));
 			break;
 		case Parameter::DiffusionModRate:
-//			diffuser.SetModRate(value);
+			diffuser.SetModRate(value);
 			break;
 		case Parameter::LineModAmount:
 			UpdateLines();
@@ -179,18 +182,18 @@ namespace CloudSeed
 			break;
 
 		case Parameter::TapSeed:
-//			multitap.Seeds = rand.Generate((int)value, 100).ToArray();
+			multitap.SetSeeds(AudioLib::ShaRandom::Generate((int)value, 100));
 			break;
 		case Parameter::DiffusionSeed:
-//			diffuser.Seeds = rand.Generate((int)value, 12).ToArray();
+			diffuser.SetSeeds(AudioLib::ShaRandom::Generate((int)value, 12));
 			break;
 		case Parameter::CombSeed:
-//			delayLineSeeds = rand.Generate((int)value, lines.Length * 3).ToArray();
+			delayLineSeeds = AudioLib::ShaRandom::Generate((int)value, lines.size() * 3);
 			UpdateLines();
 			break;
 		case Parameter::PostDiffusionSeed:
-//			for (int i = 0; i < lines.Length; i++)
-//				lines[i].DiffuserSeeds = rand.Generate(((int)value) + i, 12).ToArray();
+			for (size_t i = 0; i < lines.size(); i++)
+				lines[i]->SetDiffuserSeeds(AudioLib::ShaRandom::Generate(((int)value) + i, 12));
 			break;
 
 		case Parameter::DryOut:
@@ -213,16 +216,16 @@ namespace CloudSeed
 			lowPassEnabled = value >= 0.5;
 			break;
 		case Parameter::LowShelfEnabled:
-//			foreach(var line in lines)
-//				line.LowShelfEnabled = value >= 0.5;
+			for (auto line : lines)
+				line->LowShelfEnabled = value >= 0.5;
 			break;
 		case Parameter::HighShelfEnabled:
-//			foreach(var line in lines)
-//				line.HighShelfEnabled = value >= 0.5;
+			for (auto line : lines)
+				line->HighShelfEnabled = value >= 0.5;
 			break;
 		case Parameter::CutoffEnabled:
-//			foreach(var line in lines)
-//				line.CutoffEnabled = value >= 0.5;
+			for (auto line : lines)
+				line->CutoffEnabled = value >= 0.5;
 			break;
 		}
 	}
@@ -237,8 +240,8 @@ namespace CloudSeed
 			highPass.Process(input, tempBuffer, len);
 		if (lowPassEnabled)
 			lowPass.Process(lowPassInput, tempBuffer, len);
-//		if (!lowPassEnabled && !highPassEnabled)
-//			input.Copy(tempBuffer, len);
+		if (!lowPassEnabled && !highPassEnabled)
+			Utils::Copy(input, tempBuffer, len);
 
 		// completely zero if no input present
 		// Previously, the very small values were causing some really strange CPU spikes
@@ -252,24 +255,24 @@ namespace CloudSeed
 		preDelay.Process(tempBuffer, len);
 		multitap.Process(preDelay.GetOutput(), len);
 
-		/*auto earlyOutStage = diffuserEnabled ? diffuser.GetOutput() : multitap.GetOutput();
+		auto earlyOutStage = diffuserEnabled ? diffuser.GetOutput() : multitap.GetOutput();
 
 		if (diffuserEnabled)
 		{
-			diffuser.Process(multitap.Output, len);
-			diffuser.Output.Copy(tempBuffer, len);
+			diffuser.Process(multitap.GetOutput(), len);
+			Utils::Copy(diffuser.GetOutput(), tempBuffer, len);
 		}
 		else
 		{
-			multitap.Output.Copy(tempBuffer, len);
+			Utils::Copy(multitap.GetOutput(), tempBuffer, len);
 		}
 
 		for (int i = 0; i < lineCount; i++)
-			lines[i].Process(tempBuffer, len);
+			lines[i]->Process(tempBuffer, len);
 
 		for (int i = 0; i < lineCount; i++)
 		{
-			var buf = lines[i].Output;
+			auto buf = lines[i]->GetOutput();
 
 			if (i == 0)
 			{
@@ -283,7 +286,7 @@ namespace CloudSeed
 			}
 		}
 
-		tempBuffer.Gain(perLineGain, len);
+		Utils::Gain(tempBuffer, perLineGain, len);
 
 		for (int i = 0; i < len; i++)
 		{
@@ -292,21 +295,25 @@ namespace CloudSeed
 				predelayOut      * predelayOutput[i] +
 				earlyOut         * earlyOutStage[i] +
 				lineOut          * tempBuffer[i];
-		}*/
+		}
 	}
 
 	void ReverbChannel::ClearBuffers()
 	{
-/*		tempBuffer.Zero();
-		outBuffer.Zero();*/
+		for (int i = 0; i < bufferSize; i++)
+		{
+			tempBuffer[i] = 0.0;
+			outBuffer[i] = 0.0;
+		}
+
 		lowPass.Output = 0;
 		highPass.Output = 0;
 
 		preDelay.ClearBuffers();
-		/*multitap.ClearBuffers();
+		multitap.ClearBuffers();
 		diffuser.ClearBuffers();
-		foreach(var line in lines)
-			line.ClearBuffers();*/
+		for (auto line : lines)
+			line->ClearBuffers();
 	}
 	
 	double ReverbChannel::GetPerLineGain()
@@ -322,7 +329,7 @@ namespace CloudSeed
 		auto lineDelay = (int)Ms2Samples(parameters[Parameter::LineDelay]);
 		if (lineDelay < 50) lineDelay = 50;
 
-		int count = 0;// lines.Length;
+		int count = lines.size();
 		for (int i = 0; i < count; i++)
 		{
 			auto delay = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelay;
@@ -332,10 +339,10 @@ namespace CloudSeed
 			auto modAmount = lineModAmount * (0.8 + 0.2 * delayLineSeeds[i + count]);
 			auto modRate = lineModRate * (0.8 + 0.2 * delayLineSeeds[i + 2 * count]) / samplerate;
 
-/*			lines[i].SetDelay((int)delay);
-			lines[i].SetFeedback(adjustedFeedback);
-			lines[i].SetModAmount(modAmount);
-			lines[i].SetModRate(modRate);*/
+			lines[i]->SetDelay((int)delay);
+			lines[i]->SetFeedback(adjustedFeedback);
+			lines[i]->SetModAmount(modAmount);
+			lines[i]->SetModRate(modRate);
 		}
 	}
 

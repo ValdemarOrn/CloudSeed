@@ -14,20 +14,20 @@ namespace AudioLib
 		auto byteArr = (unsigned char*)&seed;
 		vector<unsigned char> bytes(byteArr, byteArr + 8);
 
-		for (int i = 0; i < iterations; i++)
+		for (size_t i = 0; i < iterations; i++)
 		{
 			bytes = sha256(&bytes[0], 8);
 			for (auto b : bytes)
 				byteList.push_back(b);
 		}
 
-		auto intArray = (int*)(&byteList[0]);
+		auto intArray = (unsigned int*)(&byteList[0]);
 		vector<double> output;
 
 		for (int i = 0; i < count; i++)
 		{
-			auto val = intArray[i];
-			auto doubleVal = val / (double)UINT_MAX;
+			unsigned int val = intArray[i];
+			double doubleVal = val / (double)UINT_MAX;
 			output.push_back(doubleVal);
 		}
 

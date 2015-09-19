@@ -1,27 +1,37 @@
 #include "DelayLine.h"
+#include "Utils.h"
+#include <iostream>
 
 namespace CloudSeed
 {
-	
 	DelayLine::DelayLine(int bufferSize, int samplerate)
 		: lowPass(samplerate)
+		, delay(bufferSize, 10000)
+		, diffuser(bufferSize, samplerate)
+		, lowShelf(AudioLib::Biquad::FilterType::LowShelf, samplerate)
+		, highShelf(AudioLib::Biquad::FilterType::HighShelf, samplerate)
 	{
-		//delay = new ModulatedDelay(bufferSize, 10000);
-		//diffuser = new AllpassDiffuser(bufferSize, samplerate){ ModulationEnabled = false };
-		
+		this->bufferSize = bufferSize;
 		tempBuffer = new double[bufferSize];
 		filterOutputBuffer = new double[bufferSize];
 		
-		//lowShelf = new Biquad(Biquad.FilterType.LowShelf, samplerate){ Slope = 1.0, GainDB = -20, Frequency = 20 };
-		//highShelf = new Biquad(Biquad.FilterType.HighShelf, samplerate){ Slope = 1.0, GainDB = -20, Frequency = 19000 };
+		lowShelf.Slope = 1.0;
+		lowShelf.SetGainDb(-20);
+		lowShelf.Frequency = 20;
+
+		highShelf.Slope = 1.0;
+		highShelf.SetGainDb(-20);
+		highShelf.Frequency = 19000;
+
 		lowPass.SetCutoffHz(1000);
-		//lowShelf.Update();
-		//highShelf.Update();
+		lowShelf.Update();
+		highShelf.Update();
 		SetSamplerate(samplerate);
 	}
 
 	DelayLine::~DelayLine()
 	{
+		std::cout << "Deleting DelayLine " << std::endl;
 		delete tempBuffer;
 		delete filterOutputBuffer;
 	}
@@ -34,26 +44,25 @@ namespace CloudSeed
 	void DelayLine::SetSamplerate(int samplerate)
 	{
 		this->samplerate = samplerate;
-		//diffuser.Samplerate = samplerate;
-		//lowPass.Samplerate = samplerate;
-		//lowShelf.Samplerate = samplerate;
-		//highShelf.Samplerate = samplerate;
+		diffuser.SetSamplerate(samplerate);
+		lowPass.SetSamplerate(samplerate);
+		lowShelf.SetSamplerate(samplerate);
+		highShelf.SetSamplerate(samplerate);
 	}
 
-	double* DelayLine::GetDiffuserSeeds()
+	vector<double> DelayLine::GetDiffuserSeeds()
 	{
-		//return diffuser.Seeds;
-		return 0;
+		return diffuser.GetSeeds();
 	}
 
-	void DelayLine::SetDiffuserSeeds(double* seeds)
+	void DelayLine::SetDiffuserSeeds(vector<double> seeds)
 	{
-		//diffuser.Seeds = value;
+		diffuser.SetSeeds(seeds);
 	}
 
 	void DelayLine::SetDelay(int delaySamples)
 	{
-		//delay.SampleDelay = delaySamples;
+		delay.SampleDelay = delaySamples;
 	}
 
 	void DelayLine::SetFeedback(double feedb)
@@ -63,74 +72,73 @@ namespace CloudSeed
 
 	void DelayLine::SetDiffuserDelay(int delaySamples)
 	{
-		//diffuser.SetDelay(delaySamples);
+		diffuser.SetDelay(delaySamples);
 	}
 
 	void DelayLine::SetDiffuserFeedback(double feedb)
 	{
-		//diffuser.SetFeedback(feedb);
+		diffuser.SetFeedback(feedb);
 	}
 
 	void DelayLine::SetDiffuserStages(int stages)
 	{
-		//diffuser.Stages = stages;
+		diffuser.Stages = stages;
 	}
 
 	void DelayLine::SetLowShelfGain(double gain)
 	{
-		//lowShelf.Gain = gain;
-		//lowShelf.Update();
+		lowShelf.SetGain(gain);
+		lowShelf.Update();
 	}
 
 	void DelayLine::SetLowShelfFrequency(double frequency)
 	{
-		//lowShelf.Frequency = frequency;
-		//lowShelf.Update();
+		lowShelf.Frequency = frequency;
+		lowShelf.Update();
 	}
 
 	void DelayLine::SetHighShelfGain(double gain)
 	{
-		//highShelf.Gain = gain;
-		//highShelf.Update();
+		highShelf.SetGain(gain);
+		highShelf.Update();
 	}
 
 	void DelayLine::SetHighShelfFrequency(double frequency)
 	{
-		//highShelf.Frequency = frequency;
-		//highShelf.Update();
+		highShelf.Frequency = frequency;
+		highShelf.Update();
 	}
 
 	void DelayLine::SetCutoffFrequency(double frequency)
 	{
-		//lowPass.CutoffHz = frequency;
+		lowPass.SetCutoffHz(frequency);
 	}
 
 	void DelayLine::SetModAmount(double amount)
 	{
-		//delay.ModAmount = amount;
+		delay.ModAmount = amount;
 	}
 
 	void DelayLine::SetModRate(double rate)
 	{
-		//delay.ModRate = rate;
+		delay.ModRate = rate;
 	}
 
 	double* DelayLine::GetOutput()
 	{ 
-		//return delay.Output;
-		return 0;
+		return delay.GetOutput();
 	}
 
 	void DelayLine::Process(double* input, int sampleCount)
 	{
-		/*var feedbackBuffer = DiffuserEnabled ? diffuser.Output : filterOutputBuffer;
+		auto feedbackBuffer = DiffuserEnabled ? diffuser.GetOutput() : filterOutputBuffer;
 
 		for (int i = 0; i < sampleCount; i++)
 			tempBuffer[i] = input[i] + feedbackBuffer[i] * feedback;
 
 		delay.Process(tempBuffer, sampleCount);
-		delay.Output.Copy(tempBuffer, sampleCount);
-
+		Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
+		
 		if (LowShelfEnabled)
 			lowShelf.Process(tempBuffer, tempBuffer, sampleCount);
 		if (HighShelfEnabled)
@@ -138,24 +146,26 @@ namespace CloudSeed
 		if (CutoffEnabled)
 			lowPass.Process(tempBuffer, tempBuffer, sampleCount);
 
-		tempBuffer.Copy(filterOutputBuffer, sampleCount);
-
+		Utils::Copy(tempBuffer, filterOutputBuffer, sampleCount);
+		
 		if (DiffuserEnabled)
 		{
 			diffuser.Process(filterOutputBuffer, sampleCount);
-		}*/
+		}
 	}
 
 	void DelayLine::ClearBuffers()
 	{
-		/*delay.ClearBuffers();
+		delay.ClearBuffers();
 		diffuser.ClearBuffers();
 		lowShelf.ClearBuffers();
 		highShelf.ClearBuffers();
 		lowPass.Output = 0;
-		tempBuffer.Zero();
-		filterOutputBuffer.Zero();*/
+
+		for (int i = 0; i < bufferSize; i++)
+		{
+			tempBuffer[i] = 0.0;
+			filterOutputBuffer[i] = 0.0;
+		}
 	}
-
-
 }

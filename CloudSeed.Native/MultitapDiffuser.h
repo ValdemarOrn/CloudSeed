@@ -10,8 +10,6 @@ namespace CloudSeed
 	class MultitapDiffuser
 	{
 	private:
-		static const int SeedValueCount = 100;
-
 		double* buffer;
 		double* output;
 		int len;
@@ -19,7 +17,7 @@ namespace CloudSeed
 		int index;
 		vector<double> tapGains;
 		vector<int> tapPosition;
-		double seeds[SeedValueCount];
+		vector<double> seeds;
 
 		int count;
 		double length;
@@ -28,9 +26,10 @@ namespace CloudSeed
 
 	public:
 		MultitapDiffuser(int bufferSize);
+		~MultitapDiffuser();
 
-		double* GetSeeds();
-		void SetSeeds(double* values);
+		vector<double> GetSeeds();
+		void SetSeeds(vector<double> seeds);
 		double* GetOutput();
 		void SetTapCount(int tapCount);
 		void SetTapLength(int tapLength);

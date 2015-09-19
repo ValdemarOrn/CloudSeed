@@ -26,11 +26,18 @@ namespace CloudSeed
 		public SharpSoundDevice.Parameter[] ParameterInfo { get; private set; }
 		public Port[] PortInfo { get; private set; }
 		public int CurrentProgram { get; private set; }
+		public int DeviceId { get; set; }
+		public IHostInfo HostInfo { get; set; }
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		internal static extern int AllocConsole();
 
 		public CloudSeedPlugin()
 		{
-			controller = new ReverbController(48000);
+			AllocConsole();
+			controller = new UnsafeReverbController(48000);
 			controller.Samplerate = 48000;
+
 			Samplerate = 48000;
 			devInfo = new DeviceInfo();
 			ParameterInfo = new SharpSoundDevice.Parameter[controller.GetParameterCount()];
@@ -71,11 +78,17 @@ namespace CloudSeed
 			}
 
 			ViewModel = new CloudSeedViewModel(this);
+			controller.ClearBuffers();
 		}
 
 		public CloudSeedViewModel ViewModel { get; private set; }
 
-		public void DisposeDevice() { }
+		public void DisposeDevice()
+		{
+			var disposable = controller as IDisposable;
+			if (disposable != null)
+				disposable.Dispose();
+		}
 
 		public void Start()
 		{
@@ -91,7 +104,12 @@ namespace CloudSeed
 
 		public void ProcessSample(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize)
 		{
-			((IUnsafeReverbController)controller).Process(input, output, inChannelCount, outChannelCount, bufferSize);
+			if (inChannelCount != 2)
+				throw new Exception("InChannelCount for CloudSeed must be 2");
+			if (outChannelCount != 2)
+				throw new Exception("OutChannelCount for CloudSeed must be 2");
+
+			((IUnsafeReverbController)controller).Process(input, output, (int)bufferSize);
 		}
 		
 		public void OpenEditor(IntPtr parentWindow) 
@@ -99,7 +117,7 @@ namespace CloudSeed
 			view = new CloudSeedView(ViewModel);
 			devInfo.EditorWidth = (int)view.Width;
 			devInfo.EditorHeight = (int)view.Height;
-			HostInfo.SendEvent(this, new Event { Data = null, EventIndex = 0, Type = EventType.WindowSize });
+			HostInfo.SendEvent(DeviceId, new Event { Data = null, EventIndex = 0, Type = EventType.WindowSize });
 			window = new System.Windows.Window() { Content = view };
 			window.Width = view.Width;
 			window.Height = view.Height;
@@ -145,7 +163,7 @@ namespace CloudSeed
 
 			if (updateHost && HostInfo != null)
 			{
-				HostInfo.SendEvent(this, new Event
+				HostInfo.SendEvent(DeviceId, new Event
 				{
 					Data = value,
 					EventIndex = param.Value(),
@@ -194,6 +212,7 @@ namespace CloudSeed
 					SetParameter(param, kvp.Value, true, true);
 				}
 			}
+			controller.ClearBuffers();
 		}
 
 		public string GetJsonProgram()
@@ -215,8 +234,7 @@ namespace CloudSeed
 				controller.Samplerate = (int)samplerate;
 			}
 		}
-
-		public IHostInfo HostInfo { get; set; }
+		
 	}
 }
 

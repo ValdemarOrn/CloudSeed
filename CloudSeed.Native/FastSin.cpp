@@ -1,4 +1,5 @@
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include "Default.h"
 #include "FastSin.h"
@@ -11,7 +12,7 @@ namespace CloudSeed
 	{
 		for (int i = 0; i < DataSize; i++)
 		{
-			data[i] = std::sin(2 * PI * i / (double)DataSize);
+			data[i] = std::sin(2 * M_PI * i / (double)DataSize);
 		}
 	}
 

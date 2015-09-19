@@ -42,9 +42,6 @@
     <ClInclude Include="ReverbChannel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Exports.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ModulatedDelay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -72,6 +69,15 @@
     <ClInclude Include="DelayLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AllpassDiffuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModulatedAllpass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLib\Biquad.h">
+      <Filter>Header Files\AudioLib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReverbController.cpp">
@@ -84,9 +90,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ModulatedDelay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FastSin.cpp">
@@ -108,6 +111,18 @@
       <Filter>Source Files\AudioLib</Filter>
     </ClCompile>
     <ClCompile Include="DelayLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AllpassDiffuser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModulatedAllpass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioLib\Biquad.cpp">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="Exports.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
