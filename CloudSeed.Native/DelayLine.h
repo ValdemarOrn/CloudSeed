@@ -19,6 +19,7 @@ namespace CloudSeed
 		Biquad highShelf;
 		AudioLib::Lp1 lowPass;
 		double* tempBuffer;
+		double* mixedBuffer;
 		double* filterOutputBuffer;
 		int bufferSize;
 		double feedback;
@@ -30,6 +31,9 @@ namespace CloudSeed
 		bool LowShelfEnabled;
 		bool HighShelfEnabled;
 		bool CutoffEnabled;
+		bool LateStageTap;
+		int SampleResolution;
+		int Undersampling;
 
 		DelayLine(int bufferSize, int samplerate);
 		~DelayLine();
@@ -48,10 +52,15 @@ namespace CloudSeed
 		void SetHighShelfGain(double gain);
 		void SetHighShelfFrequency(double frequency);
 		void SetCutoffFrequency(double frequency);
-		void SetModAmount(double amount);
-		void SetModRate(double rate);
+		void SetLineModAmount(double amount);
+		void SetLineModRate(double rate);
+		void SetDiffuserModAmount(double amount);
+		void SetDiffuserModRate(double rate);
+		void SetInterpolationEnabled(bool value);
+
 		double* GetOutput();
 		void Process(double* input, int sampleCount);
+		void ClearDiffuserBuffer();
 		void ClearBuffers();
 	};
 }

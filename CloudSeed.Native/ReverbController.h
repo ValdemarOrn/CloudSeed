@@ -9,7 +9,6 @@
 
 namespace CloudSeed
 {
-	#pragma pack(push, 4)
 	class ReverbController
 	{
 	private:
@@ -20,8 +19,12 @@ namespace CloudSeed
 		ReverbChannel channelR;
 		double leftChannelIn[bufferSize];
 		double rightChannelIn[bufferSize];
+		double leftLineBuffer[bufferSize];
+		double rightLineBuffer[bufferSize];
 
 		double parameters[(int)Parameter::Count];
+		int GetSampleResolution();
+		int GetUndersampling();
 
 	public:
 		ReverbController(int samplerate);
@@ -37,6 +40,5 @@ namespace CloudSeed
 	private:
 		double P(Parameter para);
 	};
-	#pragma pack(pop)
 }
 #endif

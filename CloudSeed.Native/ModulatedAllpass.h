@@ -14,7 +14,7 @@ namespace CloudSeed
 		double* output;
 		int bufferSize;
 		int index;
-		int samplesProcessed;
+		unsigned int samplesProcessed;
 
 		double modPhase;
 		int delayA;
@@ -29,6 +29,7 @@ namespace CloudSeed
 		double ModAmount;
 		double ModRate;
 
+		bool InterpolationEnabled;
 		bool ModulationEnabled;
 
 		ModulatedAllpass(int bufferSize, int sampleDelay);

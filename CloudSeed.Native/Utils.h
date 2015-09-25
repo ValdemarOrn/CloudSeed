@@ -28,6 +28,25 @@ namespace CloudSeed
 				buffer[i] *= gain;
 			}
 		}
+
+		// perform bit crushing and undersampling
+		// undersampling: if set to 1, perfroms no effect, if set to 2, will undersample to 1/2 samplerate, etc...
+		// sampleResolution: if set to 32, will use 2^32 steps, if set to 8, will resude to 2^8 = 256 steps
+		static inline void BitcrushAndReduce(double* bufferIn, double* bufferOut, int len, int undersampling, int sampleResolution)
+		{
+			double sampleSteps = std::pow(2, sampleResolution);
+			double inverseSteps = 1.0 / sampleSteps;
+
+			double sample = 0.0;
+
+			for (int i = 0; i < len; i++)
+			{
+				if (i % undersampling == 0)
+					sample = ((long)(bufferIn[i] * sampleSteps)) * inverseSteps;
+
+				bufferOut[i] = sample;
+			}
+		}
 	};
 }
 

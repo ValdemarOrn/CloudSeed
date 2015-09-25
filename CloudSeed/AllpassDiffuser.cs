@@ -9,6 +9,8 @@ namespace CloudSeed
 {
 	public class AllpassDiffuser
 	{
+		public const int MaxStageCount = 8;
+
 		private readonly ModulatedAllpass[] filters;
 		private double[] output;
 		private int delay;
@@ -20,9 +22,9 @@ namespace CloudSeed
 		
 		public AllpassDiffuser(int bufferSize, int samplerate)
 		{
-			filters = Enumerable.Range(0, 4).Select(x => new ModulatedAllpass(bufferSize, 100)).ToArray();
+			filters = Enumerable.Range(0, MaxStageCount).Select(x => new ModulatedAllpass(bufferSize, 100)).ToArray();
 			output = new double[bufferSize];
-			Seeds = new ShaRandom().Generate(23, 12).ToArray();
+			Seeds = new ShaRandom().Generate(23456, MaxStageCount * 3).ToArray();
 			Stages = 1;
 
 			Samplerate = samplerate;
@@ -77,7 +79,7 @@ namespace CloudSeed
 		public void SetModAmount(double amount)
 		{
 			for (int i = 0; i < filters.Length; i++)
-				filters[i].ModAmount = amount * (0.8 + 0.2 * Seeds[i + 4]);
+				filters[i].ModAmount = amount * (0.8 + 0.2 * Seeds[MaxStageCount + i]);
 		}
 
 		public void SetModRate(double rate)
@@ -85,22 +87,24 @@ namespace CloudSeed
 			modRate = rate;
 
 			for (int i = 0; i < filters.Length; i++)
-				filters[i].ModRate = rate * (0.5 + 0.5 * Seeds[i + 8]) / samplerate;
+				filters[i].ModRate = rate * (0.5 + 0.5 * Seeds[MaxStageCount * 2 + i]) / samplerate;
 		}
 
 		private void Update()
 		{
 			for (int i = 0; i < filters.Length; i++)
-				filters[i].SampleDelay = (int)(delay * (0.2 + 0.8 * Seeds[i]));
+				filters[i].SampleDelay = (int)(delay * (0.5 + 1.0 * Seeds[i]));
 		}
 
 		public void Process(double[] input, int sampleCount)
 		{
 			filters[0].Process(input, sampleCount);
-			filters[1].Process(filters[0].Output, sampleCount);
-			filters[2].Process(filters[1].Output, sampleCount);
-			filters[3].Process(filters[2].Output, sampleCount);
 
+			for (int i = 1; i < Stages; i++)
+			{
+				filters[i].Process(filters[i - 1].Output, sampleCount);
+			}
+			
 			output = filters[Stages - 1].Output;
 		}
 

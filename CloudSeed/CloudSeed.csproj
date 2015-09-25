@@ -76,6 +76,7 @@
       <DependentUpon>BorderlessDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\DelegateCommand.cs" />
+    <Compile Include="UI\ReductionEffects.cs" />
     <Compile Include="UI\RenameProgramDialog.xaml.cs">
       <DependentUpon>RenameProgramDialog.xaml</DependentUpon>
     </Compile>
@@ -85,6 +86,8 @@
       <DependentUpon>CloudSeedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\CloudSeedViewModel.cs" />
+    <Resource Include="OpenSans-Light.ttf" />
+    <Resource Include="OpenSans-Regular.ttf" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

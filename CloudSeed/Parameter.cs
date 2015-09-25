@@ -10,7 +10,7 @@ namespace CloudSeed
 	{
 		// Input
 
-		CrossMix = 0,
+		InputMix = 0,
 		PreDelay,
 
 		HighPass, 
@@ -33,11 +33,12 @@ namespace CloudSeed
 		LineCount,
 		LineDelay,
 		LineFeedback,
+		
 
-		PostDiffusionEnabled,
-		PostDiffusionStages,
-		PostDiffusionDelay,
-		PostDiffusionFeedback,
+        LateDiffusionEnabled,
+		LateDiffusionStages,
+		LateDiffusionDelay,
+		LateDiffusionFeedback,
 
 		// Frequency Response
 
@@ -49,11 +50,14 @@ namespace CloudSeed
 		
 		// Modulation
 		
-		DiffusionModAmount,
-		DiffusionModRate,
+		EarlyDiffusionModAmount,
+		EarlyDiffusionModRate,
 
 		LineModAmount,
 		LineModRate,
+
+		LateDiffusionModAmount,
+		LateDiffusionModRate,
 
 		// Seeds
 
@@ -64,7 +68,7 @@ namespace CloudSeed
 		
 		// Output
 
-		StereoWidth,
+		CrossFeed,
 
 		DryOut,
 		PredelayOut,
@@ -77,6 +81,12 @@ namespace CloudSeed
 		LowShelfEnabled,
 		HighShelfEnabled,
 		CutoffEnabled,
+		LateStageTap,
+
+		// Effects
+		SampleResolution,
+		Undersampling,
+		Interpolation,
 
 		Count,
 
@@ -126,6 +136,7 @@ namespace CloudSeed
 		private static readonly Func<double, string> FrequencyFormatter = x => x.ToString("0", CultureInfo.InvariantCulture) + " Hz";
 		private static readonly Func<double, string> FrequencyDecimalFormatter = x => x.ToString("0.00", CultureInfo.InvariantCulture) + " Hz";
 		private static readonly Func<double, string> OnOffFormatter = x => x >= 0.5 ? "On" : "Off";
+		private static readonly Func<double, string> PrePostFormatter = x => x >= 0.5 ? "Post" : "Pre";
 		private static readonly Func<double, string> DbFormatter = x =>
 		{
 			var val = AudioLib.Utils.Gain2DB(x);
@@ -137,7 +148,7 @@ namespace CloudSeed
 
 		private static readonly Dictionary<Parameter, Func<double, string>> Formatters = new Dictionary<Parameter, Func<double, string>>
 		{
-			{ Parameter.CrossMix, DecimalFormatter },
+			{ Parameter.InputMix, DecimalFormatter },
 			{ Parameter.PreDelay, MillisFormatter },
 
 			{ Parameter.HighPass,  FrequencyFormatter },
@@ -157,10 +168,10 @@ namespace CloudSeed
 			{ Parameter.LineDelay, MillisFormatter },
 			{ Parameter.LineFeedback, DecimalFormatter },
 
-			{ Parameter.PostDiffusionEnabled, OnOffFormatter },
-			{ Parameter.PostDiffusionStages, IntFormatter },
-			{ Parameter.PostDiffusionDelay, MillisFormatter },
-			{ Parameter.PostDiffusionFeedback, DecimalFormatter },
+			{ Parameter.LateDiffusionEnabled, OnOffFormatter },
+			{ Parameter.LateDiffusionStages, IntFormatter },
+			{ Parameter.LateDiffusionDelay, MillisFormatter },
+			{ Parameter.LateDiffusionFeedback, DecimalFormatter },
 
 			{ Parameter.PostLowShelfGain, DbFormatter },
 			{ Parameter.PostLowShelfFrequency, FrequencyFormatter },
@@ -168,17 +179,19 @@ namespace CloudSeed
 			{ Parameter.PostHighShelfFrequency, FrequencyFormatter },
 			{ Parameter.PostCutoffFrequency, FrequencyFormatter },
 
-			{ Parameter.DiffusionModAmount, DecimalFormatter },
-			{ Parameter.DiffusionModRate, FrequencyDecimalFormatter },
+			{ Parameter.EarlyDiffusionModAmount, DecimalFormatter },
+			{ Parameter.EarlyDiffusionModRate, FrequencyDecimalFormatter },
 			{ Parameter.LineModAmount, DecimalFormatter },
 			{ Parameter.LineModRate, FrequencyDecimalFormatter },
+			{ Parameter.LateDiffusionModAmount, DecimalFormatter },
+			{ Parameter.LateDiffusionModRate, FrequencyDecimalFormatter },
 
 			{ Parameter.TapSeed, IntFormatter },
 			{ Parameter.DiffusionSeed, IntFormatter },
 			{ Parameter.CombSeed, IntFormatter },
 			{ Parameter.PostDiffusionSeed, IntFormatter },
 
-			{ Parameter.StereoWidth, DecimalFormatter },
+			{ Parameter.CrossFeed, DecimalFormatter },
 
 			{ Parameter.DryOut, DbFormatter },
 			{ Parameter.PredelayOut, DbFormatter },
@@ -189,7 +202,12 @@ namespace CloudSeed
 			{ Parameter.LowPassEnabled, OnOffFormatter },
 			{ Parameter.LowShelfEnabled, OnOffFormatter },
 			{ Parameter.HighShelfEnabled, OnOffFormatter },
-			{ Parameter.CutoffEnabled, OnOffFormatter }
+			{ Parameter.CutoffEnabled, OnOffFormatter },
+			{ Parameter.LateStageTap, PrePostFormatter },
+
+			{ Parameter.SampleResolution, DecimalFormatter },
+			{ Parameter.Undersampling, DecimalFormatter },
+			{ Parameter.Interpolation, DecimalFormatter }
 		};
 	}
 }

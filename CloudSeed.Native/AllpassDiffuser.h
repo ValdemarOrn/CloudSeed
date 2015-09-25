@@ -10,9 +10,11 @@ using namespace std;
 
 namespace CloudSeed
 {
-#pragma pack(push, 4)
 	class AllpassDiffuser
 	{
+	public:
+		static const int MaxStageCount = 8;
+
 	private:
 		int samplerate;
 
@@ -34,6 +36,7 @@ namespace CloudSeed
 		void SetSeeds(vector<double> seeds);
 		bool GetModulationEnabled();
 		void SetModulationEnabled(bool value);
+		void SetInterpolationEnabled(bool enabled);
 		double* GetOutput();
 		
 		void SetDelay(int delaySamples);
@@ -44,6 +47,5 @@ namespace CloudSeed
 		void Process(double* input, int sampleCount);
 		void ClearBuffers();
 	};
-#pragma pack(pop)
 }
 #endif

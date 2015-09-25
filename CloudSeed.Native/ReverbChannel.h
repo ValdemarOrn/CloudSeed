@@ -34,6 +34,7 @@ namespace CloudSeed
 		AudioLib::Hp1 highPass;
 		AudioLib::Lp1 lowPass;
 		double* tempBuffer;
+		double* lineOutBuffer;
 		double* outBuffer;
 		vector<double> delayLineSeeds;
 
@@ -55,6 +56,7 @@ namespace CloudSeed
 		int GetSamplerate();
 		void SetSamplerate(int samplerate);
 		double* GetOutput();
+		double* GetLineOutput();
 		void SetParameter(Parameter para, double value);
 		void Process(double* input, int sampleCount);
 		void ClearBuffers();

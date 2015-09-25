@@ -1,6 +1,10 @@
+#include <iostream>
+
 #include "ReverbController.h"
 #include "AudioLib/ValueTables.h"
-#include <iostream>
+#include "AllpassDiffuser.h"
+#include "MultitapDiffuser.h"
+#include "Utils.h"
 
 using namespace AudioLib;
 
@@ -35,25 +39,49 @@ namespace CloudSeed
 		return parameters;
 	}
 
+	int ReverbController::GetSampleResolution()
+	{
+		auto reso = P(Parameter::SampleResolution);
+		if (reso < 0.33)
+			return 6;
+		if (reso < 0.66)
+			return 8;
+		else
+			return 16;
+	}
+
+	int ReverbController::GetUndersampling()
+	{
+		auto reso = P(Parameter::Undersampling);
+		if (reso < 0.25)
+			return 1;
+		if (reso < 0.5)
+			return 2;
+		if (reso < 0.75)
+			return 4;
+		else
+			return 8;
+	}
+
 	double ReverbController::GetScaledParameter(Parameter param)
 	{
-			switch (param)
-			{
+		switch (param)
+		{
 			// Input
-			case Parameter::CrossMix:                  return P(Parameter::CrossMix);
+			case Parameter::InputMix:                  return P(Parameter::InputMix);
 			case Parameter::PreDelay:                  return (int)(P(Parameter::PreDelay) * 500);
 
 			case Parameter::HighPass:                  return 20 + ValueTables::Get(P(Parameter::HighPass), ValueTables::Response4Oct) * 980;
 			case Parameter::LowPass:                   return 400 + ValueTables::Get(P(Parameter::LowPass), ValueTables::Response4Oct) * 19600;
 
 			// Early
-			case Parameter::TapCount:                  return 1 + (int)(P(Parameter::TapCount) * 49.0);
+			case Parameter::TapCount:                  return 1 + (int)(P(Parameter::TapCount) * (MultitapDiffuser::MaxTaps - 1));
 			case Parameter::TapLength:                 return (int)(P(Parameter::TapLength) * 500);
 			case Parameter::TapGain:                   return ValueTables::Get(P(Parameter::TapGain), ValueTables::Response2Dec);
 			case Parameter::TapDecay:                  return P(Parameter::TapDecay);
 
 			case Parameter::DiffusionEnabled:          return P(Parameter::DiffusionEnabled);
-			case Parameter::DiffusionStages:           return 1 + (int)(P(Parameter::DiffusionStages) * 3.999);
+			case Parameter::DiffusionStages:           return 1 + (int)(P(Parameter::DiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
 			case Parameter::DiffusionDelay:            return (int)(P(Parameter::DiffusionDelay) * 50);
 			case Parameter::DiffusionFeedback:         return P(Parameter::DiffusionFeedback);
 
@@ -62,10 +90,10 @@ namespace CloudSeed
 			case Parameter::LineDelay:                 return (int)(P(Parameter::LineDelay) * 500);
 			case Parameter::LineFeedback:              return P(Parameter::LineFeedback);
 
-			case Parameter::PostDiffusionEnabled:      return P(Parameter::PostDiffusionEnabled);
-			case Parameter::PostDiffusionStages:       return 1 + (int)(P(Parameter::PostDiffusionStages) * 3.999);
-			case Parameter::PostDiffusionDelay:        return (int)(P(Parameter::PostDiffusionDelay) * 50);
-			case Parameter::PostDiffusionFeedback:     return P(Parameter::PostDiffusionFeedback);
+			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled);
+			case Parameter::LateDiffusionStages:       return 1 + (int)(P(Parameter::LateDiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
+			case Parameter::LateDiffusionDelay:        return (int)(P(Parameter::LateDiffusionDelay) * 50);
+			case Parameter::LateDiffusionFeedback:     return P(Parameter::LateDiffusionFeedback);
 
 			// Frequency Response
 			case Parameter::PostLowShelfGain:          return ValueTables::Get(P(Parameter::PostLowShelfGain), ValueTables::Response2Dec);
@@ -75,10 +103,12 @@ namespace CloudSeed
 			case Parameter::PostCutoffFrequency:       return 400 + ValueTables::Get(P(Parameter::PostCutoffFrequency), ValueTables::Response4Oct) * 19600;
 
 			// Modulation
-			case Parameter::DiffusionModAmount:        return P(Parameter::DiffusionModAmount) * 2.5;
-			case Parameter::DiffusionModRate:          return ValueTables::Get(P(Parameter::DiffusionModRate), ValueTables::Response2Dec) * 5;
+			case Parameter::EarlyDiffusionModAmount:   return P(Parameter::EarlyDiffusionModAmount) * 2.5;
+			case Parameter::EarlyDiffusionModRate:     return ValueTables::Get(P(Parameter::EarlyDiffusionModRate), ValueTables::Response2Dec) * 5;
 			case Parameter::LineModAmount:             return P(Parameter::LineModAmount) * 2.5;
 			case Parameter::LineModRate:               return ValueTables::Get(P(Parameter::LineModRate), ValueTables::Response2Dec) * 5;
+			case Parameter::LateDiffusionModAmount:    return P(Parameter::LateDiffusionModAmount) * 2.5;
+			case Parameter::LateDiffusionModRate:      return ValueTables::Get(P(Parameter::LateDiffusionModRate), ValueTables::Response2Dec) * 5;
 
 			// Seeds
 			case Parameter::TapSeed:                   return (int)(P(Parameter::TapSeed) * 1000000);
@@ -87,7 +117,7 @@ namespace CloudSeed
 			case Parameter::PostDiffusionSeed:         return (int)(P(Parameter::PostDiffusionSeed) * 1000000);
 
 			// Output
-			case Parameter::StereoWidth:               return P(Parameter::StereoWidth);
+			case Parameter::CrossFeed:                 return P(Parameter::CrossFeed);
 
 			case Parameter::DryOut:                    return ValueTables::Get(P(Parameter::DryOut), ValueTables::Response2Dec);
 			case Parameter::PredelayOut:               return ValueTables::Get(P(Parameter::PredelayOut), ValueTables::Response2Dec);
@@ -95,14 +125,20 @@ namespace CloudSeed
 			case Parameter::MainOut:                   return ValueTables::Get(P(Parameter::MainOut), ValueTables::Response2Dec);
 
 			// Switches
-			case Parameter::HiPassEnabled:             return P(Parameter::HiPassEnabled);
-			case Parameter::LowPassEnabled:            return P(Parameter::LowPassEnabled);
-			case Parameter::LowShelfEnabled:           return P(Parameter::LowShelfEnabled);
-			case Parameter::HighShelfEnabled:          return P(Parameter::HighShelfEnabled);
-			case Parameter::CutoffEnabled:             return P(Parameter::CutoffEnabled);
+			case Parameter::HiPassEnabled:             return P(Parameter::HiPassEnabled) < 0.5 ? 0.0 : 1.0;
+			case Parameter::LowPassEnabled:            return P(Parameter::LowPassEnabled) < 0.5 ? 0.0 : 1.0;
+			case Parameter::LowShelfEnabled:           return P(Parameter::LowShelfEnabled) < 0.5 ? 0.0 : 1.0;
+			case Parameter::HighShelfEnabled:          return P(Parameter::HighShelfEnabled) < 0.5 ? 0.0 : 1.0;
+			case Parameter::CutoffEnabled:             return P(Parameter::CutoffEnabled) < 0.5 ? 0.0 : 1.0;
+			case Parameter::LateStageTap:			   return P(Parameter::LateStageTap) < 0.5 ? 0.0 : 1.0;
+
+			// Effects
+			case Parameter::Interpolation:			   return P(Parameter::Interpolation) < 0.5 ? 0.0 : 1.0;
+			case Parameter::SampleResolution:	       return GetSampleResolution();
+			case Parameter::Undersampling:			   return GetUndersampling();
 
 			default: return 0.0;
-			}
+		}
 
 		return 0.0;
 	}
@@ -129,11 +165,11 @@ namespace CloudSeed
 	void ReverbController::Process(double** input, double** output, int bufferSize)
 	{
 		auto len = bufferSize;
-
-		auto cm = GetScaledParameter(Parameter::CrossMix) * 0.5;
+		auto cm = GetScaledParameter(Parameter::InputMix) * 0.5;
 		auto cmi = (1 - cm);
-		auto st = 0.5 + 0.5 * GetScaledParameter(Parameter::StereoWidth);
-		auto sti = (1 - st);
+
+		auto crossFeed = 0.5 * GetScaledParameter(Parameter::CrossFeed);
+		auto directFeed = 1.0 - crossFeed;
 
 		for (uint i = 0; i < len; i++)
 		{
@@ -148,11 +184,9 @@ namespace CloudSeed
 
 		for (uint i = 0; i < len; i++)
 		{
-			output[0][i] = leftOut[i] * st + rightOut[i] * sti;
-			output[1][i] = rightOut[i] * st + leftOut[i] * sti;
+			output[0][i] = leftOut[i] * directFeed + rightOut[i] * crossFeed;
+			output[1][i] = rightOut[i] * directFeed + leftOut[i] * crossFeed;
 		}
-
-		std::cout << "Sample 0: " << output[0][0] << std::endl;
 	}
 
 	double ReverbController::P(Parameter para)

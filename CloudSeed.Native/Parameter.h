@@ -5,7 +5,7 @@ enum class Parameter
 {
 	// Input
 
-	CrossMix = 0,
+	InputMix = 0,
 	PreDelay,
 
 	HighPass,
@@ -29,10 +29,11 @@ enum class Parameter
 	LineDelay,
 	LineFeedback,
 
-	PostDiffusionEnabled,
-	PostDiffusionStages,
-	PostDiffusionDelay,
-	PostDiffusionFeedback,
+
+	LateDiffusionEnabled,
+	LateDiffusionStages,
+	LateDiffusionDelay,
+	LateDiffusionFeedback,
 
 	// Frequency Response
 
@@ -44,11 +45,14 @@ enum class Parameter
 
 	// Modulation
 
-	DiffusionModAmount,
-	DiffusionModRate,
+	EarlyDiffusionModAmount,
+	EarlyDiffusionModRate,
 
 	LineModAmount,
 	LineModRate,
+
+	LateDiffusionModAmount,
+	LateDiffusionModRate,
 
 	// Seeds
 
@@ -59,7 +63,7 @@ enum class Parameter
 
 	// Output
 
-	StereoWidth,
+	CrossFeed,
 
 	DryOut,
 	PredelayOut,
@@ -72,6 +76,12 @@ enum class Parameter
 	LowShelfEnabled,
 	HighShelfEnabled,
 	CutoffEnabled,
+	LateStageTap,
+
+	// Effects
+	SampleResolution,
+	Undersampling,
+	Interpolation,
 
 	Count,
 

@@ -10,17 +10,19 @@ namespace CloudSeed
 
 	ModulatedAllpass::ModulatedAllpass(int bufferSize, int sampleDelay)
 	{
+		this->InterpolationEnabled = true;
 		this->Id = id++;
 		this->bufferSize = bufferSize;
 		buffer = new double[bufferSize];
 		output = new double[bufferSize];
 		SampleDelay = sampleDelay;
 		index = bufferSize - 1;
+		std::cout << "Created ModulatedAllpass " << this->Id << ", buffer: " << (int)buffer << ", output: " << (int)output << std::endl;
 	}
 
 	ModulatedAllpass::~ModulatedAllpass()
 	{
-		std::cout << "Deleting ModulatedAllpass " << this->Id << std::endl;
+		std::cout << "Deleting ModulatedAllpass " << this->Id << ", buffer: " << (int)buffer << ", output: " << (int)output << std::endl;
 		delete buffer;
 		delete output;
 	}
@@ -50,9 +52,10 @@ namespace CloudSeed
 		if (delayedIndex < 0) delayedIndex += bufferSize;
 
 		for (int i = 0; i < sampleCount; i++)
-		{
+		{			
 			auto bufOut = buffer[delayedIndex];
 			auto inVal = input[i] + bufOut * Feedback;
+
 			buffer[index] = inVal;
 			output[i] = bufOut - inVal * Feedback;
 
@@ -68,10 +71,27 @@ namespace CloudSeed
 	{
 		for (int i = 0; i < sampleCount; i++)
 		{
-			if (samplesProcessed == ModulationUpdateRate)
+			if (samplesProcessed >= ModulationUpdateRate)
 				Update();
 
-			auto bufOut = Get(delayA) * gainA + Get(delayB) * gainB;
+			double bufOut;
+
+			if (InterpolationEnabled)
+			{
+				int idxA = index - delayA;
+				int idxB = index - delayB;
+				idxA += bufferSize * (idxA < 0); // modulo
+				idxB += bufferSize * (idxB < 0); // modulo
+
+				bufOut = buffer[idxA] * gainA + buffer[idxB] * gainB;
+			}
+			else
+			{
+				int idxA = index - delayA;
+				idxA += bufferSize * (idxA < 0); // modulo
+				bufOut = buffer[idxA];
+			}
+
 			auto inVal = input[i] + bufOut * Feedback;
 			buffer[index] = inVal;
 			output[i] = bufOut - inVal * Feedback;
@@ -82,9 +102,9 @@ namespace CloudSeed
 		}
 	}
 
-	double ModulatedAllpass::Get(int delay)
+	double inline ModulatedAllpass::Get(int delay)
 	{
-		auto idx = index - delay;
+		int idx = index - delay;
 		if (idx < 0)
 			idx += bufferSize;
 

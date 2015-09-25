@@ -62,7 +62,7 @@ namespace CloudSeed
 			switch(param)
 			{
 				// Input
-				case Parameter.CrossMix:                  return P(Parameter.CrossMix);
+				case Parameter.InputMix:                  return P(Parameter.InputMix);
 				case Parameter.PreDelay:                  return (int)(P(Parameter.PreDelay) * 500);
 		
 				case Parameter.HighPass:                  return 20 + ValueTables.Get(P(Parameter.HighPass), ValueTables.Response4Oct) * 980;
@@ -75,7 +75,7 @@ namespace CloudSeed
 				case Parameter.TapDecay:                  return P(Parameter.TapDecay);
 
 				case Parameter.DiffusionEnabled:          return P(Parameter.DiffusionEnabled);
-				case Parameter.DiffusionStages:           return 1 + (int)(P(Parameter.DiffusionStages) * 3.999);
+				case Parameter.DiffusionStages:           return 1 + (int)(P(Parameter.DiffusionStages) * (AllpassDiffuser.MaxStageCount - 0.001));
 				case Parameter.DiffusionDelay:            return (int)(P(Parameter.DiffusionDelay) * 50);
 				case Parameter.DiffusionFeedback:         return P(Parameter.DiffusionFeedback);
 
@@ -84,10 +84,10 @@ namespace CloudSeed
 				case Parameter.LineDelay:                 return (int)(P(Parameter.LineDelay) * 500);
 				case Parameter.LineFeedback:              return P(Parameter.LineFeedback);
 
-				case Parameter.PostDiffusionEnabled:      return P(Parameter.PostDiffusionEnabled);
-				case Parameter.PostDiffusionStages:       return 1 + (int)(P(Parameter.PostDiffusionStages) * 3.999);
-				case Parameter.PostDiffusionDelay:        return (int)(P(Parameter.PostDiffusionDelay) * 50);
-				case Parameter.PostDiffusionFeedback:     return P(Parameter.PostDiffusionFeedback);
+				case Parameter.LateDiffusionEnabled:      return P(Parameter.LateDiffusionEnabled);
+				case Parameter.LateDiffusionStages:       return 1 + (int)(P(Parameter.LateDiffusionStages) * (AllpassDiffuser.MaxStageCount - 0.001));
+				case Parameter.LateDiffusionDelay:        return (int)(P(Parameter.LateDiffusionDelay) * 50);
+				case Parameter.LateDiffusionFeedback:     return P(Parameter.LateDiffusionFeedback);
 
 				// Frequency Response
 				case Parameter.PostLowShelfGain:          return ValueTables.Get(P(Parameter.PostLowShelfGain), ValueTables.Response2Dec);
@@ -97,10 +97,12 @@ namespace CloudSeed
 				case Parameter.PostCutoffFrequency:       return 400 + ValueTables.Get(P(Parameter.PostCutoffFrequency), ValueTables.Response4Oct) * 19600;
 
 				// Modulation
-				case Parameter.DiffusionModAmount:        return P(Parameter.DiffusionModAmount) * 2.5;
-				case Parameter.DiffusionModRate:          return ValueTables.Get(P(Parameter.DiffusionModRate), ValueTables.Response2Dec) * 5;
+				case Parameter.EarlyDiffusionModAmount:   return P(Parameter.EarlyDiffusionModAmount) * 2.5;
+				case Parameter.EarlyDiffusionModRate:     return ValueTables.Get(P(Parameter.EarlyDiffusionModRate), ValueTables.Response2Dec) * 5;
 				case Parameter.LineModAmount:             return P(Parameter.LineModAmount) * 2.5;
 				case Parameter.LineModRate:               return ValueTables.Get(P(Parameter.LineModRate), ValueTables.Response2Dec) * 5;
+				case Parameter.LateDiffusionModAmount:    return P(Parameter.LateDiffusionModAmount) * 2.5;
+				case Parameter.LateDiffusionModRate:      return ValueTables.Get(P(Parameter.LateDiffusionModRate), ValueTables.Response2Dec) * 5;
 
 				// Seeds
 				case Parameter.TapSeed:                   return (int)(P(Parameter.TapSeed) * 1000000);
@@ -109,7 +111,7 @@ namespace CloudSeed
 				case Parameter.PostDiffusionSeed:         return (int)(P(Parameter.PostDiffusionSeed) * 1000000);
 
 				// Output
-				case Parameter.StereoWidth:               return P(Parameter.StereoWidth);
+				case Parameter.CrossFeed:                 return P(Parameter.CrossFeed);
 
 				case Parameter.DryOut:                    return ValueTables.Get(P(Parameter.DryOut), ValueTables.Response2Dec);
 				case Parameter.PredelayOut:               return ValueTables.Get(P(Parameter.PredelayOut), ValueTables.Response2Dec);
@@ -149,9 +151,9 @@ namespace CloudSeed
 		{
 			var len = input[0].Length;
 
-			var cm = GetScaledParameter(Parameter.CrossMix) * 0.5;
+			var cm = GetScaledParameter(Parameter.InputMix) * 0.5;
 			var cmi = (1 - cm);
-			var st = 0.5 + 0.5 * GetScaledParameter(Parameter.StereoWidth);
+			var st = 0.5 + 0.5 * GetScaledParameter(Parameter.CrossFeed);
 			var sti = (1 - st);
 
 			for (int i = 0; i < len; i++)

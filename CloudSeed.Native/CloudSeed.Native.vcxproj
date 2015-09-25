@@ -94,8 +94,9 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>cp $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(Configuration)\$(TargetFileName)
-cp $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
+      <Command>copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(Configuration)\$(TargetFileName)
+copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)
+copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,7 +118,7 @@ cp $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTar
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>

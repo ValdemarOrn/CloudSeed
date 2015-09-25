@@ -78,8 +78,10 @@ namespace CloudSeed
 				update(Parameter.TapLength);
 				update(Parameter.DiffusionDelay);
 				update(Parameter.LineDelay);
-				update(Parameter.PostDiffusionDelay);
-				update(Parameter.DiffusionModAmount);
+				update(Parameter.LateDiffusionDelay);
+				update(Parameter.EarlyDiffusionModRate);
+				update(Parameter.LineModRate);
+				update(Parameter.LateDiffusionModRate);
 				update(Parameter.LineModAmount);
 				UpdateLines();
 			}
@@ -140,19 +142,19 @@ namespace CloudSeed
 					UpdateLines();
 					break;
 
-				case Parameter.PostDiffusionEnabled:
+				case Parameter.LateDiffusionEnabled:
 					foreach (var line in lines)
 						line.DiffuserEnabled = value >= 0.5;
 					break;
-				case Parameter.PostDiffusionStages:
+				case Parameter.LateDiffusionStages:
 					foreach (var line in lines)
 						line.SetDiffuserStages((int)value);
 					break;
-				case Parameter.PostDiffusionDelay:
+				case Parameter.LateDiffusionDelay:
 					foreach (var line in lines)
 						line.SetDiffuserDelay((int)Ms2Samples(value));
 					break;
-				case Parameter.PostDiffusionFeedback:
+				case Parameter.LateDiffusionFeedback:
 					foreach (var line in lines)
 						line.SetDiffuserFeedback(value);
 					break;
@@ -178,10 +180,10 @@ namespace CloudSeed
 						line.SetCutoffFrequency(value);
 					break;
 
-				case Parameter.DiffusionModAmount:
+				case Parameter.EarlyDiffusionModAmount:
 					diffuser.SetModAmount(Ms2Samples(value));
 					break;
-				case Parameter.DiffusionModRate:
+				case Parameter.EarlyDiffusionModRate:
 					diffuser.SetModRate(value);
 					break;
 				case Parameter.LineModAmount:
@@ -190,12 +192,18 @@ namespace CloudSeed
 				case Parameter.LineModRate:
 					UpdateLines();
 					break;
+				case Parameter.LateDiffusionModAmount:
+					UpdateLines();
+					break;
+				case Parameter.LateDiffusionModRate:
+					UpdateLines();
+					break;
 
 				case Parameter.TapSeed:
 					multitap.Seeds = rand.Generate((int)value, 100).ToArray();
 					break;
 				case Parameter.DiffusionSeed:
-					diffuser.Seeds = rand.Generate((int)value, 12).ToArray();
+					diffuser.Seeds = rand.Generate((int)value, AllpassDiffuser.MaxStageCount * 3).ToArray();
 					break;
 				case Parameter.CombSeed:
 					delayLineSeeds = rand.Generate((int)value, lines.Length * 3).ToArray();
@@ -203,7 +211,7 @@ namespace CloudSeed
 					break;
 				case Parameter.PostDiffusionSeed:
 					for (int i = 0; i < lines.Length; i++)
-						lines[i].DiffuserSeeds = rand.Generate(((int)value) + i, 12).ToArray();
+						lines[i].DiffuserSeeds = rand.Generate(((long)value) * (i + 1), AllpassDiffuser.MaxStageCount * 3).ToArray();
 					break;
 
 				case Parameter.DryOut:

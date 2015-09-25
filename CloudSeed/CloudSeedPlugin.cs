@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using SharpSoundDevice;
 using System.Globalization;
 using CloudSeed.UI;
+using System.Threading;
 
 namespace CloudSeed
 {
@@ -20,6 +21,7 @@ namespace CloudSeed
 		private readonly IReverbController controller;
 		private CloudSeedView view;
 		private System.Windows.Window window;
+		private volatile bool isDisposing;
 
 		public double Samplerate;
 		public DeviceInfo DeviceInfo { get { return devInfo; } }
@@ -48,7 +50,7 @@ namespace CloudSeed
 		{
 			devInfo.DeviceID = "Low Profile - CloudSeed";
 			devInfo.Developer = "Valdemar Erlingsson";
-			devInfo.EditorWidth = 936;
+			devInfo.EditorWidth = 995;
 			devInfo.EditorHeight = 386;
 			devInfo.HasEditor = true;
 			devInfo.Name = "CloudSeed Algorithmic Reverb";
@@ -85,9 +87,12 @@ namespace CloudSeed
 
 		public void DisposeDevice()
 		{
+			/*isDisposing = true;
+			Thread.Sleep(100);
+
 			var disposable = controller as IDisposable;
 			if (disposable != null)
-				disposable.Dispose();
+				disposable.Dispose();*/
 		}
 
 		public void Start()
@@ -99,6 +104,9 @@ namespace CloudSeed
 
 		public void ProcessSample(double[][] input, double[][] output, uint bufferSize)
 		{
+			if (isDisposing)
+				return;
+
 			((IManagedReverbController)controller).Process(input, output);
 		}
 

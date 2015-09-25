@@ -21,8 +21,6 @@ namespace CloudSeed
 		for (auto value = 0; value < (int)Parameter::Count; value++)
 			this->parameters[static_cast<Parameter>(value)] = 0.0;
 
-		diffuser.SetModulationEnabled(true);
-
 		lineCount = 8;
 		perLineGain = GetPerLineGain();
 
@@ -30,6 +28,7 @@ namespace CloudSeed
 		lowPass.SetCutoffHz(20000);
 
 		tempBuffer = new double[bufferSize];
+		lineOutBuffer = new double[bufferSize];
 		outBuffer = new double[bufferSize];
 		delayLineSeeds = AudioLib::ShaRandom::Generate(12345, lines.size() * 3);
 
@@ -42,6 +41,7 @@ namespace CloudSeed
 			delete line;
 
 		delete tempBuffer;
+		delete lineOutBuffer;
 		delete outBuffer;
 	}
 
@@ -66,8 +66,10 @@ namespace CloudSeed
 		update(Parameter::TapLength);
 		update(Parameter::DiffusionDelay);
 		update(Parameter::LineDelay);
-		update(Parameter::PostDiffusionDelay);
-		update(Parameter::DiffusionModAmount);
+		update(Parameter::LateDiffusionDelay);
+		update(Parameter::EarlyDiffusionModRate);
+		update(Parameter::LineModRate);
+		update(Parameter::LateDiffusionModRate);
 		update(Parameter::LineModAmount);
 		UpdateLines();
 	}
@@ -75,6 +77,11 @@ namespace CloudSeed
 	double* ReverbChannel::GetOutput()
 	{
 		return outBuffer;
+	}
+
+	double* ReverbChannel::GetLineOutput()
+	{
+		return lineOutBuffer;
 	}
 
 	void ReverbChannel::SetParameter(Parameter para, double value)
@@ -107,8 +114,13 @@ namespace CloudSeed
 			break;
 
 		case Parameter::DiffusionEnabled:
-			diffuserEnabled = value >= 0.5;
+		{
+			auto newVal = value >= 0.5;
+			if (newVal != diffuserEnabled)
+				diffuser.ClearBuffers();
+			diffuserEnabled = newVal;
 			break;
+		}
 		case Parameter::DiffusionStages:
 			diffuser.Stages = (int)value;
 			break;
@@ -130,19 +142,24 @@ namespace CloudSeed
 			UpdateLines();
 			break;
 
-		case Parameter::PostDiffusionEnabled:
-			for(auto line : lines)
-				line->DiffuserEnabled = value >= 0.5;
+		case Parameter::LateDiffusionEnabled:
+			for (auto line : lines)
+			{
+				auto newVal = value >= 0.5;
+				if (newVal != line->DiffuserEnabled)
+					line->ClearDiffuserBuffer();
+				line->DiffuserEnabled = newVal;
+			}
 			break;
-		case Parameter::PostDiffusionStages:
+		case Parameter::LateDiffusionStages:
 			for(auto line : lines)
 				line->SetDiffuserStages((int)value);
 			break;
-		case Parameter::PostDiffusionDelay:
+		case Parameter::LateDiffusionDelay:
 			for (auto line : lines)
 				line->SetDiffuserDelay((int)Ms2Samples(value));
 			break;
-		case Parameter::PostDiffusionFeedback:
+		case Parameter::LateDiffusionFeedback:
 			for (auto line : lines)
 				line->SetDiffuserFeedback(value);
 			break;
@@ -168,10 +185,11 @@ namespace CloudSeed
 				line->SetCutoffFrequency(value);
 			break;
 
-		case Parameter::DiffusionModAmount:
+		case Parameter::EarlyDiffusionModAmount:
+			diffuser.SetModulationEnabled(value > 0.0);
 			diffuser.SetModAmount(Ms2Samples(value));
 			break;
-		case Parameter::DiffusionModRate:
+		case Parameter::EarlyDiffusionModRate:
 			diffuser.SetModRate(value);
 			break;
 		case Parameter::LineModAmount:
@@ -180,12 +198,18 @@ namespace CloudSeed
 		case Parameter::LineModRate:
 			UpdateLines();
 			break;
+		case Parameter::LateDiffusionModAmount:
+			UpdateLines();
+			break;
+		case Parameter::LateDiffusionModRate:
+			UpdateLines();
+			break;
 
 		case Parameter::TapSeed:
 			multitap.SetSeeds(AudioLib::ShaRandom::Generate((int)value, 100));
 			break;
 		case Parameter::DiffusionSeed:
-			diffuser.SetSeeds(AudioLib::ShaRandom::Generate((int)value, 12));
+			diffuser.SetSeeds(AudioLib::ShaRandom::Generate((int)value, AllpassDiffuser::MaxStageCount * 3));
 			break;
 		case Parameter::CombSeed:
 			delayLineSeeds = AudioLib::ShaRandom::Generate((int)value, lines.size() * 3);
@@ -193,7 +217,7 @@ namespace CloudSeed
 			break;
 		case Parameter::PostDiffusionSeed:
 			for (size_t i = 0; i < lines.size(); i++)
-				lines[i]->SetDiffuserSeeds(AudioLib::ShaRandom::Generate(((int)value) + i, 12));
+				lines[i]->SetDiffuserSeeds(AudioLib::ShaRandom::Generate(((long long)value) * (i + 1), AllpassDiffuser::MaxStageCount * 3));
 			break;
 
 		case Parameter::DryOut:
@@ -226,6 +250,24 @@ namespace CloudSeed
 		case Parameter::CutoffEnabled:
 			for (auto line : lines)
 				line->CutoffEnabled = value >= 0.5;
+			break;
+		case Parameter::LateStageTap:
+			for (auto line : lines)
+				line->LateStageTap = value >= 0.5;
+			break;
+
+		case Parameter::Interpolation:
+			diffuser.SetInterpolationEnabled(value >= 0.5);
+			for (auto line : lines)
+				line->SetInterpolationEnabled(value >= 0.5);
+			break;
+		case Parameter::SampleResolution:
+			for (auto line : lines)
+				line->SampleResolution = value;
+			break;
+		case Parameter::Undersampling:
+			for (auto line : lines)
+				line->Undersampling = value;
 			break;
 		}
 	}
@@ -267,6 +309,10 @@ namespace CloudSeed
 			Utils::Copy(multitap.GetOutput(), tempBuffer, len);
 		}
 
+		// mix in the feedback from the other channel
+		//for (int i = 0; i < len; i++)
+		//	tempBuffer[i] += crossMix[i];
+		
 		for (int i = 0; i < lineCount; i++)
 			lines[i]->Process(tempBuffer, len);
 
@@ -287,6 +333,7 @@ namespace CloudSeed
 		}
 
 		Utils::Gain(tempBuffer, perLineGain, len);
+		Utils::Copy(tempBuffer, lineOutBuffer, len);
 
 		for (int i = 0; i < len; i++)
 		{
@@ -303,6 +350,7 @@ namespace CloudSeed
 		for (int i = 0; i < bufferSize; i++)
 		{
 			tempBuffer[i] = 0.0;
+			lineOutBuffer[i] = 0.0;
 			outBuffer[i] = 0.0;
 		}
 
@@ -323,10 +371,15 @@ namespace CloudSeed
 	
 	void ReverbChannel::UpdateLines()
 	{
-		auto lineModRate = parameters[Parameter::LineModRate];
-		auto lineModAmount = Ms2Samples(parameters[Parameter::LineModAmount]);
-		auto lineFeedback = parameters[Parameter::LineFeedback];
 		auto lineDelay = (int)Ms2Samples(parameters[Parameter::LineDelay]);
+		auto lineFeedback = parameters[Parameter::LineFeedback];
+
+		auto lineModAmount = Ms2Samples(parameters[Parameter::LineModAmount]);
+		auto lineModRate = parameters[Parameter::LineModRate];
+		
+		auto lateDiffusionModAmount = Ms2Samples(parameters[Parameter::LateDiffusionModAmount]);
+		auto lateDiffusionModRate = parameters[Parameter::LateDiffusionModRate];
+		
 		if (lineDelay < 50) lineDelay = 50;
 
 		int count = lines.size();
@@ -341,8 +394,10 @@ namespace CloudSeed
 
 			lines[i]->SetDelay((int)delay);
 			lines[i]->SetFeedback(adjustedFeedback);
-			lines[i]->SetModAmount(modAmount);
-			lines[i]->SetModRate(modRate);
+			lines[i]->SetLineModAmount(modAmount);
+			lines[i]->SetLineModRate(modRate);
+			lines[i]->SetDiffuserModAmount(lateDiffusionModAmount);
+			lines[i]->SetDiffuserModRate(lateDiffusionModRate);
 		}
 	}
 

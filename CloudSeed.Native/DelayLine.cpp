@@ -11,8 +11,12 @@ namespace CloudSeed
 		, lowShelf(AudioLib::Biquad::FilterType::LowShelf, samplerate)
 		, highShelf(AudioLib::Biquad::FilterType::HighShelf, samplerate)
 	{
+		this->SampleResolution = 32;
+		this->Undersampling = 1;
+
 		this->bufferSize = bufferSize;
 		tempBuffer = new double[bufferSize];
+		mixedBuffer = new double[bufferSize];
 		filterOutputBuffer = new double[bufferSize];
 		
 		lowShelf.Slope = 1.0;
@@ -33,6 +37,7 @@ namespace CloudSeed
 	{
 		std::cout << "Deleting DelayLine " << std::endl;
 		delete tempBuffer;
+		delete mixedBuffer;
 		delete filterOutputBuffer;
 	}
 
@@ -114,31 +119,86 @@ namespace CloudSeed
 		lowPass.SetCutoffHz(frequency);
 	}
 
-	void DelayLine::SetModAmount(double amount)
+	void DelayLine::SetLineModAmount(double amount)
 	{
 		delay.ModAmount = amount;
 	}
 
-	void DelayLine::SetModRate(double rate)
+	void DelayLine::SetLineModRate(double rate)
 	{
 		delay.ModRate = rate;
 	}
 
+	void DelayLine::SetDiffuserModAmount(double amount)
+	{
+		diffuser.SetModulationEnabled(amount > 0.0);
+		diffuser.SetModAmount(amount);
+	}
+
+	void DelayLine::SetDiffuserModRate(double rate)
+	{
+		diffuser.SetModRate(rate);
+	}
+
+	void DelayLine::SetInterpolationEnabled(bool value)
+	{
+		diffuser.SetInterpolationEnabled(value);
+	}
+
 	double* DelayLine::GetOutput()
-	{ 
-		return delay.GetOutput();
+	{
+		if (LateStageTap)
+		{
+			if (DiffuserEnabled)
+				return diffuser.GetOutput();
+			else
+				return mixedBuffer;
+		}
+		else
+		{
+			return delay.GetOutput();
+		}
 	}
 
 	void DelayLine::Process(double* input, int sampleCount)
 	{
-		auto feedbackBuffer = DiffuserEnabled ? diffuser.GetOutput() : filterOutputBuffer;
-
 		for (int i = 0; i < sampleCount; i++)
-			tempBuffer[i] = input[i] + feedbackBuffer[i] * feedback;
+			mixedBuffer[i] = input[i] + filterOutputBuffer[i] * feedback;
 
-		delay.Process(tempBuffer, sampleCount);
-		Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
-		
+		if (LateStageTap)
+		{
+			if (DiffuserEnabled)
+			{
+				diffuser.Process(mixedBuffer, sampleCount);
+				Utils::BitcrushAndReduce(diffuser.GetOutput(), mixedBuffer, sampleCount, Undersampling, SampleResolution);
+				delay.Process(mixedBuffer, sampleCount);
+			}
+			else
+			{
+				Utils::BitcrushAndReduce(mixedBuffer, mixedBuffer, sampleCount, Undersampling, SampleResolution);
+				delay.Process(mixedBuffer, sampleCount);
+			}
+
+			Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
+		}
+		else
+		{
+			
+			if (DiffuserEnabled)
+			{
+				Utils::BitcrushAndReduce(mixedBuffer, mixedBuffer, sampleCount, Undersampling, SampleResolution);
+				delay.Process(mixedBuffer, sampleCount);
+				diffuser.Process(delay.GetOutput(), sampleCount);
+				Utils::Copy(diffuser.GetOutput(), tempBuffer, sampleCount);
+			}
+			else
+			{
+				Utils::BitcrushAndReduce(mixedBuffer, mixedBuffer, sampleCount, Undersampling, SampleResolution);
+				delay.Process(mixedBuffer, sampleCount);
+				Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
+			}
+		}
+
 		if (LowShelfEnabled)
 			lowShelf.Process(tempBuffer, tempBuffer, sampleCount);
 		if (HighShelfEnabled)
@@ -147,11 +207,11 @@ namespace CloudSeed
 			lowPass.Process(tempBuffer, tempBuffer, sampleCount);
 
 		Utils::Copy(tempBuffer, filterOutputBuffer, sampleCount);
-		
-		if (DiffuserEnabled)
-		{
-			diffuser.Process(filterOutputBuffer, sampleCount);
-		}
+	}
+
+	void DelayLine::ClearDiffuserBuffer()
+	{
+		diffuser.ClearBuffers();
 	}
 
 	void DelayLine::ClearBuffers()

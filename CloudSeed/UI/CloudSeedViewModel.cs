@@ -24,12 +24,22 @@ namespace CloudSeed.UI
 		private Parameter? activeControl;
 		private ProgramBanks.PluginProgram selectedProgram;
 		private string newProgramName;
-		
+		private System.Windows.FontWeight[] fontWeights;
+
+		private ReductionEffect reductionResolution;
+		private ReductionEffect reductionUndersampling;
+		private ReductionEffect reductionInterpolation;
 
 		public CloudSeedViewModel(CloudSeedPlugin plugin)
 		{
 			this.plugin = plugin;
-			this.parameterUpdates = new Dictionary<Parameter, double>();
+
+			fontWeights = new System.Windows.FontWeight[9];
+			SetReductionEffect(ReductionEffect.ResolutionFull.ToString());
+			SetReductionEffect(ReductionEffect.UndersamplingOff.ToString());
+			SetReductionEffect(ReductionEffect.InterpolationEnabled.ToString());
+			
+            this.parameterUpdates = new Dictionary<Parameter, double>();
 			NumberedParameters = new ObservableCollection<double>();
 			foreach (var para in Enum.GetValues(typeof(Parameter)).Cast<Parameter>())
 				NumberedParameters.Add(0.0);
@@ -37,6 +47,7 @@ namespace CloudSeed.UI
 			SaveProgramCommand = new DelegateCommand(x => SaveProgram());
 			RenameProgramCommand = new DelegateCommand(x => RenameProgram());
 			LoadProgramCommand = new DelegateCommand(LoadProgram);
+			SetReductionEffectCommand = new DelegateCommand(x => SetReductionEffect(x.ToString()));
 
 			NumberedParameters.CollectionChanged += (s, e) =>
 			{
@@ -57,6 +68,47 @@ namespace CloudSeed.UI
 			updateThread.Start();
 			
 			LoadProgram(ProgramBanks.Bank.UserPrograms.FirstOrDefault() ?? new ProgramBanks.PluginProgram { Name = "Default Program" });
+		}
+
+		private void SetReductionEffect(string value)
+		{
+			var type = (ReductionEffect)Enum.Parse(typeof(ReductionEffect), value);
+
+			if (value.Contains("Resolution"))
+			{
+				fontWeights[(int)ReductionEffect.ResolutionBit8] = System.Windows.FontWeights.Normal;
+				fontWeights[(int)ReductionEffect.ResolutionBit12] = System.Windows.FontWeights.Normal;
+				fontWeights[(int)ReductionEffect.ResolutionFull] = System.Windows.FontWeights.Normal;
+
+				reductionResolution = type;
+				var val = (int)type - (int)ReductionEffect.ResolutionBit8;
+				plugin.SetParameter(Parameter.SampleResolution, val / 2.0);
+			}
+			else if (value.Contains("Undersampling"))
+			{
+				fontWeights[(int)ReductionEffect.Undersampling8x] = System.Windows.FontWeights.Normal;
+				fontWeights[(int)ReductionEffect.Undersampling4x] = System.Windows.FontWeights.Normal;
+				fontWeights[(int)ReductionEffect.Undersampling2x] = System.Windows.FontWeights.Normal;
+				fontWeights[(int)ReductionEffect.UndersamplingOff] = System.Windows.FontWeights.Normal;
+				
+				reductionUndersampling = type;
+				var val = (int)type - (int)ReductionEffect.UndersamplingOff;
+				plugin.SetParameter(Parameter.Undersampling, val / 3.0);
+
+			}
+			else if (value.Contains("Interpolation"))
+			{
+				fontWeights[(int)ReductionEffect.InterpolationDisabled] = System.Windows.FontWeights.Normal;
+				fontWeights[(int)ReductionEffect.InterpolationEnabled] = System.Windows.FontWeights.Normal;
+
+				reductionInterpolation = type;
+				var val = (int)type - (int)ReductionEffect.InterpolationDisabled;
+				plugin.SetParameter(Parameter.Interpolation, val);
+			}
+
+			fontWeights[(int)type] = System.Windows.FontWeights.Bold;
+			FontWeights = fontWeights.Select(x => x).ToArray();
+			NotifyChanged(() => ReductionEffectsString);
 		}
 
 		private void UpdateParameters()
@@ -88,6 +140,41 @@ namespace CloudSeed.UI
 		public ICommand SaveProgramCommand { get; private set; }
 		public ICommand RenameProgramCommand { get; private set; }
 		public ICommand LoadProgramCommand { get; private set; }
+		public ICommand SetReductionEffectCommand { get; private set; }
+
+        public System.Windows.FontWeight[] FontWeights
+		{
+			get { return fontWeights; }
+			set { fontWeights = value; NotifyChanged(); }
+		}
+
+		public string ReductionEffectsString
+		{
+			get
+			{
+				var parts = new List<string>();
+
+				if (reductionResolution == ReductionEffect.ResolutionBit12)
+					parts.Add("12Bit");
+				if (reductionResolution == ReductionEffect.ResolutionBit8)
+					parts.Add("8Bit");
+
+				if (reductionUndersampling == ReductionEffect.Undersampling2x)
+					parts.Add("2x");
+				if (reductionUndersampling == ReductionEffect.Undersampling4x)
+					parts.Add("4x");
+				if (reductionUndersampling == ReductionEffect.Undersampling8x)
+					parts.Add("8x");
+
+				if (reductionInterpolation == ReductionEffect.InterpolationDisabled)
+					parts.Add("No Interp.");
+
+				if (parts.Any())
+					return string.Join(", ", parts);
+				else
+					return "No Effects";
+			}
+		}
 
 		public ObservableCollection<double> NumberedParameters { get; private set; }
 

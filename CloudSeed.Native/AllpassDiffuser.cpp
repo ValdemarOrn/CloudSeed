@@ -8,13 +8,13 @@ namespace CloudSeed
 	AllpassDiffuser::AllpassDiffuser(int bufferSize, int samplerate)
 	{
 		this->bufferSize = bufferSize;
-		filters.push_back(new ModulatedAllpass(bufferSize, 100));
-		filters.push_back(new ModulatedAllpass(bufferSize, 100));
-		filters.push_back(new ModulatedAllpass(bufferSize, 100));
-		filters.push_back(new ModulatedAllpass(bufferSize, 100));
-
+		for (int i = 0; i < MaxStageCount; i++)
+		{
+			filters.push_back(new ModulatedAllpass(bufferSize, 100));
+		}
+		
 		output = new double[bufferSize];
-		SetSeeds(AudioLib::ShaRandom::Generate(23, 12));
+		SetSeeds(AudioLib::ShaRandom::Generate(23456, MaxStageCount * 3));
 		Stages = 1;
 
 		SetSamplerate(samplerate);
@@ -36,7 +36,7 @@ namespace CloudSeed
 
 	void AllpassDiffuser::SetSamplerate(int samplerate)
 	{
-		samplerate = samplerate;
+		this->samplerate = samplerate;
 		SetModRate(modRate);
 	}
 
@@ -62,6 +62,12 @@ namespace CloudSeed
 			filter->ModulationEnabled = value;
 	}
 
+	void AllpassDiffuser::SetInterpolationEnabled(bool enabled)
+	{
+		for (auto filter : filters)
+			filter->InterpolationEnabled = enabled;
+	}
+
 	double* AllpassDiffuser::GetOutput()
 	{
 		return output;
@@ -83,7 +89,7 @@ namespace CloudSeed
 	void AllpassDiffuser::SetModAmount(double amount)
 	{
 		for (size_t i = 0; i < filters.size(); i++)
-			filters[i]->ModAmount = amount * (0.8 + 0.2 * seeds[i + 4]);
+			filters[i]->ModAmount = amount * (0.8 + 0.2 * seeds[MaxStageCount + i]);
 	}
 
 	void AllpassDiffuser::SetModRate(double rate)
@@ -91,23 +97,27 @@ namespace CloudSeed
 		modRate = rate;
 
 		for (size_t i = 0; i < filters.size(); i++)
-			filters[i]->ModRate = rate * (0.5 + 0.5 * seeds[i + 8]) / samplerate;
+			filters[i]->ModRate = rate * (0.5 + 0.5 * seeds[MaxStageCount * 2 + i]) / samplerate;
 	}
 
 	void AllpassDiffuser::Update()
 	{
 		for (size_t i = 0; i < filters.size(); i++)
-			filters[i]->SampleDelay = (int)(delay * (0.2 + 0.8 * seeds[i]));
+			filters[i]->SampleDelay = (int)(delay * (0.5 + 1.0 * seeds[i]));
 	}
 
 	void AllpassDiffuser::Process(double* input, int sampleCount)
 	{
-		filters[0]->Process(input, sampleCount);
-		filters[1]->Process(filters[0]->GetOutput(), sampleCount);
-		filters[2]->Process(filters[1]->GetOutput(), sampleCount);
-		filters[3]->Process(filters[2]->GetOutput(), sampleCount);
+		ModulatedAllpass** filterPtr = &filters[0];
 
-		output = filters[Stages - 1]->GetOutput();
+		filterPtr[0]->Process(input, sampleCount);
+
+		for (int i = 1; i < Stages; i++)
+		{
+			filterPtr[i]->Process(filterPtr[i - 1]->GetOutput(), sampleCount);
+		}
+		
+		output = filterPtr[Stages - 1]->GetOutput();
 	}
 
 	void AllpassDiffuser::ClearBuffers()

@@ -153,5 +153,20 @@ namespace CloudSeed.UI
 			ProgramLabel.ContextMenu.DataContext = DataContext;
 			ProgramLabel.ContextMenu.IsOpen = true;
 		}
+
+		private void Label_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Right)
+				return;
+
+			(sender as Label).ContextMenu.DataContext = viewModel;
+			(sender as Label).ContextMenu.IsOpen = true;
+		}
+
+		private void MenuItem_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			var s = (sender as MenuItem);
+			viewModel.SetReductionEffectCommand.Execute(s.CommandParameter);
+		}
 	}
 }
