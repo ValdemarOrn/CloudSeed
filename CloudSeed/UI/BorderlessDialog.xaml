@@ -7,6 +7,7 @@
         AllowsTransparency="True"
         ResizeMode="NoResize"
         WindowStyle="None"
+        WindowStartupLocation="Manual"
         d:DesignHeight="150" d:DesignWidth="400">
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml" />

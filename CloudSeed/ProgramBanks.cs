@@ -9,7 +9,7 @@ namespace CloudSeed
 {
 	public class ProgramBanks
 	{
-		public class PluginProgram
+		public struct PluginProgram
 		{
 			public string Name { get; set; }
 			public string Library { get; set; }
@@ -35,13 +35,18 @@ namespace CloudSeed
 			FactoryDir = Path.Combine(Path.GetDirectoryName(assemblyLocation), "Programs", "Factory Programs");
 			UserDir = Path.Combine(Path.GetDirectoryName(assemblyLocation), "Programs", "User Programs");
 
+			ReloadPrograms();
+		}
+
+		public void ReloadPrograms()
+		{
 			FactoryPrograms = GetProgramFiles(FactoryDir);
 			UserPrograms = GetProgramFiles(UserDir);
 		}
 
 		public bool CanDeleteProgram(PluginProgram program)
 		{
-			return FactoryPrograms.Any(x => 
+			return UserPrograms.Any(x => 
 				x.Library == program.Library && 
 				x.Name == program.Name && 
 				x.Path == program.Path && 
@@ -54,23 +59,23 @@ namespace CloudSeed
 				File.Delete(program.Path);
 
 			// Reload programs
-			UserPrograms = GetProgramFiles(FactoryDir);
+			ReloadPrograms();
 		}
 
-		public bool SaveProgram(string name, string data, bool overwrite)
+		public PluginProgram? SaveProgram(string name, string data, bool overwrite)
 		{
 			var programPath = Path.Combine(UserDir, name + ".json");
 			if (!Directory.Exists(Path.GetDirectoryName(programPath)))
 				Directory.CreateDirectory(Path.GetDirectoryName(programPath));
 
 			if (File.Exists(programPath) && !overwrite)
-				return false;
+				return null;
 
 			File.WriteAllText(programPath, data);
 
 			// Reload programs
 			UserPrograms = GetProgramFiles(UserDir);
-			return true;
+			return UserPrograms.Single(x => x.Path == programPath);
 		}
 
 		private PluginProgram[] GetProgramFiles(string dir)

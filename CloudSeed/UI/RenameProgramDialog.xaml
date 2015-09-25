@@ -22,14 +22,13 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Row="0" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">
-                <Label Style="{StaticResource MainLabelStyle}" FontSize="16" Margin="10">Rename Program:</Label>
-                <TextBox Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Center" Width="300" 
-                                     Text="{Binding NewProgramName}" x:Name="RenameProgramTextBox" />
+                <Label Style="{StaticResource MainLabelStyle}" FontSize="16" Margin="10" x:Name="TitleLabel">Title Text</Label>
+                <TextBox Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Center" Width="300" Text="{Binding NewProgramName}" x:Name="MainTextBox" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="5">
-                <Button Style="{StaticResource ButtonStyle}" Command="{Binding RenameProgramCommand}" Click="CloseDialog">Save</Button>
-                <Button Style="{StaticResource ButtonStyle}" Click="CloseDialog">Cancel</Button>
+                <Button Style="{StaticResource ButtonStyle}" Command="{Binding RenameProgramCommand}" Click="Save">Save</Button>
+                <Button Style="{StaticResource ButtonStyle}" Click="Cancel">Cancel</Button>
             </StackPanel>
         </Grid>
     </Border>

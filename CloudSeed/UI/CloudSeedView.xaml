@@ -103,26 +103,7 @@
                 <Label Content="Early Out" Grid.Row="5" Grid.Column="2" />
                 <Label Content="Main Out" Grid.Row="5" Grid.Column="3" />
 
-                <Border Style="{StaticResource ResourceKey=BorderDropdownStyle}" Grid.ColumnSpan="2">
-                    <Label VerticalContentAlignment="Center" Foreground="#f3f3f3" FontSize="12" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                           Margin="0" MouseUp="Label_MouseUp" Content="{Binding ReductionEffectsString, FallbackValue=Disabled}" >
-                        <Label.ContextMenu>
-                            <ContextMenu DataContext="{Binding ElementName=Main, Path=DataContext}">
-                                <MenuItem Header="8 Bit Resolution" FontWeight="{Binding FontWeights[0]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="ResolutionBit8" />
-                                <MenuItem Header="12 Bit Resolution" FontWeight="{Binding FontWeights[1]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="ResolutionBit12" />
-                                <MenuItem Header="Full Resolution" FontWeight="{Binding FontWeights[2]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="ResolutionFull" />
-                                <Separator />
-                                <MenuItem Header="No Undersampling" FontWeight="{Binding FontWeights[3]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="UndersamplingOff" />
-                                <MenuItem Header="2x Undersampling" FontWeight="{Binding FontWeights[4]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="Undersampling2x" />
-                                <MenuItem Header="4x Undersampling" FontWeight="{Binding FontWeights[5]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="Undersampling4x" />
-                                <MenuItem Header="8x Undersampling" FontWeight="{Binding FontWeights[6]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="Undersampling8x" />
-                                <Separator />
-                                <MenuItem Header="Linear Interpolation Disabled" FontWeight="{Binding FontWeights[7]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="InterpolationDisabled" />
-                                <MenuItem Header="Linear Interpolation Enabled" FontWeight="{Binding FontWeights[8]}" PreviewMouseDown="MenuItem_PreviewMouseDown" CommandParameter="InterpolationEnabled" />
-                            </ContextMenu>
-                        </Label.ContextMenu>
-                    </Label>
-                </Border>
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="Interpolation" TextOff="Disabled" TextOn="Enabled" Grid.ColumnSpan="2" />
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="HiPassEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LowPassEnabled" Grid.Column="3" Grid.Row="0" IsChecked="True" />
 
@@ -252,7 +233,7 @@
 
                 <Label Content="Low Gain" Grid.Row="5" Grid.Column="0" />
                 <Label Content="Hi Gain" Grid.Row="5" Grid.Column="1" />
-                <Label Content="Stereo Mix" Grid.Row="5" Grid.Column="2" />
+                <Label Content="Cross Seed" Grid.Row="5" Grid.Column="2" />
 
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LowShelfEnabled" Grid.Column="0" Grid.Row="0" IsChecked="True" />
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="HighShelfEnabled" Grid.Column="1" Grid.Row="0" IsChecked="True" />
@@ -264,7 +245,7 @@
 
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostLowShelfGain" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="PostHighShelfGain" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="1" />
-                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="CrossFeed" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="CrossSeed" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="2" />
             </Grid>
         </Border>
 
@@ -311,10 +292,18 @@
                    Style="{StaticResource ProgramLabelStyle}" x:Name="ProgramLabel" MouseDown="ProgramLabelClick">
                 <Label.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Factory Programs">
-                            <MenuItem Header="Program 1" />
-                            <MenuItem Header="Program 2" />
-                            <MenuItem Header="Program 3" />
+                        <MenuItem Header="Factory Programs" ItemsSource="{Binding FactoryPrograms}" Command="{Binding LoadProgramCommand}" >
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="{x:Type MenuItem}">
+                                    <Setter Property="Command" Value="{Binding DataContext.LoadProgramCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type MenuItem}, AncestorLevel=1}}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
                         </MenuItem>
                         <MenuItem Header="User Programs" ItemsSource="{Binding UserPrograms}" Command="{Binding LoadProgramCommand}" >
                             <MenuItem.ItemContainerStyle>
@@ -329,9 +318,8 @@
                                 </DataTemplate>
                             </MenuItem.ItemTemplate>
                         </MenuItem>
-                        <MenuItem Header="Rename Program" Click="ShowRenameDialog" />
                         <MenuItem Header="Save Program" Click="ShowSaveDialog" />
-                        <MenuItem Header="Delete Program" />
+                        <MenuItem Header="Delete Program" Click="DeleteProgram" />
                     </ContextMenu>
                 </Label.ContextMenu>
             </Label>

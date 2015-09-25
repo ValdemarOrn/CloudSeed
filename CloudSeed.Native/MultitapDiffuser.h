@@ -20,7 +20,9 @@ namespace CloudSeed
 		int index;
 		vector<double> tapGains;
 		vector<int> tapPosition;
-		vector<double> seeds;
+		vector<double> seedValues;
+		int seed;
+		double crossSeed;
 		int count;
 		double length;
 		double gain;
@@ -35,16 +37,19 @@ namespace CloudSeed
 		MultitapDiffuser(int bufferSize);
 		~MultitapDiffuser();
 
-		vector<double> GetSeeds();
-		void SetSeeds(vector<double> seeds);
+		void SetSeed(int seed);
+		void SetCrossSeed(double crossSeed);
 		double* GetOutput();
 		void SetTapCount(int tapCount);
 		void SetTapLength(int tapLength);
 		void SetTapDecay(double tapDecay);
 		void SetTapGain(double tapGain);
-		void Update();
 		void Process(double* input, int sampleCount);
 		void ClearBuffers();
+
+	private:
+		void Update();
+		void UpdateSeeds();
 	};
 }
 

@@ -21,10 +21,7 @@ namespace CloudSeed
 		double rightChannelIn[bufferSize];
 		double leftLineBuffer[bufferSize];
 		double rightLineBuffer[bufferSize];
-
 		double parameters[(int)Parameter::Count];
-		int GetSampleResolution();
-		int GetUndersampling();
 
 	public:
 		ReverbController(int samplerate);

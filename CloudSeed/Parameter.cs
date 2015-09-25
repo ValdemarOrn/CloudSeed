@@ -66,9 +66,9 @@ namespace CloudSeed
 		CombSeed,
 		PostDiffusionSeed,
 		
-		// Output
+		// Seed Mix
 
-		CrossFeed,
+		CrossSeed,
 
 		DryOut,
 		PredelayOut,
@@ -84,8 +84,6 @@ namespace CloudSeed
 		LateStageTap,
 
 		// Effects
-		SampleResolution,
-		Undersampling,
 		Interpolation,
 
 		Count,
@@ -137,6 +135,7 @@ namespace CloudSeed
 		private static readonly Func<double, string> FrequencyDecimalFormatter = x => x.ToString("0.00", CultureInfo.InvariantCulture) + " Hz";
 		private static readonly Func<double, string> OnOffFormatter = x => x >= 0.5 ? "On" : "Off";
 		private static readonly Func<double, string> PrePostFormatter = x => x >= 0.5 ? "Post" : "Pre";
+		private static readonly Func<double, string> InterpolationFormatter = x => x >= 0.5 ? "Enabled" : "Disabled";
 		private static readonly Func<double, string> DbFormatter = x =>
 		{
 			var val = AudioLib.Utils.Gain2DB(x);
@@ -191,7 +190,7 @@ namespace CloudSeed
 			{ Parameter.CombSeed, IntFormatter },
 			{ Parameter.PostDiffusionSeed, IntFormatter },
 
-			{ Parameter.CrossFeed, DecimalFormatter },
+			{ Parameter.CrossSeed, DecimalFormatter },
 
 			{ Parameter.DryOut, DbFormatter },
 			{ Parameter.PredelayOut, DbFormatter },
@@ -205,9 +204,7 @@ namespace CloudSeed
 			{ Parameter.CutoffEnabled, OnOffFormatter },
 			{ Parameter.LateStageTap, PrePostFormatter },
 
-			{ Parameter.SampleResolution, DecimalFormatter },
-			{ Parameter.Undersampling, DecimalFormatter },
-			{ Parameter.Interpolation, DecimalFormatter }
+			{ Parameter.Interpolation, InterpolationFormatter }
 		};
 	}
 }

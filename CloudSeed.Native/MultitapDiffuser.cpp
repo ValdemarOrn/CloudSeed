@@ -18,7 +18,8 @@ namespace CloudSeed
 		length = 1;
 		gain = 1.0;
 		decay = 0.0;
-		SetSeeds(AudioLib::ShaRandom::Generate(1, 100));
+		crossSeed = 0.0;
+		UpdateSeeds();
 	}
 
 	MultitapDiffuser::~MultitapDiffuser()
@@ -28,16 +29,17 @@ namespace CloudSeed
 		delete output;
 	}
 
-	vector<double> MultitapDiffuser::GetSeeds()
+	void MultitapDiffuser::SetSeed(int seed)
 	{
-		return seeds;
+		this->seed = seed;
+		UpdateSeeds();
 	}
 
-	void MultitapDiffuser::SetSeeds(vector<double> seeds)
+	void MultitapDiffuser::SetCrossSeed(double crossSeed)
 	{
-		this->seeds = seeds;
-		Update();
-	}	
+		this->crossSeed = crossSeed;
+		UpdateSeeds();
+	}
 
 	double* MultitapDiffuser::GetOutput()
 	{ 
@@ -68,59 +70,6 @@ namespace CloudSeed
 		Update();
 	}
 
-	void MultitapDiffuser::Update()
-	{
-		vector<double> newTapGains;
-		vector<int> newTapPosition;
-
-		int s = 0;
-		auto rand = [&](){return seeds[s++]; };
-
-		if (count < 1)
-			count = 1;
-
-		if (length < count)
-			length = count;
-
-		// used to adjust the volume of the overall output as it grows when we add more taps
-		double tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
-
-		newTapGains.resize(count);
-		newTapPosition.resize(count);
-
-		vector<double> tapData(count, 0.0);
-
-		auto sumLengths = 0.0;
-		for (size_t i = 0; i < count; i++)
-		{
-			auto val = 0.1 + rand();
-			tapData[i] = val;
-			sumLengths += val;
-		}
-		
-		auto scaleLength = length / sumLengths;
-		newTapPosition[0] = 0;
-
-		for (int i = 1; i < count; i++)
-		{
-			newTapPosition[i] = newTapPosition[i - 1] + (int)(tapData[i] * scaleLength);
-		}
-
-		double sumGains = 0.0;
-		for (int i = 0; i < count; i++)
-		{
-			auto g = gain * (1 - decay * (i / (double)count));
-			newTapGains[i] = g * (2 * rand() - 1) * tapCountFactor;
-		}
-
-		// Set the tap vs. clean mix
-		newTapGains[0] = (1 - gain) + newTapGains[0] * gain;
-		
-		this->tapGains = newTapGains;
-		this->tapPosition = newTapPosition;
-		isDirty = true;
-	}
-
 	void MultitapDiffuser::Process(double* input, int sampleCount)
 	{
 		// prevents race condition when parameters are updated from Gui
@@ -130,16 +79,6 @@ namespace CloudSeed
 			tapPositionTemp = tapPosition;
 			countTemp = count;
 			isDirty = false;
-		}
-
-		if (tapPositionTemp.size() == 0)
-		{
-			std::cout << "0";
-		}
-
-		if (tapGainsTemp.size() == 0)
-		{
-			std::cout << "0";
 		}
 
 		int* const tapPos = &tapPositionTemp[0];
@@ -166,5 +105,64 @@ namespace CloudSeed
 	{
 		Utils::ZeroBuffer(buffer, len);
 		Utils::ZeroBuffer(output, len);
+	}
+	
+	void MultitapDiffuser::Update()
+	{
+		vector<double> newTapGains;
+		vector<int> newTapPosition;
+
+		int s = 0;
+		auto rand = [&]() {return seedValues[s++]; };
+
+		if (count < 1)
+			count = 1;
+
+		if (length < count)
+			length = count;
+
+		// used to adjust the volume of the overall output as it grows when we add more taps
+		double tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
+
+		newTapGains.resize(count);
+		newTapPosition.resize(count);
+
+		vector<double> tapData(count, 0.0);
+
+		auto sumLengths = 0.0;
+		for (size_t i = 0; i < count; i++)
+		{
+			auto val = 0.1 + rand();
+			tapData[i] = val;
+			sumLengths += val;
+		}
+
+		auto scaleLength = length / sumLengths;
+		newTapPosition[0] = 0;
+
+		for (int i = 1; i < count; i++)
+		{
+			newTapPosition[i] = newTapPosition[i - 1] + (int)(tapData[i] * scaleLength);
+		}
+
+		double sumGains = 0.0;
+		for (int i = 0; i < count; i++)
+		{
+			auto g = gain * (1 - decay * (i / (double)count));
+			newTapGains[i] = g * (2 * rand() - 1) * tapCountFactor;
+		}
+
+		// Set the tap vs. clean mix
+		newTapGains[0] = (1 - gain) + newTapGains[0] * gain;
+
+		this->tapGains = newTapGains;
+		this->tapPosition = newTapPosition;
+		isDirty = true;
+	}
+	
+	void MultitapDiffuser::UpdateSeeds()
+	{
+		this->seedValues = AudioLib::ShaRandom::Generate(seed, 100, crossSeed);
+		Update();
 	}
 }

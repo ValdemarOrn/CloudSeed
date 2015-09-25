@@ -11,9 +11,6 @@ namespace CloudSeed
 		, lowShelf(AudioLib::Biquad::FilterType::LowShelf, samplerate)
 		, highShelf(AudioLib::Biquad::FilterType::HighShelf, samplerate)
 	{
-		this->SampleResolution = 32;
-		this->Undersampling = 1;
-
 		this->bufferSize = bufferSize;
 		tempBuffer = new double[bufferSize];
 		mixedBuffer = new double[bufferSize];
@@ -31,6 +28,8 @@ namespace CloudSeed
 		lowShelf.Update();
 		highShelf.Update();
 		SetSamplerate(samplerate);
+
+		SetDiffuserSeed(1, 0.0);
 	}
 
 	DelayLine::~DelayLine()
@@ -55,14 +54,10 @@ namespace CloudSeed
 		highShelf.SetSamplerate(samplerate);
 	}
 
-	vector<double> DelayLine::GetDiffuserSeeds()
+	void DelayLine::SetDiffuserSeed(int seed, double crossSeed)
 	{
-		return diffuser.GetSeeds();
-	}
-
-	void DelayLine::SetDiffuserSeeds(vector<double> seeds)
-	{
-		diffuser.SetSeeds(seeds);
+		diffuser.SetSeed(seed);
+		diffuser.SetCrossSeed(crossSeed);
 	}
 
 	void DelayLine::SetDelay(int delaySamples)
@@ -170,12 +165,10 @@ namespace CloudSeed
 			if (DiffuserEnabled)
 			{
 				diffuser.Process(mixedBuffer, sampleCount);
-				Utils::BitcrushAndReduce(diffuser.GetOutput(), mixedBuffer, sampleCount, Undersampling, SampleResolution);
-				delay.Process(mixedBuffer, sampleCount);
+				delay.Process(diffuser.GetOutput(), sampleCount);
 			}
 			else
 			{
-				Utils::BitcrushAndReduce(mixedBuffer, mixedBuffer, sampleCount, Undersampling, SampleResolution);
 				delay.Process(mixedBuffer, sampleCount);
 			}
 
@@ -186,14 +179,12 @@ namespace CloudSeed
 			
 			if (DiffuserEnabled)
 			{
-				Utils::BitcrushAndReduce(mixedBuffer, mixedBuffer, sampleCount, Undersampling, SampleResolution);
 				delay.Process(mixedBuffer, sampleCount);
 				diffuser.Process(delay.GetOutput(), sampleCount);
 				Utils::Copy(diffuser.GetOutput(), tempBuffer, sampleCount);
 			}
 			else
 			{
-				Utils::BitcrushAndReduce(mixedBuffer, mixedBuffer, sampleCount, Undersampling, SampleResolution);
 				delay.Process(mixedBuffer, sampleCount);
 				Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
 			}

@@ -111,7 +111,7 @@ namespace CloudSeed
 				case Parameter.PostDiffusionSeed:         return (int)(P(Parameter.PostDiffusionSeed) * 1000000);
 
 				// Output
-				case Parameter.CrossFeed:                 return P(Parameter.CrossFeed);
+				case Parameter.CrossSeed:                 return P(Parameter.CrossSeed);
 
 				case Parameter.DryOut:                    return ValueTables.Get(P(Parameter.DryOut), ValueTables.Response2Dec);
 				case Parameter.PredelayOut:               return ValueTables.Get(P(Parameter.PredelayOut), ValueTables.Response2Dec);
@@ -153,7 +153,7 @@ namespace CloudSeed
 
 			var cm = GetScaledParameter(Parameter.InputMix) * 0.5;
 			var cmi = (1 - cm);
-			var st = 0.5 + 0.5 * GetScaledParameter(Parameter.CrossFeed);
+			var st = 0.5 + 0.5 * GetScaledParameter(Parameter.CrossSeed);
 			var sti = (1 - st);
 
 			for (int i = 0; i < len; i++)

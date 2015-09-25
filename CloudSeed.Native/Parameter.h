@@ -61,9 +61,9 @@ enum class Parameter
 	CombSeed,
 	PostDiffusionSeed,
 
-	// Output
+	// Seed Mix
 
-	CrossFeed,
+	CrossSeed,
 
 	DryOut,
 	PredelayOut,
@@ -79,8 +79,6 @@ enum class Parameter
 	LateStageTap,
 
 	// Effects
-	SampleResolution,
-	Undersampling,
 	Interpolation,
 
 	Count,

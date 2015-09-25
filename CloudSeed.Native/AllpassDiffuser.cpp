@@ -14,7 +14,9 @@ namespace CloudSeed
 		}
 		
 		output = new double[bufferSize];
-		SetSeeds(AudioLib::ShaRandom::Generate(23456, MaxStageCount * 3));
+		crossSeed = 0.0;
+		seed = 23456;
+		UpdateSeeds();
 		Stages = 1;
 
 		SetSamplerate(samplerate);
@@ -40,15 +42,16 @@ namespace CloudSeed
 		SetModRate(modRate);
 	}
 
-	vector<double> AllpassDiffuser::GetSeeds()
+	void AllpassDiffuser::SetSeed(int seed)
 	{
-		return seeds;
+		this->seed = seed;
+		UpdateSeeds();
 	}
 
-	void AllpassDiffuser::SetSeeds(vector<double> value)
+	void AllpassDiffuser::SetCrossSeed(double crossSeed)
 	{
-		seeds = value;
-		Update();
+		this->crossSeed = crossSeed;
+		UpdateSeeds();
 	}
 
 	bool AllpassDiffuser::GetModulationEnabled()
@@ -89,7 +92,7 @@ namespace CloudSeed
 	void AllpassDiffuser::SetModAmount(double amount)
 	{
 		for (size_t i = 0; i < filters.size(); i++)
-			filters[i]->ModAmount = amount * (0.8 + 0.2 * seeds[MaxStageCount + i]);
+			filters[i]->ModAmount = amount * (0.7 + 0.3 * seedValues[MaxStageCount + i]);
 	}
 
 	void AllpassDiffuser::SetModRate(double rate)
@@ -97,13 +100,13 @@ namespace CloudSeed
 		modRate = rate;
 
 		for (size_t i = 0; i < filters.size(); i++)
-			filters[i]->ModRate = rate * (0.5 + 0.5 * seeds[MaxStageCount * 2 + i]) / samplerate;
+			filters[i]->ModRate = rate * (0.7 + 0.3 * seedValues[MaxStageCount * 2 + i]) / samplerate;
 	}
 
 	void AllpassDiffuser::Update()
 	{
 		for (size_t i = 0; i < filters.size(); i++)
-			filters[i]->SampleDelay = (int)(delay * (0.5 + 1.0 * seeds[i]));
+			filters[i]->SampleDelay = (int)(delay * (0.5 + 1.0 * seedValues[i]));
 	}
 
 	void AllpassDiffuser::Process(double* input, int sampleCount)
@@ -126,6 +129,12 @@ namespace CloudSeed
 
 		for (size_t i = 0; i < filters.size(); i++)
 			filters[i]->ClearBuffers();
+	}
+
+	void AllpassDiffuser::UpdateSeeds()
+	{
+		this->seedValues = AudioLib::ShaRandom::Generate(seed, AllpassDiffuser::MaxStageCount * 3, crossSeed);
+		Update();
 	}
 
 }

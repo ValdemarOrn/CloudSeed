@@ -36,7 +36,8 @@ namespace CloudSeed
 		double* tempBuffer;
 		double* lineOutBuffer;
 		double* outBuffer;
-		vector<double> delayLineSeeds;
+		int delayLineSeed;
+		int postDiffusionSeed;
 
 		// Used the the main process loop
 		int lineCount;
@@ -49,6 +50,7 @@ namespace CloudSeed
 		double predelayOut;
 		double earlyOut;
 		double lineOut;
+		double crossSeed;
 
 	public:
 		ReverbChannel(int bufferSize, int samplerate);
@@ -64,6 +66,7 @@ namespace CloudSeed
 	private:
 		double GetPerLineGain();
 		void UpdateLines();
+		void UpdatePostDiffusion();
 		double Ms2Samples(double value);
 	};
 

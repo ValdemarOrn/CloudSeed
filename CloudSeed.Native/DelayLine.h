@@ -24,7 +24,7 @@ namespace CloudSeed
 		int bufferSize;
 		double feedback;
 		int samplerate;
-		
+
 	public:
 
 		bool DiffuserEnabled;
@@ -32,16 +32,13 @@ namespace CloudSeed
 		bool HighShelfEnabled;
 		bool CutoffEnabled;
 		bool LateStageTap;
-		int SampleResolution;
-		int Undersampling;
 
 		DelayLine(int bufferSize, int samplerate);
 		~DelayLine();
 
 		int GetSamplerate();
 		void SetSamplerate(int samplerate);
-		vector<double> GetDiffuserSeeds();
-		void SetDiffuserSeeds(vector<double> seeds);
+		void SetDiffuserSeed(int seed, double crossMix);
 		void SetDelay(int delaySamples);
 		void SetFeedback(double feedb);
 		void SetDiffuserDelay(int delaySamples);

@@ -23,11 +23,13 @@ namespace CloudSeed.UI
 		public BorderlessDialog()
 		{
 			InitializeComponent();
+			this.IsVisibleChanged += (s, x) => this.Center();
 		}
 
 		protected void CloseDialog(object sender, RoutedEventArgs e)
 		{
 			this.Close();
+			
 		}
 	}
 }

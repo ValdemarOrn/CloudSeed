@@ -21,6 +21,7 @@ namespace CloudSeed
 		for (auto value = 0; value < (int)Parameter::Count; value++)
 			this->parameters[static_cast<Parameter>(value)] = 0.0;
 
+		crossSeed = 0.0;
 		lineCount = 8;
 		perLineGain = GetPerLineGain();
 
@@ -30,7 +31,6 @@ namespace CloudSeed
 		tempBuffer = new double[bufferSize];
 		lineOutBuffer = new double[bufferSize];
 		outBuffer = new double[bufferSize];
-		delayLineSeeds = AudioLib::ShaRandom::Generate(12345, lines.size() * 3);
 
 		this->samplerate = samplerate;
 	}
@@ -206,18 +206,26 @@ namespace CloudSeed
 			break;
 
 		case Parameter::TapSeed:
-			multitap.SetSeeds(AudioLib::ShaRandom::Generate((int)value, 100));
+			multitap.SetSeed(value);
 			break;
 		case Parameter::DiffusionSeed:
-			diffuser.SetSeeds(AudioLib::ShaRandom::Generate((int)value, AllpassDiffuser::MaxStageCount * 3));
+			diffuser.SetSeed(value);
 			break;
 		case Parameter::CombSeed:
-			delayLineSeeds = AudioLib::ShaRandom::Generate((int)value, lines.size() * 3);
+			delayLineSeed = value;
 			UpdateLines();
 			break;
 		case Parameter::PostDiffusionSeed:
-			for (size_t i = 0; i < lines.size(); i++)
-				lines[i]->SetDiffuserSeeds(AudioLib::ShaRandom::Generate(((long long)value) * (i + 1), AllpassDiffuser::MaxStageCount * 3));
+			postDiffusionSeed = value;
+			UpdatePostDiffusion();
+			break;
+
+		case Parameter::CrossSeed:
+			crossSeed = value;
+			multitap.SetCrossSeed(value);
+			diffuser.SetCrossSeed(value);
+			UpdateLines();
+			UpdatePostDiffusion();
 			break;
 
 		case Parameter::DryOut:
@@ -260,14 +268,6 @@ namespace CloudSeed
 			diffuser.SetInterpolationEnabled(value >= 0.5);
 			for (auto line : lines)
 				line->SetInterpolationEnabled(value >= 0.5);
-			break;
-		case Parameter::SampleResolution:
-			for (auto line : lines)
-				line->SampleResolution = value;
-			break;
-		case Parameter::Undersampling:
-			for (auto line : lines)
-				line->Undersampling = value;
 			break;
 		}
 	}
@@ -382,7 +382,9 @@ namespace CloudSeed
 		
 		if (lineDelay < 50) lineDelay = 50;
 
+		auto delayLineSeeds = AudioLib::ShaRandom::Generate(delayLineSeed, lines.size() * 3, crossSeed);
 		int count = lines.size();
+
 		for (int i = 0; i < count; i++)
 		{
 			auto delay = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelay;
@@ -399,6 +401,12 @@ namespace CloudSeed
 			lines[i]->SetDiffuserModAmount(lateDiffusionModAmount);
 			lines[i]->SetDiffuserModRate(lateDiffusionModRate);
 		}
+	}
+
+	void ReverbChannel::UpdatePostDiffusion()
+	{
+		for (size_t i = 0; i < lines.size(); i++)
+			lines[i]->SetDiffuserSeed(((long long)postDiffusionSeed) * (i + 1), crossSeed);
 	}
 
 	double ReverbChannel::Ms2Samples(double value)

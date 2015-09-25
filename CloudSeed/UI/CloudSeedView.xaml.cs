@@ -126,22 +126,25 @@ namespace CloudSeed.UI
 
 		private void ShowSaveDialog(object sender, RoutedEventArgs e)
 		{
-			viewModel.NewProgramName = "";
-			SaveProgramDialog.Visibility = Visibility.Visible;
-			SaveProgramTextBox.Focus();
-		}
-
-		private void ShowRenameDialog(object sender, RoutedEventArgs e)
-		{
-			viewModel.NewProgramName = viewModel.SelectedProgram.Name;
-			RenameProgramDialog.Visibility = Visibility.Visible;
-			RenameProgramTextBox.Focus();
-
 			var dialog = new RenameProgramDialog();
 			dialog.Owner = Parent as Window;
-			dialog.ShowDialog();
+			var newName = dialog.ShowDialog("Save new Program");
+
+			if (newName != null)
+			{
+				viewModel.SaveProgramCommand.Execute(newName);
+			}
 		}
-		
+
+		private void DeleteProgram(object sender, RoutedEventArgs e)
+		{
+			var ok = MessageBox.Show("Are you sure you want to delete program " + viewModel.SelectedProgram.Name + "?", "Delete Program", MessageBoxButton.YesNo, MessageBoxImage.Question);
+			if (ok == MessageBoxResult.Yes)
+			{
+				viewModel.DeleteProgramCommand.Execute(null);
+			}
+		}
+
 		private void CloseDialogs(object sender, RoutedEventArgs e)
 		{
 			SaveProgramDialog.Visibility = Visibility.Collapsed;
@@ -152,21 +155,6 @@ namespace CloudSeed.UI
 		{
 			ProgramLabel.ContextMenu.DataContext = DataContext;
 			ProgramLabel.ContextMenu.IsOpen = true;
-		}
-
-		private void Label_MouseUp(object sender, MouseButtonEventArgs e)
-		{
-			if (e.ChangedButton == MouseButton.Right)
-				return;
-
-			(sender as Label).ContextMenu.DataContext = viewModel;
-			(sender as Label).ContextMenu.IsOpen = true;
-		}
-
-		private void MenuItem_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-		{
-			var s = (sender as MenuItem);
-			viewModel.SetReductionEffectCommand.Execute(s.CommandParameter);
 		}
 	}
 }

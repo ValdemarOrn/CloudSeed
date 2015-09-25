@@ -33,4 +33,18 @@ namespace AudioLib
 
 		return output;
 	}
+
+	vector<double> ShaRandom::Generate(long long seed, int count, double crossSeed)
+	{
+		auto seedA = seed;
+		auto seedB = ~seed;
+		auto seriesA = Generate(seedA, count);
+		auto seriesB = Generate(seedB, count);
+
+		vector<double> output;
+		for (int i = 0; i < count; i++)
+			output.push_back(seriesA[i] * (1 - crossSeed) + seriesB[i] * crossSeed);
+
+		return output;
+	}
 }

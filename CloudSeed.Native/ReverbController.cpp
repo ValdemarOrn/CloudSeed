@@ -39,30 +39,6 @@ namespace CloudSeed
 		return parameters;
 	}
 
-	int ReverbController::GetSampleResolution()
-	{
-		auto reso = P(Parameter::SampleResolution);
-		if (reso < 0.33)
-			return 6;
-		if (reso < 0.66)
-			return 8;
-		else
-			return 16;
-	}
-
-	int ReverbController::GetUndersampling()
-	{
-		auto reso = P(Parameter::Undersampling);
-		if (reso < 0.25)
-			return 1;
-		if (reso < 0.5)
-			return 2;
-		if (reso < 0.75)
-			return 4;
-		else
-			return 8;
-	}
-
 	double ReverbController::GetScaledParameter(Parameter param)
 	{
 		switch (param)
@@ -117,7 +93,7 @@ namespace CloudSeed
 			case Parameter::PostDiffusionSeed:         return (int)(P(Parameter::PostDiffusionSeed) * 1000000);
 
 			// Output
-			case Parameter::CrossFeed:                 return P(Parameter::CrossFeed);
+			case Parameter::CrossSeed:                 return P(Parameter::CrossSeed);
 
 			case Parameter::DryOut:                    return ValueTables::Get(P(Parameter::DryOut), ValueTables::Response2Dec);
 			case Parameter::PredelayOut:               return ValueTables::Get(P(Parameter::PredelayOut), ValueTables::Response2Dec);
@@ -134,8 +110,6 @@ namespace CloudSeed
 
 			// Effects
 			case Parameter::Interpolation:			   return P(Parameter::Interpolation) < 0.5 ? 0.0 : 1.0;
-			case Parameter::SampleResolution:	       return GetSampleResolution();
-			case Parameter::Undersampling:			   return GetUndersampling();
 
 			default: return 0.0;
 		}
@@ -148,12 +122,16 @@ namespace CloudSeed
 		parameters[(int)param] = value;
 		auto scaled = GetScaledParameter(param);
 
-		channelL.SetParameter(param, scaled);
-
-		if ((int)param >= (int)Parameter::TapSeed && (int)param <= (int)Parameter::PostDiffusionSeed)
-			scaled = (int)scaled + 1000000; // different seeds for right channel
-
-		channelR.SetParameter(param, scaled);
+		if (param == Parameter::CrossSeed) // this is the only parameter that varies between the two channels
+		{
+			channelL.SetParameter(param, 0);
+			channelR.SetParameter(param, scaled);
+		}
+		else
+		{
+			channelL.SetParameter(param, scaled);
+			channelR.SetParameter(param, scaled);
+		}
 	}
 
 	void ReverbController::ClearBuffers()
@@ -168,9 +146,6 @@ namespace CloudSeed
 		auto cm = GetScaledParameter(Parameter::InputMix) * 0.5;
 		auto cmi = (1 - cm);
 
-		auto crossFeed = 0.5 * GetScaledParameter(Parameter::CrossFeed);
-		auto directFeed = 1.0 - crossFeed;
-
 		for (uint i = 0; i < len; i++)
 		{
 			leftChannelIn[i] = input[0][i] * cmi + input[1][i] * cm;
@@ -184,8 +159,8 @@ namespace CloudSeed
 
 		for (uint i = 0; i < len; i++)
 		{
-			output[0][i] = leftOut[i] * directFeed + rightOut[i] * crossFeed;
-			output[1][i] = rightOut[i] * directFeed + leftOut[i] * crossFeed;
+			output[0][i] = leftOut[i];
+			output[1][i] = rightOut[i];
 		}
 	}
 

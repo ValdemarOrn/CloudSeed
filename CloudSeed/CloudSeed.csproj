@@ -75,8 +75,8 @@
     <Compile Include="UI\BorderlessDialog.xaml.cs">
       <DependentUpon>BorderlessDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\CenterHelper.cs" />
     <Compile Include="UI\DelegateCommand.cs" />
-    <Compile Include="UI\ReductionEffects.cs" />
     <Compile Include="UI\RenameProgramDialog.xaml.cs">
       <DependentUpon>RenameProgramDialog.xaml</DependentUpon>
     </Compile>

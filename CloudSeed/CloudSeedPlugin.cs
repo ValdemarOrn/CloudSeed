@@ -122,6 +122,8 @@ namespace CloudSeed
 		
 		public void OpenEditor(IntPtr parentWindow) 
 		{
+			System.Threading.Tasks.Task.Run(() => ProgramBanks.Bank.ReloadPrograms());
+
 			view = new CloudSeedView(ViewModel);
 			devInfo.EditorWidth = (int)view.Width;
 			devInfo.EditorHeight = (int)view.Height;

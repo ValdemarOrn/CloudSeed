@@ -23,7 +23,9 @@ namespace CloudSeed
 		double* output;
 		int delay;
 		double modRate;
-		vector<double> seeds;
+		vector<double> seedValues;
+		int seed;
+		double crossSeed;
 		
 	public:
 		int Stages;
@@ -31,9 +33,10 @@ namespace CloudSeed
 		AllpassDiffuser(int bufferSize, int samplerate);
 		~AllpassDiffuser();
 		int GetSamplerate();
-		void SetSamplerate(int samplerate);
-		vector<double> GetSeeds();
-		void SetSeeds(vector<double> seeds);
+		void SetSamplerate(int samplerate);		
+		void SetSeed(int seed);
+		void SetCrossSeed(double crossSeed);
+
 		bool GetModulationEnabled();
 		void SetModulationEnabled(bool value);
 		void SetInterpolationEnabled(bool enabled);
@@ -43,9 +46,12 @@ namespace CloudSeed
 		void SetFeedback(double feedback);
 		void SetModAmount(double amount);
 		void SetModRate(double rate);
-		void Update();
 		void Process(double* input, int sampleCount);
 		void ClearBuffers();
+
+	private:
+		void Update();
+		void UpdateSeeds();
 	};
 }
 #endif

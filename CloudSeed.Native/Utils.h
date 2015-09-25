@@ -32,6 +32,7 @@ namespace CloudSeed
 		// perform bit crushing and undersampling
 		// undersampling: if set to 1, perfroms no effect, if set to 2, will undersample to 1/2 samplerate, etc...
 		// sampleResolution: if set to 32, will use 2^32 steps, if set to 8, will resude to 2^8 = 256 steps
+		// Currently Unused
 		static inline void BitcrushAndReduce(double* bufferIn, double* bufferOut, int len, int undersampling, int sampleResolution)
 		{
 			double sampleSteps = std::pow(2, sampleResolution);
