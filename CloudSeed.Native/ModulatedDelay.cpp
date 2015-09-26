@@ -11,6 +11,9 @@ namespace CloudSeed
 		this->output = new double[bufferSize];
 		this->SampleDelay = sampleDelay;
 		writeIndex = 0;
+		modPhase = 0.01 + 0.98 * (std::rand() / (double)RAND_MAX);
+		ModRate = 0.0;
+		ModAmount = 0.0;
 		Update();
 	}
 
@@ -54,7 +57,8 @@ namespace CloudSeed
 	void ModulatedDelay::Update()
 	{
 		modPhase += ModRate * ModulationUpdateRate;
-		if (modPhase > 1) modPhase -= 1;
+		if (modPhase > 1) 
+			modPhase = std::fmod(modPhase, 1.0);
 
 		auto mod = FastSin::Get(modPhase);
 		auto totalDelay = SampleDelay + ModAmount * mod;

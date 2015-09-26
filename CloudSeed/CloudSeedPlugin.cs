@@ -85,18 +85,24 @@ namespace CloudSeed
 
 			ViewModel = new CloudSeedViewModel(this);
 			controller.ClearBuffers();
+
+			var prog = ProgramBanks.Bank.FactoryPrograms.Any()
+				? ProgramBanks.Bank.FactoryPrograms.First()
+				: new ProgramBanks.PluginProgram { Name = "Default Program" };
+
+			SetPluginProgram(prog);
 		}
 
 		public CloudSeedViewModel ViewModel { get; private set; }
 
 		public void DisposeDevice()
 		{
-			/*isDisposing = true;
-			Thread.Sleep(100);
+			isDisposing = true;
+			Thread.Sleep(200); // wait for processing to stop
 
 			var disposable = controller as IDisposable;
 			if (disposable != null)
-				disposable.Dispose();*/
+				disposable.Dispose();
 		}
 
 		public void Start()
@@ -170,8 +176,6 @@ namespace CloudSeed
 			ParameterInfo[param.Value()].Value = value;
 			ParameterInfo[param.Value()].Display = GetDisplay(param);
 
-			//System.Windows.Forms.Cursor.Show();
-
 			if (updateUi && ViewModel != null)
 				ViewModel.UpdateParameterAsync(param, value);
 
@@ -191,7 +195,9 @@ namespace CloudSeed
 			var propVal = controller.GetScaledParameter(param);
 			return param.Formatter()(propVal);
 		}
-	
+
+		#region SharpSoundDevice Programs
+
 		public void SetProgramData(Program program, int index)
 		{
 			try
@@ -210,8 +216,24 @@ namespace CloudSeed
 			var output = new Program();
 			var jsonData = GetJsonProgram();
 			output.Data = Encoding.UTF8.GetBytes(jsonData);
-			output.Name = "Default Program";
+			output.Name = "Program";
 			return output;
+		}
+
+		#endregion
+
+		#region Cloud Seed Programs
+
+		public void SetPluginProgram(ProgramBanks.PluginProgram programData)
+		{
+			if (programData.Name == null)
+				return;
+
+			if (programData.Data != null)
+			{
+				SetJsonProgram(programData.Data);
+				ViewModel.SelectedProgram = programData;
+			}
 		}
 
 		public void SetJsonProgram(string jsonData)
@@ -226,6 +248,7 @@ namespace CloudSeed
 					SetParameter(param, kvp.Value, true, true);
 				}
 			}
+
 			controller.ClearBuffers();
 		}
 
@@ -238,6 +261,8 @@ namespace CloudSeed
 			var json = JsonConvert.SerializeObject(dict, Formatting.Indented);
 			return json;
 		}
+
+		#endregion
 
 		public void HostChanged()
 		{

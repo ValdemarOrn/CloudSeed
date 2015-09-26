@@ -31,7 +31,7 @@
   "LateDiffusionModRate": 0.27500006556510925,
   "TapSeed": 0.0011500000255182385,
   "DiffusionSeed": 0.00018899999849963933,
-  "CombSeed": 0.0002730000123847276,
+  "DelaySeed": 0.0002730000123847276,
   "PostDiffusionSeed": 0.00050099997315555811,
   "CrossSeed": 0.5,
   "DryOut": 1.0,

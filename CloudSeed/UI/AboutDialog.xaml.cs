@@ -30,7 +30,7 @@ namespace CloudSeed.UI
 				this.Center();
 			};
 
-			VersionLabel.Content = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			VersionLabel.Content = "Version: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
 		private void Close(object sender, RoutedEventArgs e)

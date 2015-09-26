@@ -55,12 +55,6 @@ namespace CloudSeed.UI
 			updateThread.IsBackground = true;
 			updateThread.Priority = ThreadPriority.Lowest;
 			updateThread.Start();
-
-			var prog = ProgramBanks.Bank.FactoryPrograms.Any()
-				? ProgramBanks.Bank.FactoryPrograms.First()
-				: new ProgramBanks.PluginProgram { Name = "Default Program" };
-
-            LoadProgram(prog);
 		}
 		
 		private void UpdateParameters()
@@ -93,7 +87,11 @@ namespace CloudSeed.UI
 		public ICommand LoadProgramCommand { get; private set; }
 		public ICommand DeleteProgramCommand { get; private set; }
 
-		public ObservableCollection<double> NumberedParameters { get; private set; }
+		public ObservableCollection<double> NumberedParameters
+		{
+			get;
+			private set;
+		}
 
 		public Parameter? ActiveControl
 		{
@@ -154,13 +152,7 @@ namespace CloudSeed.UI
 
 		private void LoadProgram(ProgramBanks.PluginProgram programData)
 		{
-			if (programData.Name == null)
-				return;
-
-			if (programData.Data != null)
-				plugin.SetJsonProgram(programData.Data);
-
-			SelectedProgram = programData;
+			plugin.SetPluginProgram(programData);
 		}
 
 		private void SaveProgram(string name)
