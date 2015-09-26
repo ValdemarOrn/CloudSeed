@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "ReverbController.h"
 #include "AudioLib/ValueTables.h"
 #include "AllpassDiffuser.h"
@@ -56,7 +54,7 @@ namespace CloudSeed
 			case Parameter::TapGain:                   return ValueTables::Get(P(Parameter::TapGain), ValueTables::Response2Dec);
 			case Parameter::TapDecay:                  return P(Parameter::TapDecay);
 
-			case Parameter::DiffusionEnabled:          return P(Parameter::DiffusionEnabled);
+			case Parameter::DiffusionEnabled:          return P(Parameter::DiffusionEnabled) < 0.5 ? 0.0 : 1.0;
 			case Parameter::DiffusionStages:           return 1 + (int)(P(Parameter::DiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
 			case Parameter::DiffusionDelay:            return (int)(P(Parameter::DiffusionDelay) * 50);
 			case Parameter::DiffusionFeedback:         return P(Parameter::DiffusionFeedback);
@@ -66,7 +64,7 @@ namespace CloudSeed
 			case Parameter::LineDelay:                 return (int)(P(Parameter::LineDelay) * 500);
 			case Parameter::LineFeedback:              return P(Parameter::LineFeedback);
 
-			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled);
+			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled) < 0 ? 0.0 : 1.0;
 			case Parameter::LateDiffusionStages:       return 1 + (int)(P(Parameter::LateDiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
 			case Parameter::LateDiffusionDelay:        return (int)(P(Parameter::LateDiffusionDelay) * 50);
 			case Parameter::LateDiffusionFeedback:     return P(Parameter::LateDiffusionFeedback);
@@ -87,10 +85,10 @@ namespace CloudSeed
 			case Parameter::LateDiffusionModRate:      return ValueTables::Get(P(Parameter::LateDiffusionModRate), ValueTables::Response2Dec) * 5;
 
 			// Seeds
-			case Parameter::TapSeed:                   return (int)(P(Parameter::TapSeed) * 1000000);
-			case Parameter::DiffusionSeed:             return (int)(P(Parameter::DiffusionSeed) * 1000000);
-			case Parameter::CombSeed:                  return (int)(P(Parameter::CombSeed) * 1000000);
-			case Parameter::PostDiffusionSeed:         return (int)(P(Parameter::PostDiffusionSeed) * 1000000);
+			case Parameter::TapSeed:                   return (int)std::floor(P(Parameter::TapSeed) * 1000000 + 0.001);
+			case Parameter::DiffusionSeed:             return (int)std::floor(P(Parameter::DiffusionSeed) * 1000000 + 0.001);
+			case Parameter::CombSeed:                  return (int)std::floor(P(Parameter::CombSeed) * 1000000 + 0.001);
+			case Parameter::PostDiffusionSeed:         return (int)std::floor(P(Parameter::PostDiffusionSeed) * 1000000 + 0.001);
 
 			// Output
 			case Parameter::CrossSeed:                 return P(Parameter::CrossSeed);

@@ -20,37 +20,27 @@ namespace CloudSeed.UI
 	/// <summary>
 	/// Interaction logic for RenameProgramDialog.xaml
 	/// </summary>
-	public partial class RenameProgramDialog : Window
+	public partial class AboutDialog : Window
 	{
-		public RenameProgramDialog()
+		public AboutDialog()
 		{
 			InitializeComponent();
 			this.IsVisibleChanged += (s, x) =>
 			{
 				this.Center();
-				MainTextBox.Focus();
 			};
+
+			VersionLabel.Content = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
-		public bool Cancelled { get; private set; }
-		
-		public string ShowDialog(string title)
+		private void Close(object sender, RoutedEventArgs e)
 		{
-			TitleLabel.Content = title;
-			this.ShowDialog();
-			return Cancelled ? null : MainTextBox.Text;
-        }
-
-		private void Save(object sender, RoutedEventArgs e)
-		{
-			Cancelled = false;
 			Close();
 		}
 
-		private void Cancel(object sender, RoutedEventArgs e)
+		private void GoToWebsite(object sender, MouseButtonEventArgs e)
 		{
-			Cancelled = true;
-			Close();
+			System.Diagnostics.Process.Start("https://github.com/ValdemarOrn/CloudSeed");
 		}
 	}
 }

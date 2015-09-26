@@ -52,10 +52,11 @@ namespace CloudSeed.UI
 			};
 
 			updateThread = new Thread(UpdateParameters);
+			updateThread.IsBackground = true;
 			updateThread.Priority = ThreadPriority.Lowest;
 			updateThread.Start();
 
-			var prog = ProgramBanks.Bank.UserPrograms.Any()
+			var prog = ProgramBanks.Bank.FactoryPrograms.Any()
 				? ProgramBanks.Bank.FactoryPrograms.First()
 				: new ProgramBanks.PluginProgram { Name = "Default Program" };
 

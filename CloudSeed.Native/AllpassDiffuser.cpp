@@ -1,19 +1,16 @@
 #include "AllpassDiffuser.h"
 #include "AudioLib\ShaRandom.h"
 #include "Utils.h"
-#include <iostream>
 
 namespace CloudSeed
 {
 	AllpassDiffuser::AllpassDiffuser(int bufferSize, int samplerate)
 	{
-		this->bufferSize = bufferSize;
 		for (int i = 0; i < MaxStageCount; i++)
 		{
 			filters.push_back(new ModulatedAllpass(bufferSize, 100));
 		}
 		
-		output = new double[bufferSize];
 		crossSeed = 0.0;
 		seed = 23456;
 		UpdateSeeds();
@@ -24,9 +21,6 @@ namespace CloudSeed
 
 	AllpassDiffuser::~AllpassDiffuser()
 	{
-		std::cout << "Deleting AllpassDiffuser " << std::endl;
-		delete output;
-
 		for (auto filter : filters)
 			delete filter;
 	}
@@ -73,7 +67,7 @@ namespace CloudSeed
 
 	double* AllpassDiffuser::GetOutput()
 	{
-		return output;
+		return filters[Stages - 1]->GetOutput();
 	}
 
 
@@ -119,14 +113,10 @@ namespace CloudSeed
 		{
 			filterPtr[i]->Process(filterPtr[i - 1]->GetOutput(), sampleCount);
 		}
-		
-		output = filterPtr[Stages - 1]->GetOutput();
 	}
 
 	void AllpassDiffuser::ClearBuffers()
 	{
-		Utils::ZeroBuffer(output, bufferSize);
-
 		for (size_t i = 0; i < filters.size(); i++)
 			filters[i]->ClearBuffers();
 	}

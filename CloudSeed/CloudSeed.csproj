@@ -72,11 +72,11 @@
     <Compile Include="Parameter.cs" />
     <Compile Include="ReverbController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\BorderlessDialog.xaml.cs">
-      <DependentUpon>BorderlessDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\CenterHelper.cs" />
     <Compile Include="UI\DelegateCommand.cs" />
+    <Compile Include="UI\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\RenameProgramDialog.xaml.cs">
       <DependentUpon>RenameProgramDialog.xaml</DependentUpon>
     </Compile>
@@ -91,11 +91,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UI\BorderlessDialog.xaml">
+    <Page Include="UI\CloudSeedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\CloudSeedView.xaml">
+    <Page Include="UI\AboutDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

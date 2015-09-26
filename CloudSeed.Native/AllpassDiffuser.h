@@ -19,8 +19,6 @@ namespace CloudSeed
 		int samplerate;
 
 		vector<ModulatedAllpass*> filters;
-		int bufferSize;
-		double* output;
 		int delay;
 		double modRate;
 		vector<double> seedValues;

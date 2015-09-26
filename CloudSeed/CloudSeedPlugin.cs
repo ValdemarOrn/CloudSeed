@@ -36,7 +36,7 @@ namespace CloudSeed
 
 		public CloudSeedPlugin()
 		{
-			AllocConsole();
+			//AllocConsole();
 			controller = new UnsafeReverbController(48000);
 			controller.Samplerate = 48000;
 

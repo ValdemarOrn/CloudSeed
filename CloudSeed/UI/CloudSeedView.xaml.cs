@@ -156,5 +156,12 @@ namespace CloudSeed.UI
 			ProgramLabel.ContextMenu.DataContext = DataContext;
 			ProgramLabel.ContextMenu.IsOpen = true;
 		}
+
+		private void ShowAboutDialog(object sender, MouseButtonEventArgs e)
+		{
+			var dialog = new AboutDialog();
+			dialog.Owner = Parent as Window;
+			dialog.ShowDialog();
+		}
 	}
 }

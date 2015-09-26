@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "ModulatedAllpass.h"
 #include "FastSin.h"
 #include "Utils.h"
@@ -17,12 +15,10 @@ namespace CloudSeed
 		output = new double[bufferSize];
 		SampleDelay = sampleDelay;
 		index = bufferSize - 1;
-		std::cout << "Created ModulatedAllpass " << this->Id << ", buffer: " << (int)buffer << ", output: " << (int)output << std::endl;
 	}
 
 	ModulatedAllpass::~ModulatedAllpass()
 	{
-		std::cout << "Deleting ModulatedAllpass " << this->Id << ", buffer: " << (int)buffer << ", output: " << (int)output << std::endl;
 		delete buffer;
 		delete output;
 	}

@@ -1,6 +1,5 @@
 #include "DelayLine.h"
 #include "Utils.h"
-#include <iostream>
 
 namespace CloudSeed
 {
@@ -34,7 +33,6 @@ namespace CloudSeed
 
 	DelayLine::~DelayLine()
 	{
-		std::cout << "Deleting DelayLine " << std::endl;
 		delete tempBuffer;
 		delete mixedBuffer;
 		delete filterOutputBuffer;

@@ -40,7 +40,9 @@
             </Label.Effect>
         </Label>
 
-        <Label Grid.Column="3" Content="By Low Profile" FontFamily="../#Open Sans Light" FontSize="14" Foreground="#777" VerticalAlignment="Top" Margin="0,35,0,0" HorizontalAlignment="Center" />
+        <Label Grid.Column="3" Content="By Low Profile" FontSize="14" Style="{StaticResource LinkHighlightStyle}"
+               MouseDown="ShowAboutDialog"
+               VerticalAlignment="Top" Margin="0,35,0,0" HorizontalAlignment="Center" />
         
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -103,7 +105,7 @@
                 <Label Content="Early Out" Grid.Row="5" Grid.Column="2" />
                 <Label Content="Main Out" Grid.Row="5" Grid.Column="3" />
 
-                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="Interpolation" TextOff="Disabled" TextOn="Enabled" Grid.ColumnSpan="2" />
+                <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="Interpolation" Grid.Column="1" />
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="HiPassEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LowPassEnabled" Grid.Column="3" Grid.Row="0" IsChecked="True" />
 

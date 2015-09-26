@@ -4,7 +4,6 @@
 #include "MultitapDiffuser.h"
 #include "Utils.h"
 #include "AudioLib/ShaRandom.h"
-#include <iostream>
 
 namespace CloudSeed
 {
@@ -24,7 +23,6 @@ namespace CloudSeed
 
 	MultitapDiffuser::~MultitapDiffuser()
 	{
-		std::cout << "Deleting MultitapDiffuser " << std::endl;
 		delete buffer;
 		delete output;
 	}
