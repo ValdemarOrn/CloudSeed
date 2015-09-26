@@ -88,7 +88,7 @@ namespace CloudSeed
 
 			var prog = ProgramBanks.Bank.FactoryPrograms.Any()
 				? ProgramBanks.Bank.FactoryPrograms.First()
-				: new ProgramBanks.PluginProgram { Name = "Default Program" };
+				: new ProgramBanks.PluginProgram { Name = "Default Program", Data = "{}" };
 
 			SetPluginProgram(prog);
 		}

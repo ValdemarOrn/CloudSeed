@@ -34,7 +34,7 @@ namespace CloudSeed.UI
 				NumberedParameters.Add(0.0);
 
 			SaveProgramCommand = new DelegateCommand(name => SaveProgram(name.ToString()));
-			LoadProgramCommand = new DelegateCommand(program => LoadProgram((ProgramBanks.PluginProgram)program));
+			LoadProgramCommand = new DelegateCommand(program => LoadProgram((ProgramBanks.PluginProgram?)program));
 			DeleteProgramCommand = new DelegateCommand(_ => DeleteProgram());
 
             NumberedParameters.CollectionChanged += (s, e) =>
@@ -150,9 +150,12 @@ namespace CloudSeed.UI
 			}
 		}
 
-		private void LoadProgram(ProgramBanks.PluginProgram programData)
+		private void LoadProgram(ProgramBanks.PluginProgram? programData)
 		{
-			plugin.SetPluginProgram(programData);
+			if (programData == null)
+				return;
+
+			plugin.SetPluginProgram(programData.Value);
 		}
 
 		private void SaveProgram(string name)
