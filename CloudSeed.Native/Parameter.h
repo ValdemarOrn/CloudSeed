@@ -58,7 +58,7 @@ enum class Parameter
 
 	TapSeed,
 	DiffusionSeed,
-	CombSeed,
+	DelaySeed,
 	PostDiffusionSeed,
 
 	// Seed Mix

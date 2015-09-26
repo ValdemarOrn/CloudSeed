@@ -107,7 +107,7 @@ namespace CloudSeed
 				// Seeds
 				case Parameter.TapSeed:                   return (int)(P(Parameter.TapSeed) * 1000000);
 				case Parameter.DiffusionSeed:             return (int)(P(Parameter.DiffusionSeed) * 1000000);
-				case Parameter.CombSeed:                  return (int)(P(Parameter.CombSeed) * 1000000);
+				case Parameter.DelaySeed:                 return (int)(P(Parameter.DelaySeed) * 1000000);
 				case Parameter.PostDiffusionSeed:         return (int)(P(Parameter.PostDiffusionSeed) * 1000000);
 
 				// Output

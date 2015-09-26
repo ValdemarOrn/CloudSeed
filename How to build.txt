@@ -1,0 +1,6 @@
+Use the Visual Studio Command Prompt to run build.bat.
+It will create a new zip file inside the Builds/ directory containing
+.NET assemblies compiled in release mode, as well as VST wrappers for each of them.
+
+To find the Visual Studio Command Prompt, look in the start menu:
+"Developer Command Prompt for VS2012"

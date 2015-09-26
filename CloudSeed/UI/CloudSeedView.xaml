@@ -56,17 +56,15 @@
         <Grid Grid.Row="0" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Impulses"  Style="{StaticResource MainLabelStyle}" />
-            <Label Grid.Column="1" Content="Diffusion"  Style="{StaticResource MainLabelStyle}" />
+            <Label Grid.Column="0" Content="Early Reflections"  Style="{StaticResource MainLabelStyle}" />
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Late Diffusion"  Style="{StaticResource MainLabelStyle}" />
+            <Label Grid.Column="0" Content="Late Reverberation"  Style="{StaticResource MainLabelStyle}" />
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="3">
@@ -285,7 +283,7 @@
             </Grid.RowDefinitions>
             <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="TapSeed" Grid.Column="0" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
             <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="DiffusionSeed" Grid.Column="1" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
-            <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="CombSeed" Grid.Column="2" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
+            <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="DelaySeed" Grid.Column="2" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
             <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="PostDiffusionSeed" Grid.Column="3" Grid.Row="0" Style="{StaticResource SeedSpinnerStyle}" Value="12345" Min="0" Max="1000000" Delta="1" Sensitivity="1" Formatter="{}0" />
         </Grid>
 

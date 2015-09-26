@@ -1,5 +1,8 @@
-CloudSeed is an algorithmic reverb plugin built in C# and C++ for emulating huge, endless spaces and modulating echoes, in the spirit of classic studio reverb units like the Lexicon 224.
+Cloud Seed is an algorithmic reverb plugin built in C# and C++ for emulating huge, endless spaces and modulated echoes. The algorithms are based on the same principles as manu classic studio reverb units from the 1980's, but Cloud Seed does not attempt to model any specific device, or even to be a general-purpose reverb plugin at all. It is best employed as a special effect, for creating thick, lush pads out of simple input sounds. 
 
-![](Screenshot.png)
+![](Documentation/Screenshot.png)
 
-It is still in early development, the active code is currently written in C# but I am doing a re-write of the reverberation kernel in C++ to improve stability and performance.
+**Reverb Kernel Architecture**
+![](Documentation/CloudSeed.png)
+
+the code was originally developed in C# and then ported over to C++. The current version contains a full implementation of the reverb kernel in CPU-efficient C++ code. The user interface is built using WPF (Windows Presentation Foundation), and the plugin uses [SharpSoundDevice](https://github.com/ValdemarOrn/SharpSoundDevice) to communicate with a VST host.

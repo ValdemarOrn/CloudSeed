@@ -24,7 +24,7 @@ namespace CloudSeed
 		crossSeed = 0.0;
 		lineCount = 8;
 		perLineGain = GetPerLineGain();
-
+		diffuser.SetInterpolationEnabled(true);
 		highPass.SetCutoffHz(20);
 		lowPass.SetCutoffHz(20000);
 
@@ -211,7 +211,7 @@ namespace CloudSeed
 		case Parameter::DiffusionSeed:
 			diffuser.SetSeed(value);
 			break;
-		case Parameter::CombSeed:
+		case Parameter::DelaySeed:
 			delayLineSeed = value;
 			UpdateLines();
 			break;
@@ -265,7 +265,6 @@ namespace CloudSeed
 			break;
 
 		case Parameter::Interpolation:
-			diffuser.SetInterpolationEnabled(value >= 0.5);
 			for (auto line : lines)
 				line->SetInterpolationEnabled(value >= 0.5);
 			break;

@@ -48,7 +48,11 @@ namespace CloudSeed
 
 		public void InitializeDevice()
 		{
+#if DEBUG
+			devInfo.DeviceID = "Low Profile - CloudSeed - DEV";
+#else
 			devInfo.DeviceID = "Low Profile - CloudSeed";
+# endif
 			devInfo.Developer = "Valdemar Erlingsson";
 			devInfo.EditorWidth = 995;
 			devInfo.EditorHeight = 386;

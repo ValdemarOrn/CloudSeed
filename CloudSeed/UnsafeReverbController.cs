@@ -92,6 +92,31 @@ namespace CloudSeed
 			Process(instance, (double**)input, (double**)output, bufferSize);
 		}
 
+		public void Process(double[][] input, double[][] output, int bufferSize)
+		{
+			var inL = input[0];
+			var inR = input[1];
+			var outL = output[0];
+			var outR = output[1];
+			var inPtr = new IntPtr[2];
+			var outPtr = new IntPtr[2];
+
+			fixed (double* il = inL)
+			fixed (double* ir = inR)
+			fixed (double* ol = outL)
+			fixed (double* or = outR)
+			fixed (IntPtr* ins = inPtr)
+			fixed (IntPtr* outs = outPtr)
+			{
+				ins[0] = (IntPtr)il;
+				ins[1] = (IntPtr)ir;
+				outs[0] = (IntPtr)ol;
+				outs[1] = (IntPtr)or;
+
+				Process((IntPtr)ins, (IntPtr)outs, bufferSize);
+			}
+		}
+
 		public void ClearBuffers()
 		{
 			ClearBuffers(instance);

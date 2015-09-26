@@ -63,7 +63,7 @@ namespace CloudSeed
 
 		TapSeed,
 		DiffusionSeed,
-		CombSeed,
+		DelaySeed,
 		PostDiffusionSeed,
 		
 		// Seed Mix
@@ -187,7 +187,7 @@ namespace CloudSeed
 
 			{ Parameter.TapSeed, IntFormatter },
 			{ Parameter.DiffusionSeed, IntFormatter },
-			{ Parameter.CombSeed, IntFormatter },
+			{ Parameter.DelaySeed, IntFormatter },
 			{ Parameter.PostDiffusionSeed, IntFormatter },
 
 			{ Parameter.CrossSeed, DecimalFormatter },

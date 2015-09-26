@@ -64,7 +64,6 @@
     <Compile Include="FastSin.cs" />
     <Compile Include="ParameterControl.cs" />
     <Compile Include="ProgramBanks.cs" />
-    <Compile Include="PTimer.cs" />
     <Compile Include="ReverbChannel.cs" />
     <Compile Include="ModulatedDelay.cs" />
     <Compile Include="MultitapDiffuser.cs" />
@@ -81,7 +80,6 @@
       <DependentUpon>RenameProgramDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UnsafeReverbController.cs" />
-    <None Include="OldWrapper.cs" />
     <Compile Include="UI\CloudSeedView.xaml.cs">
       <DependentUpon>CloudSeedView.xaml</DependentUpon>
     </Compile>

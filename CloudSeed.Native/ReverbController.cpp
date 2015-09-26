@@ -64,7 +64,7 @@ namespace CloudSeed
 			case Parameter::LineDelay:                 return (int)(P(Parameter::LineDelay) * 500);
 			case Parameter::LineFeedback:              return P(Parameter::LineFeedback);
 
-			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled) < 0 ? 0.0 : 1.0;
+			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled) < 0.5 ? 0.0 : 1.0;
 			case Parameter::LateDiffusionStages:       return 1 + (int)(P(Parameter::LateDiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
 			case Parameter::LateDiffusionDelay:        return (int)(P(Parameter::LateDiffusionDelay) * 50);
 			case Parameter::LateDiffusionFeedback:     return P(Parameter::LateDiffusionFeedback);
@@ -87,7 +87,7 @@ namespace CloudSeed
 			// Seeds
 			case Parameter::TapSeed:                   return (int)std::floor(P(Parameter::TapSeed) * 1000000 + 0.001);
 			case Parameter::DiffusionSeed:             return (int)std::floor(P(Parameter::DiffusionSeed) * 1000000 + 0.001);
-			case Parameter::CombSeed:                  return (int)std::floor(P(Parameter::CombSeed) * 1000000 + 0.001);
+			case Parameter::DelaySeed:                 return (int)std::floor(P(Parameter::DelaySeed) * 1000000 + 0.001);
 			case Parameter::PostDiffusionSeed:         return (int)std::floor(P(Parameter::PostDiffusionSeed) * 1000000 + 0.001);
 
 			// Output

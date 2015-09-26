@@ -205,7 +205,7 @@ namespace CloudSeed
 				case Parameter.DiffusionSeed:
 					diffuser.Seeds = rand.Generate((int)value, AllpassDiffuser.MaxStageCount * 3).ToArray();
 					break;
-				case Parameter.CombSeed:
+				case Parameter.DelaySeed:
 					delayLineSeeds = rand.Generate((int)value, lines.Length * 3).ToArray();
 					UpdateLines();
 					break;
