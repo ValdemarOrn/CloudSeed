@@ -11,6 +11,7 @@ namespace CloudSeed.Tests
 		public static void Main(string[] args)
 		{
 			new UnsafeReverbTests().TestSetProgram();
+			Console.ReadLine();
 		}
 	}
 }

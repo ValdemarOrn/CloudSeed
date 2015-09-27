@@ -167,6 +167,7 @@ namespace CloudSeed.Tests
 					}
 				}
             }
+			Console.WriteLine("Disposing");
 			controller.Dispose();
 		}
 	}
