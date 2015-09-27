@@ -10,6 +10,9 @@ Cloud Seed is an algorithmic reverb plugin built in C# and C++ for emulating hug
 2. Copy the files into your VST plugin directory. Be sure to keep the 32 bit and the 64 bit folders separate, do not copy files from one directory over the other as this will make the plugin unloadable.  
 3. Most users will need to install the Microsoft Visual Studio 2015 Redistributable Runtime. This component can be [**downloaded directly from Microsoft**](https://www.microsoft.com/en-us/download/details.aspx?id=48145) (Note: I've had some difficulty getting Microsoft's web site to work, if you have the same problems you can download the [**32 bit verion here**](http://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x86.exe) and the [**64 bit version here**](http://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x64.exe).)
 
+**If you get errors about either "vcruntime140.dll" or 
+"msvcp140.dll", you need to install the Redistributable Runtime as described above.**
+
 
 ## Documentation
 
