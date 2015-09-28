@@ -39,11 +39,16 @@ namespace CloudSeed
 		[DllImport(@"CloudSeed.Native.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = false, ThrowOnUnmappableChar = false)]
 		static extern void Process(IntPtr item, double** input, double** output, int bufferSize);
 
+		private static object createLock = new object();
+
 		private IntPtr instance;
 
 		public UnsafeReverbController(int samplerate)
 		{
-			instance = Create(samplerate);
+			lock (createLock)
+			{
+				instance = Create(samplerate);
+			}
 		}
 
 		~UnsafeReverbController()

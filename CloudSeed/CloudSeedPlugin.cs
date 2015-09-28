@@ -122,6 +122,8 @@ namespace CloudSeed
 
 		public void ProcessSample(IntPtr input, IntPtr output, uint inChannelCount, uint outChannelCount, uint bufferSize)
 		{
+			if (bufferSize > 4096)
+				throw new Exception("Buffer size is >1024 sample. CloudSeed does no support buffers this large");
 			if (inChannelCount != 2)
 				throw new Exception("InChannelCount for CloudSeed must be 2");
 			if (outChannelCount != 2)

@@ -6,11 +6,12 @@ namespace CloudSeed
 	class ModulatedAllpass
 	{
 	public:
+		const int DelayBufferSamples = 9600; // 50ms at 192Khz
 		static const int ModulationUpdateRate = 8;
 
 	private:
 		int Id;
-		double* buffer;
+		double* delayBuffer;
 		double* output;
 		int bufferSize;
 		int index;

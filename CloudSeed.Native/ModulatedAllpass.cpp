@@ -11,10 +11,10 @@ namespace CloudSeed
 		this->InterpolationEnabled = true;
 		this->Id = id++;
 		this->bufferSize = bufferSize;
-		buffer = new double[bufferSize];
+		delayBuffer = new double[DelayBufferSamples];
 		output = new double[bufferSize];
 		SampleDelay = sampleDelay;
-		index = bufferSize - 1;
+		index = DelayBufferSamples - 1;
 		modPhase = 0.01 + 0.98 * std::rand() / (double)RAND_MAX;
 		ModRate = 0.0;
 		ModAmount = 0.0;
@@ -23,7 +23,7 @@ namespace CloudSeed
 
 	ModulatedAllpass::~ModulatedAllpass()
 	{
-		delete buffer;
+		delete delayBuffer;
 		delete output;
 	}
 
@@ -34,7 +34,7 @@ namespace CloudSeed
 
 	void ModulatedAllpass::ClearBuffers()
 	{
-		Utils::ZeroBuffer(buffer, bufferSize);
+		Utils::ZeroBuffer(delayBuffer, DelayBufferSamples);
 		Utils::ZeroBuffer(output, bufferSize);
 	}
 
@@ -49,20 +49,20 @@ namespace CloudSeed
 	void ModulatedAllpass::ProcessNoMod(double* input, int sampleCount)
 	{
 		auto delayedIndex = index - SampleDelay;
-		if (delayedIndex < 0) delayedIndex += bufferSize;
+		if (delayedIndex < 0) delayedIndex += DelayBufferSamples;
 
 		for (int i = 0; i < sampleCount; i++)
 		{			
-			auto bufOut = buffer[delayedIndex];
+			auto bufOut = delayBuffer[delayedIndex];
 			auto inVal = input[i] + bufOut * Feedback;
 
-			buffer[index] = inVal;
+			delayBuffer[index] = inVal;
 			output[i] = bufOut - inVal * Feedback;
 
 			index++;
 			delayedIndex++;
-			if (index >= bufferSize) index -= bufferSize;
-			if (delayedIndex >= bufferSize) delayedIndex -= bufferSize;
+			if (index >= DelayBufferSamples) index -= DelayBufferSamples;
+			if (delayedIndex >= DelayBufferSamples) delayedIndex -= DelayBufferSamples;
 			samplesProcessed++;
 		}
 	}
@@ -80,24 +80,24 @@ namespace CloudSeed
 			{
 				int idxA = index - delayA;
 				int idxB = index - delayB;
-				idxA += bufferSize * (idxA < 0); // modulo
-				idxB += bufferSize * (idxB < 0); // modulo
+				idxA += DelayBufferSamples * (idxA < 0); // modulo
+				idxB += DelayBufferSamples * (idxB < 0); // modulo
 
-				bufOut = buffer[idxA] * gainA + buffer[idxB] * gainB;
+				bufOut = delayBuffer[idxA] * gainA + delayBuffer[idxB] * gainB;
 			}
 			else
 			{
 				int idxA = index - delayA;
-				idxA += bufferSize * (idxA < 0); // modulo
-				bufOut = buffer[idxA];
+				idxA += DelayBufferSamples * (idxA < 0); // modulo
+				bufOut = delayBuffer[idxA];
 			}
 
 			auto inVal = input[i] + bufOut * Feedback;
-			buffer[index] = inVal;
+			delayBuffer[index] = inVal;
 			output[i] = bufOut - inVal * Feedback;
 
 			index++;
-			if (index >= bufferSize) index -= bufferSize;
+			if (index >= DelayBufferSamples) index -= DelayBufferSamples;
 			samplesProcessed++;
 		}
 	}
@@ -106,9 +106,9 @@ namespace CloudSeed
 	{
 		int idx = index - delay;
 		if (idx < 0)
-			idx += bufferSize;
+			idx += DelayBufferSamples;
 
-		return buffer[idx];
+		return delayBuffer[idx];
 	}
 
 	void ModulatedAllpass::Update()

@@ -7,7 +7,7 @@ namespace CloudSeed
 	ModulatedDelay::ModulatedDelay(int bufferSize, int sampleDelay)
 	{
 		this->bufferSize = bufferSize;
-		this->buffer = new double[bufferSize];
+		this->delayBuffer = new double[DelayBufferSamples];
 		this->output = new double[bufferSize];
 		this->SampleDelay = sampleDelay;
 		writeIndex = 0;
@@ -19,7 +19,7 @@ namespace CloudSeed
 
 	ModulatedDelay::~ModulatedDelay()
 	{
-		delete buffer;
+		delete delayBuffer;
 		delete output;
 	}
 
@@ -35,22 +35,22 @@ namespace CloudSeed
 			if (samplesProcessed == ModulationUpdateRate)
 				Update();
 
-			buffer[writeIndex] = input[i];
-			output[i] = buffer[readIndexA] * gainA + buffer[readIndexB] * gainB;
+			delayBuffer[writeIndex] = input[i];
+			output[i] = delayBuffer[readIndexA] * gainA + delayBuffer[readIndexB] * gainB;
 
 			writeIndex++;
 			readIndexA++;
 			readIndexB++;
-			if (writeIndex >= bufferSize) writeIndex -= bufferSize;
-			if (readIndexA >= bufferSize) readIndexA -= bufferSize;
-			if (readIndexB >= bufferSize) readIndexB -= bufferSize;
+			if (writeIndex >= DelayBufferSamples) writeIndex -= DelayBufferSamples;
+			if (readIndexA >= DelayBufferSamples) readIndexA -= DelayBufferSamples;
+			if (readIndexB >= DelayBufferSamples) readIndexB -= DelayBufferSamples;
 			samplesProcessed++;
 		}
 	}
 
 	void ModulatedDelay::ClearBuffers()
 	{
-		Utils::ZeroBuffer(buffer, bufferSize);
+		Utils::ZeroBuffer(delayBuffer, DelayBufferSamples);
 		Utils::ZeroBuffer(output, bufferSize);
 	}
 
@@ -73,8 +73,8 @@ namespace CloudSeed
 
 		readIndexA = writeIndex - delayA;
 		readIndexB = writeIndex - delayB;
-		if (readIndexA < 0) readIndexA += bufferSize;
-		if (readIndexB < 0) readIndexB += bufferSize;
+		if (readIndexA < 0) readIndexA += DelayBufferSamples;
+		if (readIndexB < 0) readIndexB += DelayBufferSamples;
 
 		samplesProcessed = 0;
 	}

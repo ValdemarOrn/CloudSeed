@@ -7,9 +7,10 @@ namespace CloudSeed
 	{
 	private:
 
+		const int DelayBufferSamples = 96000; // 500ms at 192Khz
 		const int ModulationUpdateRate = 8;
 
-		double* buffer;
+		double* delayBuffer;
 		double* output;
 		int bufferSize;
 		int writeIndex;
