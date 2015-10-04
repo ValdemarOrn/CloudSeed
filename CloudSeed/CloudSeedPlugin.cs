@@ -205,7 +205,12 @@ namespace CloudSeed
 			try
 			{
 				var jsonData = Encoding.UTF8.GetString(program.Data);
-				SetJsonProgram(jsonData);
+				var newProgram = new ProgramBanks.PluginProgram
+				{
+					Data = jsonData,
+					Name = program.Name
+				};
+                SetPluginProgram(newProgram);
 			}
 			catch
 			{
@@ -218,7 +223,7 @@ namespace CloudSeed
 			var output = new Program();
 			var jsonData = GetJsonProgram();
 			output.Data = Encoding.UTF8.GetBytes(jsonData);
-			output.Name = "Program";
+			output.Name = ViewModel.SelectedProgram.Name;
 			return output;
 		}
 
