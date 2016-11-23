@@ -40,9 +40,9 @@
             </Label.Effect>
         </Label>
 
-        <Label Grid.Column="3" Content="By Low Profile" FontSize="14" Style="{StaticResource LinkHighlightStyle}"
+        <Label Grid.Column="2" Grid.ColumnSpan="2"  Content="Designed by Valdemar Erlingsson" FontSize="14" Style="{StaticResource LinkHighlightStyle}"
                MouseDown="ShowAboutDialog"
-               VerticalAlignment="Top" Margin="0,35,0,0" HorizontalAlignment="Center" />
+               VerticalAlignment="Top" Margin="0,35,40,0" HorizontalAlignment="right" />
         
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -149,7 +149,7 @@
                 <Label Content="Mod Rate" Grid.Row="5" Grid.Column="3" />
 
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="DiffusionEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
-                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="DiffusionStages" Grid.Column="3" Grid.Row="0" Value="1" Min="1" Max="8" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="DiffusionStages" Grid.Column="3" Grid.Row="0" Value="1" Min="1" Max="8" Delta="1" Default="1" Sensitivity="20" Formatter="{}0" />
                 
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="TapCount" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="TapLength" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="1" />
@@ -187,22 +187,22 @@
                 <Label Content="Delay" Grid.Row="3" Grid.Column="2" />
                 <Label Content="Mod Amt." Grid.Row="3" Grid.Column="3" />
 
-                <Label Content="Feedback" Grid.Row="5" Grid.Column="0" />
+                <Label Content="Decay" Grid.Row="5" Grid.Column="0" />
                 <Label Content="Mod Rate" Grid.Row="5" Grid.Column="1" />
                 <Label Content="Feedback" Grid.Row="5" Grid.Column="2" />
                 <Label Content="Mod Rate" Grid.Row="5" Grid.Column="3" />
 
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LateStageTap" Grid.Column="0" Grid.Row="0" IsChecked="True" TextOn="Post" TextOff="Pre" />
-                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="LineCount" Grid.Column="1" Grid.Row="0" Value="1" Min="1" Max="12" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="LineCount" Grid.Column="1" Grid.Row="0" Value="1" Min="1" Max="12" Delta="1" Sensitivity="20" Formatter="{}0" Default="1" />
                 <wpfUi:FlatToggleButton cloudSeed:ParameterControl.Parameter="LateDiffusionEnabled" Grid.Column="2" Grid.Row="0" IsChecked="True" />
-                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="LateDiffusionStages" Grid.Column="3" Grid.Row="0" Value="1" Min="1" Max="8" Delta="1" Sensitivity="20" Formatter="{}0" />
+                <wpfUi:Spinner cloudSeed:ParameterControl.Parameter="LateDiffusionStages" Grid.Column="3" Grid.Row="0" Value="1" Min="1" Max="8" Delta="1" Sensitivity="20" Formatter="{}0" Default="1" />
 
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineDelay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="0" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineModAmount" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="1" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LateDiffusionDelay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="2" Grid.Column="2" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LateDiffusionModAmount" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="2" Grid.Column="3" />
 
-                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineFeedback" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" />
+                <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineDecay" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="0" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LineModRate" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="1" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LateDiffusionFeedback" Style="{StaticResource ResourceKey=KnobStyle}" Grid.Row="4" Grid.Column="2" />
                 <wpfUi:Knob2 cloudSeed:ParameterControl.Parameter="LateDiffusionModRate" Style="{StaticResource ResourceKey=KnobSmallStyle}" Grid.Row="4" Grid.Column="3" />

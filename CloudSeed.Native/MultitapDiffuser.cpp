@@ -147,17 +147,15 @@ namespace CloudSeed
 		double lastTapPos = newTapPosition[count - 1];
 		for (int i = 0; i < count; i++)
 		{
-			// gain formula: exp(-tapPos/lastTapPos * (0.5 + decay)^3)
-			auto adjuster = 0.5 + decay;
-			adjuster = adjuster * adjuster * adjuster;
-
-			auto g = std::exp(-newTapPosition[i] / (double)(lastTapPos + 1) * adjuster);
+			// when decay set to 0, there is no decay, when set to 1, the gain at the last sample is 0.01 = -40dB
+			auto g = std::pow(10, -decay * 2 * newTapPosition[i] / (double)(lastTapPos + 1));
+			
 			auto tap = (2 * rand() - 1) * tapCountFactor;
-			newTapGains[i] = tap * g;
+			newTapGains[i] = tap * g * gain;
 		}
 
 		// Set the tap vs. clean mix
-		newTapGains[0] = (1 - gain) + newTapGains[0] * gain;
+		newTapGains[0] = (1 - gain);
 
 		this->tapGains = newTapGains;
 		this->tapPosition = newTapPosition;

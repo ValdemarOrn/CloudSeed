@@ -8,7 +8,7 @@ namespace CloudSeed
 {
 	ReverbChannel::ReverbChannel(int bufferSize, int samplerate)
 		: preDelay(bufferSize, 10000)
-		, multitap(bufferSize)
+		, multitap(192000) // at least 1 sec at max samplerate
 		, highPass(samplerate)
 		, lowPass(samplerate)
 		, diffuser(bufferSize, samplerate)
@@ -138,7 +138,7 @@ namespace CloudSeed
 		case Parameter::LineDelay:
 			UpdateLines();
 			break;
-		case Parameter::LineFeedback:
+		case Parameter::LineDecay:
 			UpdateLines();
 			break;
 
@@ -370,8 +370,9 @@ namespace CloudSeed
 	
 	void ReverbChannel::UpdateLines()
 	{
-		auto lineDelay = (int)Ms2Samples(parameters[Parameter::LineDelay]);
-		auto lineFeedback = parameters[Parameter::LineFeedback];
+		auto lineDelaySamples = (int)Ms2Samples(parameters[Parameter::LineDelay]);
+		auto lineDecayMillis = parameters[Parameter::LineDecay] * 1000;
+		auto lineDecaySamples = Ms2Samples(lineDecayMillis);
 
 		auto lineModAmount = Ms2Samples(parameters[Parameter::LineModAmount]);
 		auto lineModRate = parameters[Parameter::LineModRate];
@@ -379,22 +380,22 @@ namespace CloudSeed
 		auto lateDiffusionModAmount = Ms2Samples(parameters[Parameter::LateDiffusionModAmount]);
 		auto lateDiffusionModRate = parameters[Parameter::LateDiffusionModRate];
 		
-		if (lineDelay < 50) lineDelay = 50;
+		if (lineDelaySamples < 50) lineDelaySamples = 50;
 
 		auto delayLineSeeds = AudioLib::ShaRandom::Generate(delayLineSeed, lines.size() * 3, crossSeed);
 		int count = lines.size();
 
 		for (int i = 0; i < count; i++)
 		{
-			auto delay = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelay;
-			auto ratio = delay / lineDelay;
-			auto adjustedFeedback = std::pow(lineFeedback, ratio);
+			auto delaySamples = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelaySamples;
+			auto dbAfter1Iteration = delaySamples / lineDecaySamples * (-60); // lineDecay is the time it takes to reach T60
+			auto gainAfter1Iteration = Utils::DB2gain(dbAfter1Iteration);
 
 			auto modAmount = lineModAmount * (0.8 + 0.2 * delayLineSeeds[i + count]);
 			auto modRate = lineModRate * (0.8 + 0.2 * delayLineSeeds[i + 2 * count]) / samplerate;
 
-			lines[i]->SetDelay((int)delay);
-			lines[i]->SetFeedback(adjustedFeedback);
+			lines[i]->SetDelay((int)delaySamples);
+			lines[i]->SetFeedback(gainAfter1Iteration);
 			lines[i]->SetLineModAmount(modAmount);
 			lines[i]->SetLineModRate(modRate);
 			lines[i]->SetDiffuserModAmount(lateDiffusionModAmount);

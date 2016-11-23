@@ -32,7 +32,7 @@ namespace CloudSeed
 
 		LineCount,
 		LineDelay,
-		LineFeedback,
+		LineDecay,
 		
 
         LateDiffusionEnabled,
@@ -128,7 +128,14 @@ namespace CloudSeed
 			return Formatters[para];
 		}
 
-		private static readonly Func<double, string> DecimalFormatter = x => x.ToString("0.00", CultureInfo.InvariantCulture);
+	    private static readonly Func<double, string> DecayFormatter = x =>
+	    {
+            if (x <= 1)
+                return (x * 1000).ToString("0", CultureInfo.InvariantCulture) + " ms";
+            else
+                return (x).ToString("0.00", CultureInfo.InvariantCulture) + " sec";
+        };
+        private static readonly Func<double, string> DecimalFormatter = x => x.ToString("0.00", CultureInfo.InvariantCulture);
 		private static readonly Func<double, string> IntFormatter = x => x.ToString("0", CultureInfo.InvariantCulture);
 		private static readonly Func<double, string> MillisFormatter = x => x.ToString("0", CultureInfo.InvariantCulture) + " ms";
 		private static readonly Func<double, string> FrequencyFormatter = x => x.ToString("0", CultureInfo.InvariantCulture) + " Hz";
@@ -165,7 +172,7 @@ namespace CloudSeed
 
 			{ Parameter.LineCount, IntFormatter },
 			{ Parameter.LineDelay, MillisFormatter },
-			{ Parameter.LineFeedback, DecimalFormatter },
+			{ Parameter.LineDecay, DecayFormatter },
 
 			{ Parameter.LateDiffusionEnabled, OnOffFormatter },
 			{ Parameter.LateDiffusionStages, IntFormatter },

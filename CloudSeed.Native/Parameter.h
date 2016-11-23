@@ -27,7 +27,7 @@ enum class Parameter
 
 	LineCount,
 	LineDelay,
-	LineFeedback,
+	LineDecay,
 
 
 	LateDiffusionEnabled,

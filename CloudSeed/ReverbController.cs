@@ -82,7 +82,7 @@ namespace CloudSeed
 				// Late
 				case Parameter.LineCount:                 return 1 + (int)(P(Parameter.LineCount) * 11.999);
 				case Parameter.LineDelay:                 return (int)(P(Parameter.LineDelay) * 500);
-				case Parameter.LineFeedback:              return P(Parameter.LineFeedback);
+				case Parameter.LineDecay:                 return P(Parameter.LineDecay);
 
 				case Parameter.LateDiffusionEnabled:      return P(Parameter.LateDiffusionEnabled);
 				case Parameter.LateDiffusionStages:       return 1 + (int)(P(Parameter.LateDiffusionStages) * (AllpassDiffuser.MaxStageCount - 0.001));

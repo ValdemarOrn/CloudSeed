@@ -138,7 +138,7 @@ namespace CloudSeed
 				case Parameter.LineDelay:
 					UpdateLines();
 					break;
-				case Parameter.LineFeedback:
+				case Parameter.LineDecay:
 					UpdateLines();
 					break;
 
@@ -257,7 +257,7 @@ namespace CloudSeed
 		{
 			var lineModRate = parameters[Parameter.LineModRate];
 			var lineModAmount = Ms2Samples(parameters[Parameter.LineModAmount]);
-			var lineFeedback = parameters[Parameter.LineFeedback];
+			var lineFeedback = parameters[Parameter.LineDecay];
 			var lineDelay = (int)Ms2Samples(parameters[Parameter.LineDelay]);
 			if (lineDelay < 50) lineDelay = 50;		
 

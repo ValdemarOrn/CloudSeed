@@ -48,6 +48,21 @@ namespace CloudSeed
 				bufferOut[i] = sample;
 			}
 		}
+
+		template<typename T>
+		static double DB2gain(T input)
+		{
+			return std::pow(10, input / 20.0);
+		}
+
+		template<typename T>
+		static double Gain2DB(T input)
+		{
+			if (input < 0.0000001)
+				return -100000;
+
+			return 20.0f * std::log10(input);
+		}
 	};
 }
 

@@ -13,7 +13,7 @@
   "DiffusionFeedback": 0.76000010967254639,
   "LineCount": 1.0,
   "LineDelay": 0.9100002646446228,
-  "LineFeedback": 0.80999958515167236,
+  "LineDecay": 0.80999958515167236,
   "LateDiffusionEnabled": 1.0,
   "LateDiffusionStages": 1.0,
   "LateDiffusionDelay": 0.71499955654144287,
