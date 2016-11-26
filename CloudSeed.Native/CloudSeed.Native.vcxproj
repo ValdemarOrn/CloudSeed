@@ -176,6 +176,7 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(Platform
     <ClInclude Include="AudioLib\Biquad.h" />
     <ClInclude Include="AudioLib\Hp1.h" />
     <ClInclude Include="AudioLib\Lp1.h" />
+    <ClInclude Include="AudioLib\MathDefs.h" />
     <ClInclude Include="AudioLib\ShaRandom.h" />
     <ClInclude Include="AudioLib\ValueTables.h" />
     <ClInclude Include="Default.h" />
@@ -191,21 +192,11 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(Platform
     <ClInclude Include="Utils\Sha256.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AllpassDiffuser.cpp" />
     <ClCompile Include="AudioLib\Biquad.cpp" />
-    <ClCompile Include="AudioLib\Hp1.cpp" />
-    <ClCompile Include="AudioLib\Lp1.cpp" />
     <ClCompile Include="AudioLib\ShaRandom.cpp" />
     <ClCompile Include="AudioLib\ValueTables.cpp" />
-    <ClCompile Include="DelayLine.cpp" />
     <ClCompile Include="Exports.cpp" />
     <ClCompile Include="FastSin.cpp" />
-    <ClCompile Include="ModulatedAllpass.cpp" />
-    <ClCompile Include="ModulatedDelay.cpp" />
-    <ClCompile Include="MultitapDiffuser.cpp" />
-    <ClCompile Include="Program.cpp" />
-    <ClCompile Include="ReverbChannel.cpp" />
-    <ClCompile Include="ReverbController.cpp" />
     <ClCompile Include="Utils\Sha256.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
