@@ -35,7 +35,7 @@ namespace CloudSeed
 
 		DelayLine(int bufferSize, int samplerate)
 			: lowPass(samplerate)
-			, delay(bufferSize, 10000)
+			, delay(bufferSize, samplerate * 1, 10000)
 			, diffuser(bufferSize, samplerate)
 			, lowShelf(AudioLib::Biquad::FilterType::LowShelf, samplerate)
 			, highShelf(AudioLib::Biquad::FilterType::HighShelf, samplerate)

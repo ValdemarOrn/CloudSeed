@@ -39,11 +39,11 @@ namespace CloudSeed
 		int countTemp;
 
 	public:
-		MultitapDiffuser(int bufferSize)
+		MultitapDiffuser(int delayBufferSize)
 		{
-			len = bufferSize;
-			buffer = new double[bufferSize];
-			output = new double[bufferSize];
+			len = delayBufferSize;
+			buffer = new double[delayBufferSize];
+			output = new double[delayBufferSize];
 			index = 0;
 			count = 1;
 			length = 1;

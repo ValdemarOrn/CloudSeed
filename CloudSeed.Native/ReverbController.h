@@ -65,7 +65,7 @@ namespace CloudSeed
 			{
 				// Input
 			case Parameter::InputMix:                  return P(Parameter::InputMix);
-			case Parameter::PreDelay:                  return (int)(P(Parameter::PreDelay) * 500);
+			case Parameter::PreDelay:                  return (int)(P(Parameter::PreDelay) * 1000);
 
 			case Parameter::HighPass:                  return 20 + ValueTables::Get(P(Parameter::HighPass), ValueTables::Response4Oct) * 980;
 			case Parameter::LowPass:                   return 400 + ValueTables::Get(P(Parameter::LowPass), ValueTables::Response4Oct) * 19600;
@@ -83,7 +83,7 @@ namespace CloudSeed
 
 				// Late
 			case Parameter::LineCount:                 return 1 + (int)(P(Parameter::LineCount) * 11.999);
-			case Parameter::LineDelay:                 return (int)(P(Parameter::LineDelay) * 500);
+			case Parameter::LineDelay:                 return (int)(ValueTables::Get(P(Parameter::LineDelay), ValueTables::Response2Dec) * 1000);
 			case Parameter::LineDecay:                 return 0.05 + ValueTables::Get(P(Parameter::LineDecay), ValueTables::Response3Dec) * 59.95;
 
 			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled) < 0.5 ? 0.0 : 1.0;

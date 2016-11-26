@@ -11,7 +11,6 @@ namespace CloudSeed
 	{
 	private:
 
-		const int DelayBufferSamples = 96000; // 500ms at 192Khz
 		const int ModulationUpdateRate = 8;
 
 		double* delayBuffer;
@@ -21,6 +20,7 @@ namespace CloudSeed
 		int readIndexA;
 		int readIndexB;
 		int samplesProcessed;
+		int delayBufferSize;
 
 		double modPhase;
 		double gainA;
@@ -28,14 +28,15 @@ namespace CloudSeed
 
 	public:
 		int SampleDelay;
-
+		
 		double ModAmount;
 		double ModRate;
 
-		ModulatedDelay(int bufferSize, int sampleDelay)
+		ModulatedDelay(int bufferSize, int delayBufferSize, int sampleDelay)
 		{
+			this->delayBufferSize = delayBufferSize;
 			this->bufferSize = bufferSize;
-			this->delayBuffer = new double[DelayBufferSamples];
+			this->delayBuffer = new double[delayBufferSize];
 			this->output = new double[bufferSize];
 			this->SampleDelay = sampleDelay;
 			writeIndex = 0;
@@ -69,16 +70,16 @@ namespace CloudSeed
 				writeIndex++;
 				readIndexA++;
 				readIndexB++;
-				if (writeIndex >= DelayBufferSamples) writeIndex -= DelayBufferSamples;
-				if (readIndexA >= DelayBufferSamples) readIndexA -= DelayBufferSamples;
-				if (readIndexB >= DelayBufferSamples) readIndexB -= DelayBufferSamples;
+				if (writeIndex >= delayBufferSize) writeIndex -= delayBufferSize;
+				if (readIndexA >= delayBufferSize) readIndexA -= delayBufferSize;
+				if (readIndexB >= delayBufferSize) readIndexB -= delayBufferSize;
 				samplesProcessed++;
 			}
 		}
 
 		void ClearBuffers()
 		{
-			Utils::ZeroBuffer(delayBuffer, DelayBufferSamples);
+			Utils::ZeroBuffer(delayBuffer, delayBufferSize);
 			Utils::ZeroBuffer(output, bufferSize);
 		}
 
@@ -103,8 +104,8 @@ namespace CloudSeed
 
 			readIndexA = writeIndex - delayA;
 			readIndexB = writeIndex - delayB;
-			if (readIndexA < 0) readIndexA += DelayBufferSamples;
-			if (readIndexB < 0) readIndexB += DelayBufferSamples;
+			if (readIndexA < 0) readIndexA += delayBufferSize;
+			if (readIndexB < 0) readIndexB += delayBufferSize;
 
 			samplesProcessed = 0;
 		}

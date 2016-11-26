@@ -1,11 +1,9 @@
 
-#ifndef ALLPASSDIFFUSER
-#define ALLPASSDIFFUSER
+#pragma once
 
 #include <vector>
 #include "ModulatedAllpass.h"
 #include "AudioLib\ShaRandom.h"
-#include "Utils.h"
 
 using namespace std;
 
@@ -112,7 +110,7 @@ namespace CloudSeed
 		void SetModAmount(double amount)
 		{
 			for (size_t i = 0; i < filters.size(); i++)
-				filters[i]->ModAmount = amount * (0.7 + 0.3 * seedValues[MaxStageCount + i]);
+				filters[i]->ModAmount = amount * (0.85 + 0.3 * seedValues[MaxStageCount + i]);
 		}
 
 		void SetModRate(double rate)
@@ -120,7 +118,7 @@ namespace CloudSeed
 			modRate = rate;
 
 			for (size_t i = 0; i < filters.size(); i++)
-				filters[i]->ModRate = rate * (0.7 + 0.3 * seedValues[MaxStageCount * 2 + i]) / samplerate;
+				filters[i]->ModRate = rate * (0.85 + 0.3 * seedValues[MaxStageCount * 2 + i]) / samplerate;
 		}
 
 		void Process(double* input, int sampleCount)
@@ -145,15 +143,18 @@ namespace CloudSeed
 		void Update()
 		{
 			for (size_t i = 0; i < filters.size(); i++)
-				filters[i]->SampleDelay = (int)(delay * (0.5 + 1.0 * seedValues[i]));
+			{
+				auto r = seedValues[i];
+				auto d = std::pow(10, r) * 0.1; // 0.1 ... 1.0
+				filters[i]->SampleDelay = (int)(delay * d);
+			}
 		}
 
 		void UpdateSeeds()
 		{
-			this->seedValues = AudioLib::ShaRandom::Generate(seed, AllpassDiffuser::MaxStageCount * 3, crossSeed);
+			this->seedValues = AudioLib::ShaRandom::Generate(seed, MaxStageCount * 3, crossSeed);
 			Update();
 		}
 
 	};
 }
-#endif

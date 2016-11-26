@@ -59,11 +59,11 @@ namespace CloudSeed
 
 	public:
 		ReverbChannel(int bufferSize, int samplerate)
-			: preDelay(bufferSize, 10000)
-			, multitap(192000) // at least 1 sec at max samplerate
+			: preDelay(bufferSize, samplerate, 100) // 1 second delay buffer
+			, multitap(samplerate) // use samplerate = 1 second delay buffer
 			, highPass(samplerate)
 			, lowPass(samplerate)
-			, diffuser(bufferSize, samplerate)
+			, diffuser(bufferSize, samplerate) // 1 sec buffer
 		{
 			for (int i = 0; i < TotalLineCount; i++)
 				lines.push_back(new DelayLine(bufferSize, samplerate));
@@ -434,19 +434,22 @@ namespace CloudSeed
 			auto lateDiffusionModAmount = Ms2Samples(parameters[Parameter::LateDiffusionModAmount]);
 			auto lateDiffusionModRate = parameters[Parameter::LateDiffusionModRate];
 
-			if (lineDelaySamples < 50) lineDelaySamples = 50;
-
-			auto delayLineSeeds = AudioLib::ShaRandom::Generate(delayLineSeed, lines.size() * 3, crossSeed);
+			auto delayLineSeeds = ShaRandom::Generate(delayLineSeed, lines.size() * 3, crossSeed);
 			int count = lines.size();
 
 			for (int i = 0; i < count; i++)
 			{
+				auto modAmount = lineModAmount * (0.7 + 0.3 * delayLineSeeds[i + count]);
+				auto modRate = lineModRate * (0.7 + 0.3 * delayLineSeeds[i + 2 * count]) / samplerate;
+				
 				auto delaySamples = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelaySamples;
+				if (delaySamples < modAmount + 2) // when the delay is set really short, and the modulation is very high
+					delaySamples = modAmount + 2; // the mod could actually take the delay time negative, prevent that! -- provide 2 extra sample as margin of safety
+
 				auto dbAfter1Iteration = delaySamples / lineDecaySamples * (-60); // lineDecay is the time it takes to reach T60
 				auto gainAfter1Iteration = Utils::DB2gain(dbAfter1Iteration);
 
-				auto modAmount = lineModAmount * (0.8 + 0.2 * delayLineSeeds[i + count]);
-				auto modRate = lineModRate * (0.8 + 0.2 * delayLineSeeds[i + 2 * count]) / samplerate;
+				
 
 				lines[i]->SetDelay((int)delaySamples);
 				lines[i]->SetFeedback(gainAfter1Iteration);
