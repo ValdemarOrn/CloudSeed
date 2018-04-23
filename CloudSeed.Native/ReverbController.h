@@ -31,7 +31,8 @@ namespace CloudSeed
 
 	public:
 		ReverbController(int samplerate)
-			: channelL(bufferSize, samplerate), channelR(bufferSize, samplerate)
+			: channelL(bufferSize, samplerate, ChannelLR::Left)
+			, channelR(bufferSize, samplerate, ChannelLR::Right)
 		{
 			this->samplerate = samplerate;
 		}
@@ -78,17 +79,17 @@ namespace CloudSeed
 
 			case Parameter::DiffusionEnabled:          return P(Parameter::DiffusionEnabled) < 0.5 ? 0.0 : 1.0;
 			case Parameter::DiffusionStages:           return 1 + (int)(P(Parameter::DiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
-			case Parameter::DiffusionDelay:            return (int)(P(Parameter::DiffusionDelay) * 50);
+			case Parameter::DiffusionDelay:            return (int)(10 + P(Parameter::DiffusionDelay) * 90);
 			case Parameter::DiffusionFeedback:         return P(Parameter::DiffusionFeedback);
 
 				// Late
 			case Parameter::LineCount:                 return 1 + (int)(P(Parameter::LineCount) * 11.999);
-			case Parameter::LineDelay:                 return (int)(ValueTables::Get(P(Parameter::LineDelay), ValueTables::Response2Dec) * 1000);
+			case Parameter::LineDelay:                 return (int)(20.0 + ValueTables::Get(P(Parameter::LineDelay), ValueTables::Response2Dec) * 980);
 			case Parameter::LineDecay:                 return 0.05 + ValueTables::Get(P(Parameter::LineDecay), ValueTables::Response3Dec) * 59.95;
 
 			case Parameter::LateDiffusionEnabled:      return P(Parameter::LateDiffusionEnabled) < 0.5 ? 0.0 : 1.0;
 			case Parameter::LateDiffusionStages:       return 1 + (int)(P(Parameter::LateDiffusionStages) * (AllpassDiffuser::MaxStageCount - 0.001));
-			case Parameter::LateDiffusionDelay:        return (int)(P(Parameter::LateDiffusionDelay) * 50);
+			case Parameter::LateDiffusionDelay:        return (int)(10 + P(Parameter::LateDiffusionDelay) * 90);
 			case Parameter::LateDiffusionFeedback:     return P(Parameter::LateDiffusionFeedback);
 
 				// Frequency Response
@@ -141,17 +142,9 @@ namespace CloudSeed
 		{
 			parameters[(int)param] = value;
 			auto scaled = GetScaledParameter(param);
-
-			if (param == Parameter::CrossSeed) // this is the only parameter that varies between the two channels
-			{
-				channelL.SetParameter(param, 0);
-				channelR.SetParameter(param, scaled);
-			}
-			else
-			{
-				channelL.SetParameter(param, scaled);
-				channelR.SetParameter(param, scaled);
-			}
+			
+			channelL.SetParameter(param, scaled);
+			channelR.SetParameter(param, scaled);
 		}
 
 		void ClearBuffers()
@@ -166,7 +159,7 @@ namespace CloudSeed
 			auto cm = GetScaledParameter(Parameter::InputMix) * 0.5;
 			auto cmi = (1 - cm);
 
-			for (uint i = 0; i < len; i++)
+			for (int i = 0; i < len; i++)
 			{
 				leftChannelIn[i] = input[0][i] * cmi + input[1][i] * cm;
 				rightChannelIn[i] = input[1][i] * cmi + input[0][i] * cm;
@@ -177,7 +170,7 @@ namespace CloudSeed
 			auto leftOut = channelL.GetOutput();
 			auto rightOut = channelR.GetOutput();
 
-			for (uint i = 0; i < len; i++)
+			for (int i = 0; i < len; i++)
 			{
 				output[0][i] = leftOut[i];
 				output[1][i] = rightOut[i];

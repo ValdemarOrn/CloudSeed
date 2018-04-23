@@ -27,11 +27,12 @@ namespace CloudSeed
 	public:
 		int Stages;
 
-		AllpassDiffuser(int bufferSize, int samplerate)
+		AllpassDiffuser(int samplerate, int delayBufferLengthMillis)
 		{
+			auto delayBufferSize = samplerate * ((double)delayBufferLengthMillis / 1000.0);
 			for (int i = 0; i < MaxStageCount; i++)
 			{
-				filters.push_back(new ModulatedAllpass(bufferSize, 100));
+				filters.push_back(new ModulatedAllpass((int)delayBufferSize, 100));
 			}
 
 			crossSeed = 0.0;
@@ -109,8 +110,10 @@ namespace CloudSeed
 
 		void SetModAmount(double amount)
 		{
-			for (size_t i = 0; i < filters.size(); i++)
+			for (int i = 0; i < filters.size(); i++)
+			{
 				filters[i]->ModAmount = amount * (0.85 + 0.3 * seedValues[MaxStageCount + i]);
+			}
 		}
 
 		void SetModRate(double rate)

@@ -22,6 +22,12 @@ using namespace std;
 
 namespace CloudSeed
 {
+	enum class ChannelLR
+	{
+		Left,
+		Right
+	};
+
 	class ReverbChannel
 	{
 	private:
@@ -46,7 +52,6 @@ namespace CloudSeed
 
 		// Used the the main process loop
 		int lineCount;
-		double perLineGain;
 
 		bool highPassEnabled;
 		bool lowPassEnabled;
@@ -56,15 +61,19 @@ namespace CloudSeed
 		double earlyOut;
 		double lineOut;
 		double crossSeed;
+		ChannelLR channelLr;
 
 	public:
-		ReverbChannel(int bufferSize, int samplerate)
-			: preDelay(bufferSize, samplerate, 100) // 1 second delay buffer
+		
+		ReverbChannel(int bufferSize, int samplerate, ChannelLR leftOrRight)
+			: preDelay(bufferSize, (int)(samplerate * 1.0), 100) // 1 second delay buffer
 			, multitap(samplerate) // use samplerate = 1 second delay buffer
 			, highPass(samplerate)
 			, lowPass(samplerate)
-			, diffuser(bufferSize, samplerate) // 1 sec buffer
+			, diffuser(samplerate, 150) // 150ms buffer, to allow for 100ms + modulation time
 		{
+			this->channelLr = leftOrRight;
+
 			for (int i = 0; i < TotalLineCount; i++)
 				lines.push_back(new DelayLine(bufferSize, samplerate));
 
@@ -75,7 +84,6 @@ namespace CloudSeed
 
 			crossSeed = 0.0;
 			lineCount = 8;
-			perLineGain = GetPerLineGain();
 			diffuser.SetInterpolationEnabled(true);
 			highPass.SetCutoffHz(20);
 			lowPass.SetCutoffHz(20000);
@@ -108,7 +116,7 @@ namespace CloudSeed
 			highPass.SetSamplerate(samplerate);
 			lowPass.SetSamplerate(samplerate);
 
-			for (size_t i = 0; i < lines.size(); i++)
+			for (int i = 0; i < lines.size(); i++)
 			{
 				lines[i]->SetSamplerate(samplerate);
 			}
@@ -185,7 +193,6 @@ namespace CloudSeed
 
 			case Parameter::LineCount:
 				lineCount = (int)value;
-				perLineGain = GetPerLineGain();
 				break;
 			case Parameter::LineDelay:
 				UpdateLines();
@@ -258,22 +265,23 @@ namespace CloudSeed
 				break;
 
 			case Parameter::TapSeed:
-				multitap.SetSeed(value);
+				multitap.SetSeed((int)value);
 				break;
 			case Parameter::DiffusionSeed:
-				diffuser.SetSeed(value);
+				diffuser.SetSeed((int)value);
 				break;
 			case Parameter::DelaySeed:
-				delayLineSeed = value;
+				delayLineSeed = (int)value;
 				UpdateLines();
 				break;
 			case Parameter::PostDiffusionSeed:
-				postDiffusionSeed = value;
+				postDiffusionSeed = (int)value;
 				UpdatePostDiffusion();
 				break;
 
 			case Parameter::CrossSeed:
-				crossSeed = value;
+
+				crossSeed = channelLr == ChannelLR::Right ? value : 0;
 				multitap.SetCrossSeed(value);
 				diffuser.SetCrossSeed(value);
 				UpdateLines();
@@ -383,6 +391,7 @@ namespace CloudSeed
 				}
 			}
 
+			auto perLineGain = GetPerLineGain();
 			Utils::Gain(tempBuffer, perLineGain, len);
 			Utils::Copy(tempBuffer, lineOutBuffer, len);
 
@@ -419,7 +428,7 @@ namespace CloudSeed
 	private:
 		double GetPerLineGain()
 		{
-			return 1 / std::sqrt(lineCount);
+			return 1.0 / std::sqrt(lineCount);
 		}
 
 		void UpdateLines()
@@ -434,22 +443,22 @@ namespace CloudSeed
 			auto lateDiffusionModAmount = Ms2Samples(parameters[Parameter::LateDiffusionModAmount]);
 			auto lateDiffusionModRate = parameters[Parameter::LateDiffusionModRate];
 
-			auto delayLineSeeds = ShaRandom::Generate(delayLineSeed, lines.size() * 3, crossSeed);
-			int count = lines.size();
+			auto delayLineSeeds = ShaRandom::Generate(delayLineSeed, (int)lines.size() * 3, crossSeed);
+			int count = (int)lines.size();
 
 			for (int i = 0; i < count; i++)
 			{
 				auto modAmount = lineModAmount * (0.7 + 0.3 * delayLineSeeds[i + count]);
 				auto modRate = lineModRate * (0.7 + 0.3 * delayLineSeeds[i + 2 * count]) / samplerate;
 				
-				auto delaySamples = (0.1 + 0.9 * delayLineSeeds[i]) * lineDelaySamples;
+				auto delaySamples = (0.5 + 1.0 * delayLineSeeds[i]) * lineDelaySamples;
 				if (delaySamples < modAmount + 2) // when the delay is set really short, and the modulation is very high
 					delaySamples = modAmount + 2; // the mod could actually take the delay time negative, prevent that! -- provide 2 extra sample as margin of safety
 
 				auto dbAfter1Iteration = delaySamples / lineDecaySamples * (-60); // lineDecay is the time it takes to reach T60
 				auto gainAfter1Iteration = Utils::DB2gain(dbAfter1Iteration);
 
-				
+
 
 				lines[i]->SetDelay((int)delaySamples);
 				lines[i]->SetFeedback(gainAfter1Iteration);
@@ -462,7 +471,7 @@ namespace CloudSeed
 
 		void UpdatePostDiffusion()
 		{
-			for (size_t i = 0; i < lines.size(); i++)
+			for (int i = 0; i < lines.size(); i++)
 				lines[i]->SetDiffuserSeed(((long long)postDiffusionSeed) * (i + 1), crossSeed);
 		}
 

@@ -35,3 +35,4 @@ _ReSharper*/
 !SharpSoundDevice-Dev-1.3.0-2015-01-06/*
 Build/*
 packages/*
+.vs*/
