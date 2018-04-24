@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSeed", "CloudSeed\CloudSeed.csproj", "{9BB36904-5BF5-4929-86AA-FD9A884505DE}"
 EndProject
@@ -16,58 +16,33 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioLib", "..\AudioLib\Aud
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSeed.Tests", "CloudSeed.Tests\CloudSeed.Tests.csproj", "{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSeed.Ui.Dev", "CloudSeed.Ui.Dev\CloudSeed.Ui.Dev.csproj", "{28103A65-ADFF-4418-830E-F43D22896608}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Debug|x64.Build.0 = Debug|Any CPU
-		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Debug|x86.Build.0 = Debug|Any CPU
 		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Release|x64.ActiveCfg = Release|Any CPU
 		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Release|x64.Build.0 = Release|Any CPU
-		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Release|x86.ActiveCfg = Release|Any CPU
-		{9BB36904-5BF5-4929-86AA-FD9A884505DE}.Release|x86.Build.0 = Release|Any CPU
 		{71460306-FE20-4720-A7D8-3D13B1739B17}.Debug|x64.ActiveCfg = Debug|x64
 		{71460306-FE20-4720-A7D8-3D13B1739B17}.Debug|x64.Build.0 = Debug|x64
-		{71460306-FE20-4720-A7D8-3D13B1739B17}.Debug|x86.ActiveCfg = Debug|Win32
-		{71460306-FE20-4720-A7D8-3D13B1739B17}.Debug|x86.Build.0 = Debug|Win32
 		{71460306-FE20-4720-A7D8-3D13B1739B17}.Release|x64.ActiveCfg = Release|x64
 		{71460306-FE20-4720-A7D8-3D13B1739B17}.Release|x64.Build.0 = Release|x64
-		{71460306-FE20-4720-A7D8-3D13B1739B17}.Release|x86.ActiveCfg = Release|Win32
-		{71460306-FE20-4720-A7D8-3D13B1739B17}.Release|x86.Build.0 = Release|Win32
 		{4905489D-6F81-4129-8780-744CED5B3269}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{4905489D-6F81-4129-8780-744CED5B3269}.Debug|x64.Build.0 = Debug|Any CPU
-		{4905489D-6F81-4129-8780-744CED5B3269}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4905489D-6F81-4129-8780-744CED5B3269}.Debug|x86.Build.0 = Debug|Any CPU
 		{4905489D-6F81-4129-8780-744CED5B3269}.Release|x64.ActiveCfg = Release|Any CPU
 		{4905489D-6F81-4129-8780-744CED5B3269}.Release|x64.Build.0 = Release|Any CPU
-		{4905489D-6F81-4129-8780-744CED5B3269}.Release|x86.ActiveCfg = Release|Any CPU
-		{4905489D-6F81-4129-8780-744CED5B3269}.Release|x86.Build.0 = Release|Any CPU
 		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Debug|x64.ActiveCfg = Debug|x64
 		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Debug|x64.Build.0 = Debug|x64
-		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Debug|x86.ActiveCfg = Debug|x86
-		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Debug|x86.Build.0 = Debug|x86
 		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Release|x64.ActiveCfg = Release|x64
 		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Release|x64.Build.0 = Release|x64
-		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Release|x86.ActiveCfg = Release|x86
-		{1352CDF5-006D-49E0-A2EE-D00DB02AB5FE}.Release|x86.Build.0 = Release|x86
-		{28103A65-ADFF-4418-830E-F43D22896608}.Debug|x64.ActiveCfg = Debug|x64
-		{28103A65-ADFF-4418-830E-F43D22896608}.Debug|x64.Build.0 = Debug|x64
-		{28103A65-ADFF-4418-830E-F43D22896608}.Debug|x86.ActiveCfg = Debug|x86
-		{28103A65-ADFF-4418-830E-F43D22896608}.Debug|x86.Build.0 = Debug|x86
-		{28103A65-ADFF-4418-830E-F43D22896608}.Release|x64.ActiveCfg = Release|x64
-		{28103A65-ADFF-4418-830E-F43D22896608}.Release|x64.Build.0 = Release|x64
-		{28103A65-ADFF-4418-830E-F43D22896608}.Release|x86.ActiveCfg = Release|x86
-		{28103A65-ADFF-4418-830E-F43D22896608}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F3EADD4C-B981-42D8-88F6-8B4475A50A61}
 	EndGlobalSection
 EndGlobal

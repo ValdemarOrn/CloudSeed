@@ -1,5 +1,5 @@
 rd /S /Q Builds\Current
-set ts=%DATE:~11%-%DATE:~8,2%-%DATE:~5,2%
+set ts=%DATE:~6,4%-%DATE:~3,2%-%DATE:~0,2%
 
 :: Build 32 Bit
 rd /s /q CloudSeed\bin\Release

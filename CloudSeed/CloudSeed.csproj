@@ -49,15 +49,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SharpSoundDevice, Version=1.3.0.143, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binaries\SharpSoundDevice\x86\Release\SharpSoundDevice.dll</HintPath>
+    <Reference Include="SharpSoundDevice">
+      <HintPath>..\Binaries\SharpSoundDevice\x64\Release\SharpSoundDevice.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -100,7 +98,6 @@
     <Compile Include="UI\CloudSeedViewModel.cs" />
     <Resource Include="OpenSans-Light.ttf" />
     <Resource Include="OpenSans-Regular.ttf" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="UI\CloudSeedView.xaml">
@@ -125,6 +122,9 @@
       <Project>{4905489d-6f81-4129-8780-744ced5b3269}</Project>
       <Name>AudioLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

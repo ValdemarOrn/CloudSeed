@@ -53,6 +53,12 @@ namespace CloudSeed
 #else
 			devInfo.DeviceID = "Low Profile - CloudSeed";
 # endif
+			if (!Environment.Is64BitOperatingSystem)
+			{
+				// solves possible conflict when both 32 and 64 bit plugins are available in Reaper
+				devInfo.DeviceID = DeviceInfo.DeviceID + " x86";
+			}
+
 			devInfo.Developer = "Valdemar Erlingsson";
 			devInfo.EditorWidth = 995;
 			devInfo.EditorHeight = 386;
@@ -60,7 +66,7 @@ namespace CloudSeed
 			devInfo.Name = "CloudSeed Algorithmic Reverb";
 			devInfo.ProgramCount = 1;
 			devInfo.Type = DeviceType.Effect;
-			devInfo.Version = 1000;
+			devInfo.Version = 1500;
 			devInfo.UnsafeProcessing = controller is IUnsafeReverbController;
 			devInfo.VstId = DeviceUtilities.GenerateIntegerId(devInfo.DeviceID);
 			

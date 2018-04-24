@@ -115,8 +115,7 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(Platform
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(Configuration)\$(TargetFileName)
-copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)
-copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
+copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
