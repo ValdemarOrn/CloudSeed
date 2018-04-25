@@ -10,14 +10,19 @@ Cloud Seed is an algorithmic reverb plugin built in C# and C++ for emulating hug
 2. Please read the **[Installation Instructions](https://github.com/ValdemarOrn/CloudSeed/tree/master/Installation%20Instructions)**
 
 **If you get errors about either "vcruntime140.dll" or 
-"msvcp140.dll", you need to install the Redistributable Runtime as described in the Installation Instructions.**
+"msvcp140.dll", you need to install the Microsoft Visual C Runtime Redistributable as described in the Installation Instructions.**
 
+## System Requirements
+
+* Microsoft Windows 7, 8, 8.1, 10 or above
+* 64 Bit Processor and operating system (support for 32 bit removes as of v1.0)
+* .NET Framework 4.5. This can be installed using the provided installer. **Please make sure to check all the required dependencies on your system.** If you're not sure, leave them checked, the installer will automatically determine whether you already have the required libraries installed.
 
 ## Documentation
 
 See the [**Documentation Page**](https://github.com/ValdemarOrn/CloudSeed/tree/master/Documentation) for an overview of the user interface and an explanation of the reverberation kernel.
 
-## Reverb Kernel Architecture
+## Reverb Kernel Architecture (for developers)
 
 ![](Documentation/CloudSeed.png)
 

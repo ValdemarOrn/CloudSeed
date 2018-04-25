@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -166,8 +166,7 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(Platform
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed\bin\$(Configuration)\$(TargetFileName)
-copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)
-copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Ui.Dev\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
+copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformTarget)\$(Configuration)\$(TargetFileName)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
