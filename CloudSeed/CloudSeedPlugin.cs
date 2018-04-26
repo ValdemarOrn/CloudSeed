@@ -66,7 +66,7 @@ namespace CloudSeed
 			devInfo.Name = "CloudSeed Algorithmic Reverb";
 			devInfo.ProgramCount = 1;
 			devInfo.Type = DeviceType.Effect;
-			devInfo.Version = 1500;
+			devInfo.Version = 1501;
 			devInfo.UnsafeProcessing = controller is IUnsafeReverbController;
 			devInfo.VstId = DeviceUtilities.GenerateIntegerId(devInfo.DeviceID);
 			
