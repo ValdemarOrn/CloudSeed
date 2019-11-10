@@ -71,6 +71,12 @@
     <ClInclude Include="Default.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Exports.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioFile.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioLib\ValueTables.cpp">

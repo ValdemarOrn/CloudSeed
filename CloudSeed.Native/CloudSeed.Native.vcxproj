@@ -171,6 +171,7 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformT
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AllpassDiffuser.h" />
+    <ClInclude Include="AudioFile.h" />
     <ClInclude Include="AudioLib\Biquad.h" />
     <ClInclude Include="AudioLib\Hp1.h" />
     <ClInclude Include="AudioLib\Lp1.h" />
@@ -179,6 +180,7 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformT
     <ClInclude Include="AudioLib\ValueTables.h" />
     <ClInclude Include="Default.h" />
     <ClInclude Include="DelayLine.h" />
+    <ClInclude Include="Exports.h" />
     <ClInclude Include="FastSin.h" />
     <ClInclude Include="ModulatedAllpass.h" />
     <ClInclude Include="ModulatedDelay.h" />
