@@ -6,7 +6,7 @@
 #include <array>
 #include "MultitapDiffuser.h"
 #include "Utils.h"
-#include "AudioLib/ShaRandom.h"
+#include "AudioLib/RandomBuffer.h"
 
 namespace CloudSeed
 {
@@ -199,7 +199,7 @@ namespace CloudSeed
 
 		void UpdateSeeds()
 		{
-			this->seedValues = AudioLib::ShaRandom::Generate(seed, 100, crossSeed);
+			this->seedValues = AudioLib::RandomBuffer::Generate(seed, 100, crossSeed);
 			Update();
 		}
 	};

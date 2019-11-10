@@ -174,9 +174,10 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformT
     <ClInclude Include="AudioFile.h" />
     <ClInclude Include="AudioLib\Biquad.h" />
     <ClInclude Include="AudioLib\Hp1.h" />
+    <ClInclude Include="AudioLib\LcgRandom.h" />
     <ClInclude Include="AudioLib\Lp1.h" />
     <ClInclude Include="AudioLib\MathDefs.h" />
-    <ClInclude Include="AudioLib\ShaRandom.h" />
+    <ClInclude Include="AudioLib\RandomBuffer.h" />
     <ClInclude Include="AudioLib\ValueTables.h" />
     <ClInclude Include="Default.h" />
     <ClInclude Include="DelayLine.h" />
@@ -189,15 +190,13 @@ copy $(TargetDir)$(TargetFileName) $(SolutionDir)CloudSeed.Tests\bin\$(PlatformT
     <ClInclude Include="ReverbChannel.h" />
     <ClInclude Include="ReverbController.h" />
     <ClInclude Include="Utils.h" />
-    <ClInclude Include="Utils\Sha256.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioLib\Biquad.cpp" />
-    <ClCompile Include="AudioLib\ShaRandom.cpp" />
+    <ClCompile Include="AudioLib\RandomBuffer.cpp" />
     <ClCompile Include="AudioLib\ValueTables.cpp" />
     <ClCompile Include="Exports.cpp" />
     <ClCompile Include="FastSin.cpp" />
-    <ClCompile Include="Utils\Sha256.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

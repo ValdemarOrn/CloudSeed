@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "ModulatedAllpass.h"
-#include "AudioLib\ShaRandom.h"
+#include "AudioLib\RandomBuffer.h"
 
 using namespace std;
 
@@ -155,7 +155,7 @@ namespace CloudSeed
 
 		void UpdateSeeds()
 		{
-			this->seedValues = AudioLib::ShaRandom::Generate(seed, MaxStageCount * 3, crossSeed);
+			this->seedValues = AudioLib::RandomBuffer::Generate(seed, MaxStageCount * 3, crossSeed);
 			Update();
 		}
 

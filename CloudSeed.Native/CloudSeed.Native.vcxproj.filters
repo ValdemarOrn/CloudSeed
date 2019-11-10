@@ -12,9 +12,6 @@
     <Filter Include="Source Files\AudioLib">
       <UniqueIdentifier>{dbfb8845-4920-4335-b646-703c46dad011}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Utils">
-      <UniqueIdentifier>{e90233f2-634b-43dd-9327-4a8ebd7e032b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllpassDiffuser.h">
@@ -38,14 +35,8 @@
     <ClInclude Include="AudioLib\Lp1.h">
       <Filter>Source Files\AudioLib</Filter>
     </ClInclude>
-    <ClInclude Include="AudioLib\ShaRandom.h">
-      <Filter>Source Files\AudioLib</Filter>
-    </ClInclude>
     <ClInclude Include="AudioLib\ValueTables.h">
       <Filter>Source Files\AudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Sha256.h">
-      <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="ModulatedAllpass.h">
       <Filter>Source Files</Filter>
@@ -77,6 +68,12 @@
     <ClInclude Include="AudioFile.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="AudioLib\LcgRandom.h">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLib\RandomBuffer.h">
+      <Filter>Source Files\AudioLib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioLib\ValueTables.cpp">
@@ -85,17 +82,14 @@
     <ClCompile Include="FastSin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Sha256.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioLib\ShaRandom.cpp">
-      <Filter>Source Files\AudioLib</Filter>
-    </ClCompile>
     <ClCompile Include="AudioLib\Biquad.cpp">
       <Filter>Source Files\AudioLib</Filter>
     </ClCompile>
     <ClCompile Include="Exports.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioLib\RandomBuffer.cpp">
+      <Filter>Source Files\AudioLib</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

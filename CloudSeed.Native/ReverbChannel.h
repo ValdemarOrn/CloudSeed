@@ -7,7 +7,7 @@
 #include "Parameter.h"
 #include "ModulatedDelay.h"
 #include "MultitapDiffuser.h"
-#include "AudioLib/ShaRandom.h"
+#include "AudioLib/RandomBuffer.h"
 #include "AudioLib/Lp1.h"
 #include "AudioLib/Hp1.h"
 #include "DelayLine.h"
@@ -15,7 +15,6 @@
 
 #include <cmath>
 #include "ReverbChannel.h"
-#include "AudioLib\ShaRandom.h"
 #include "Utils.h"
 
 using namespace std;
@@ -41,7 +40,7 @@ namespace CloudSeed
 		MultitapDiffuser multitap;
 		AllpassDiffuser diffuser;
 		vector<DelayLine*> lines;
-		AudioLib::ShaRandom rand;
+		AudioLib::RandomBuffer rand;
 		AudioLib::Hp1 highPass;
 		AudioLib::Lp1 lowPass;
 		double* tempBuffer;
@@ -443,7 +442,7 @@ namespace CloudSeed
 			auto lateDiffusionModAmount = Ms2Samples(parameters[Parameter::LateDiffusionModAmount]);
 			auto lateDiffusionModRate = parameters[Parameter::LateDiffusionModRate];
 
-			auto delayLineSeeds = ShaRandom::Generate(delayLineSeed, (int)lines.size() * 3, crossSeed);
+			auto delayLineSeeds = RandomBuffer::Generate(delayLineSeed, (int)lines.size() * 3, crossSeed);
 			int count = (int)lines.size();
 
 			for (int i = 0; i < count; i++)

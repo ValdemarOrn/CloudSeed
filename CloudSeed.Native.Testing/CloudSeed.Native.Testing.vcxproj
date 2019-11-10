@@ -121,9 +121,10 @@
     <ClInclude Include="..\CloudSeed.Native\AudioFile.h" />
     <ClInclude Include="..\CloudSeed.Native\AudioLib\Biquad.h" />
     <ClInclude Include="..\CloudSeed.Native\AudioLib\Hp1.h" />
+    <ClInclude Include="..\CloudSeed.Native\AudioLib\LcgRandom.h" />
     <ClInclude Include="..\CloudSeed.Native\AudioLib\Lp1.h" />
     <ClInclude Include="..\CloudSeed.Native\AudioLib\MathDefs.h" />
-    <ClInclude Include="..\CloudSeed.Native\AudioLib\ShaRandom.h" />
+    <ClInclude Include="..\CloudSeed.Native\AudioLib\RandomBuffer.h" />
     <ClInclude Include="..\CloudSeed.Native\AudioLib\ValueTables.h" />
     <ClInclude Include="..\CloudSeed.Native\Default.h" />
     <ClInclude Include="..\CloudSeed.Native\DelayLine.h" />
@@ -137,16 +138,14 @@
     <ClInclude Include="..\CloudSeed.Native\ReverbChannel.h" />
     <ClInclude Include="..\CloudSeed.Native\ReverbController.h" />
     <ClInclude Include="..\CloudSeed.Native\Utils.h" />
-    <ClInclude Include="..\CloudSeed.Native\Utils\Sha256.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CloudSeed.Native\AudioLib\Biquad.cpp" />
-    <ClCompile Include="..\CloudSeed.Native\AudioLib\ShaRandom.cpp" />
+    <ClCompile Include="..\CloudSeed.Native\AudioLib\RandomBuffer.cpp" />
     <ClCompile Include="..\CloudSeed.Native\AudioLib\ValueTables.cpp" />
     <ClCompile Include="..\CloudSeed.Native\Exports.cpp" />
     <ClCompile Include="..\CloudSeed.Native\FastSin.cpp" />
     <ClCompile Include="..\CloudSeed.Native\Main.cpp" />
-    <ClCompile Include="..\CloudSeed.Native\Utils\Sha256.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

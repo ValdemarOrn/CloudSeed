@@ -1,11 +1,10 @@
-#ifndef SHARANDOM
-#define SHARANDOM
+#pragma once
 
 #include <vector>
 
 namespace AudioLib
 {
-	class ShaRandom
+	class RandomBuffer
 	{
 	public:
 		static std::vector<double> Generate(long long seed, int count);
@@ -13,4 +12,3 @@ namespace AudioLib
 	};
 }
 
-#endif
