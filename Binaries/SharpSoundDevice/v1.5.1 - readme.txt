@@ -1,1 +1,0 @@
-Download the 1.5.0.1 release from https://github.com/ValdemarOrn/SharpSoundDevice
