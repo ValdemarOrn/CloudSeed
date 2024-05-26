@@ -1,3 +1,19 @@
+**NOTE: This is a legacy repository**
+
+For the Cloud Seed open source algorithm, visit:
+
+https://github.com/GhostNoteAudio/CloudSeedCore
+
+To download the latest plugin version, visit:
+
+https://ghostnoteaudio.uk/products/cloudseed
+
+The content in the repository is preserved only for legacy reasons. Please use the new version of Cloud Seed from Ghost Note Audio.
+
+
+---
+
+
 ## Cloud Seed VST
 
 Cloud Seed is an algorithmic reverb plugin built in C# and C++ for emulating huge, endless spaces and modulated echoes. The algorithms are based on the same principles as manu classic studio reverb units from the 1980's, but Cloud Seed does not attempt to model any specific device, or even to be a general-purpose reverb plugin at all. It is best employed as a special effect, for creating thick, lush pads out of simple input sounds. 
